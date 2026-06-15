@@ -1,10 +1,11 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ProductController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CartItemController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -25,6 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/products', [ProductController::class, 'index']) ->name('products.index');
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::post('/cart/items', [CartItemController::class, 'store'])->name('cart.items.store');
 
 require __DIR__.'/auth.php';
