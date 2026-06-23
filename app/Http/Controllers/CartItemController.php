@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
-use App\Services\CartService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Models\Product;
+use App\Models\CartItem;
+use App\Services\CartService;
 
 class CartItemController extends Controller
 {
@@ -40,5 +41,20 @@ class CartItemController extends Controller
         return redirect()
             ->route('products.index')
             ->with('success', 'Prodotto aggiunto al carrello.');
+    }
+
+    public function destroy(Request $request, CartService $cartService, CartItem $cartItem): RedirectResponse
+    {
+        $cart = $cartService->getCurrentCart($request);
+
+        if ($cartItem->cart_id !== $cart->id) {
+            abort(403);
+        }
+
+        $cartItem->delete();
+
+        return redirect()
+            ->route('cart.index')
+            ->with('success', 'Prodotto rimosso dal carrello.');
     }
 }

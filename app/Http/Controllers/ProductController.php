@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Product;
 
 class ProductController extends Controller
 {

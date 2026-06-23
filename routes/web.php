@@ -6,6 +6,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartItemController;
+use App\Http\Controllers\CartController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -27,6 +28,9 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::patch('/cart', [CartController::class, 'update'])->name('cart.update');
 Route::post('/cart/items', [CartItemController::class, 'store'])->name('cart.items.store');
+Route::delete('/cart/items/{cartItem}', [CartItemController::class, 'destroy'])->name('cart.items.destroy');
 
 require __DIR__.'/auth.php';
