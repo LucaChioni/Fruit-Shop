@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -28,9 +29,14 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::patch('/cart', [CartController::class, 'update'])->name('cart.update');
+
 Route::post('/cart/items', [CartItemController::class, 'store'])->name('cart.items.store');
 Route::delete('/cart/items/{cartItem}', [CartItemController::class, 'destroy'])->name('cart.items.destroy');
+
+Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
 require __DIR__.'/auth.php';

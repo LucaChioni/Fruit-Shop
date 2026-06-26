@@ -104,6 +104,9 @@ function removeItem(item) {
             >
                 Aggiorna carrello
             </button>
+            <a :href="route('checkout.create')" class="checkout-link">
+                Vai al checkout
+            </a>
         </form>
     </main>
 </template>
@@ -259,5 +262,20 @@ function removeItem(item) {
 .remove-item-button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.checkout-link {
+    justify-self: start;
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: #166534;
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.checkout-link:hover {
+    background: #14532d;
 }
 </style>
