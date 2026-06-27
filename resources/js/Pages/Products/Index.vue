@@ -1,12 +1,12 @@
 <script setup>
-import { useForm, usePage } from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3';
+import FlashMessage from '@/Components/FlashMessage.vue';
+import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
 
 const props = defineProps({
     products: Array,
 });
-
-const page = usePage();
 
 const quantities = Object.fromEntries(
     props.products.map((product) => [product.id, product.quantity_step])
@@ -28,19 +28,13 @@ function addToCart(product) {
 </script>
 
 <template>
-    <main class="products-page">
+    <PageContainer>
         <header class="products-header">
             <h1 class="products-title">Prodotti</h1>
 
             <PageNav />
 
-            <div v-if="page.props.flash?.success" class="flash-message flash-message--success">
-                {{ page.props.flash.success }}
-            </div>
-
-            <div v-if="page.props.flash?.error" class="flash-message flash-message--error">
-                {{ page.props.flash.error }}
-            </div>
+            <FlashMessage />
         </header>
 
         <p v-if="products.length === 0" class="empty-message">
@@ -89,14 +83,10 @@ function addToCart(product) {
                 </div>
             </article>
         </section>
-    </main>
+    </PageContainer>
 </template>
 
 <style scoped>
-.products-page {
-    padding: 40px;
-}
-
 .products-header {
     margin-bottom: 24px;
 }
@@ -105,18 +95,6 @@ function addToCart(product) {
     margin-bottom: 8px;
     font-size: 28px;
     font-weight: 700;
-}
-
-.flash-message {
-    font-weight: 600;
-}
-
-.flash-message--success {
-    color: #15803d;
-}
-
-.flash-message--error {
-    color: #b91c1c;
 }
 
 .empty-message {

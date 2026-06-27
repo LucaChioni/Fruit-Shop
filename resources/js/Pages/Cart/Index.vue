@@ -1,13 +1,13 @@
 <script setup>
-import { useForm, usePage } from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3';
+import FlashMessage from '@/Components/FlashMessage.vue';
+import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
 
 const props = defineProps({
     items: Array,
     total: String,
 });
-
-const page = usePage();
 
 const form = useForm({
     quantities: Object.fromEntries(
@@ -31,18 +31,13 @@ function removeItem(item) {
 </script>
 
 <template>
-    <main class="cart-page">
+    <PageContainer>
         <header class="cart-header">
             <h1 class="cart-title">Carrello</h1>
 
             <PageNav />
 
-            <div v-if="page.props.flash?.success" class="flash-message flash-message--success">
-                {{ page.props.flash.success }}
-            </div>
-            <div v-if="page.props.flash?.error" class="flash-message flash-message--error">
-                {{ page.props.flash.error }}
-            </div>
+            <FlashMessage />
         </header>
 
         <section v-if="items.length === 0" class="empty-cart">
@@ -116,14 +111,10 @@ function removeItem(item) {
                 Procedi al checkout
             </a>
         </form>
-    </main>
+    </PageContainer>
 </template>
 
 <style scoped>
-.cart-page {
-    padding: 40px;
-}
-
 .cart-header {
     margin-bottom: 24px;
 }
@@ -236,19 +227,6 @@ function removeItem(item) {
 .update-cart-button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-}
-
-.flash-message {
-    margin-top: 12px;
-    font-weight: 600;
-}
-
-.flash-message--success {
-    color: #15803d;
-}
-
-.flash-message--error {
-    color: #b91c1c;
 }
 
 .cart-item-actions {

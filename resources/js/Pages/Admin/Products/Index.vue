@@ -1,24 +1,22 @@
 <script setup>
-import { usePage } from '@inertiajs/vue3';
+import FlashMessage from '@/Components/FlashMessage.vue';
+import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
 
 defineProps({
     products: Array,
 });
 
-const page = usePage();
 </script>
 
 <template>
-    <main class="admin-products-page">
+    <PageContainer>
         <header class="admin-products-header">
             <h1 class="admin-products-title">Gestione prodotti</h1>
 
             <PageNav />
 
-            <div v-if="page.props.flash?.success" class="flash-message flash-message--success">
-                {{ page.props.flash.success }}
-            </div>
+            <FlashMessage />
 
             <a :href="route('admin.products.create')" class="create-link">
                 Nuovo prodotto
@@ -53,14 +51,10 @@ const page = usePage();
                 </a>
             </article>
         </section>
-    </main>
+    </PageContainer>
 </template>
 
 <style scoped>
-.admin-products-page {
-    padding: 40px;
-}
-
 .admin-products-header {
     margin-bottom: 24px;
 }
@@ -81,15 +75,6 @@ const page = usePage();
 .create-link:hover,
 .edit-link:hover {
     text-decoration: underline;
-}
-
-.flash-message {
-    margin-bottom: 12px;
-    font-weight: 600;
-}
-
-.flash-message--success {
-    color: #15803d;
 }
 
 .empty-products,
