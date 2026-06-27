@@ -15,6 +15,12 @@ class CartItemController extends Controller
         $validated = $request->validate([
             'product_id' => ['required', 'exists:products,id'],
             'quantity' => ['required', 'numeric', 'min:0.01'],
+        ], [
+            'product_id.required' => 'Seleziona un prodotto da aggiungere al carrello.',
+            'product_id.exists' => 'Il prodotto selezionato non esiste.',
+            'quantity.required' => 'Inserisci la quantità.',
+            'quantity.numeric' => 'La quantità deve essere un numero.',
+            'quantity.min' => 'La quantità minima è 0,01.',
         ]);
 
         $product = Product::query()

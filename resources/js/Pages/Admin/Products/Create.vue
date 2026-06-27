@@ -2,6 +2,10 @@
 import { useForm } from '@inertiajs/vue3';
 import PageNav from '@/Components/PageNav.vue';
 
+defineProps({
+    unitTypes: Array,
+});
+
 const form = useForm({
     name: '',
     description: '',
@@ -44,7 +48,15 @@ function submit() {
 
             <label class="field">
                 Unità di misura
-                <input v-model="form.unit_type" type="text" class="input" />
+                <select v-model="form.unit_type" class="input">
+                    <option
+                        v-for="unitType in unitTypes"
+                        :key="unitType"
+                        :value="unitType"
+                    >
+                        {{ unitType }}
+                    </option>
+                </select>
                 <span v-if="form.errors.unit_type" class="error">{{ form.errors.unit_type }}</span>
             </label>
 

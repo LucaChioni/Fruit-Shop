@@ -38,6 +38,9 @@ class OrderController extends Controller
     {
         $validated = $request->validate([
             'status' => ['required', Rule::in(OrderData::STATUSES)],
+        ], [
+            'status.required' => 'Scegli lo stato dell\'ordine.',
+            'status.in' => 'Lo stato selezionato non è valido.',
         ]);
 
         $order->update([

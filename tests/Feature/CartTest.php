@@ -148,4 +148,20 @@ class CartTest extends TestCase
 
         $this->assertNull($cartItem->fresh());
     }
+
+    public function test_cart_item_quantity_validation_uses_italian_message(): void
+    {
+        $product = $this->createProduct();
+
+        $response = $this
+            ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
+            ->post(route('cart.items.store'), [
+                'product_id' => $product->id,
+                'quantity' => 0,
+            ]);
+
+        $response->assertSessionHasErrors([
+            'quantity' => 'La quantità minima è 0,01.',
+        ]);
+    }
 }

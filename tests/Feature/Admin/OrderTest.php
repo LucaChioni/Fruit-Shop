@@ -126,7 +126,9 @@ class OrderTest extends TestCase
             ]);
 
         $response
-            ->assertSessionHasErrors('status')
+            ->assertSessionHasErrors([
+                'status' => 'Lo stato selezionato non è valido.',
+            ])
             ->assertRedirect(route('admin.orders.show', $order));
 
         $this->assertSame('pending', $order->refresh()->status);

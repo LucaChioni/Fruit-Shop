@@ -4,6 +4,7 @@ import PageNav from '@/Components/PageNav.vue';
 
 const props = defineProps({
     product: Object,
+    unitTypes: Array,
 });
 
 const form = useForm({
@@ -48,7 +49,15 @@ function submit() {
 
             <label class="field">
                 Unità di misura
-                <input v-model="form.unit_type" type="text" class="input" />
+                <select v-model="form.unit_type" class="input">
+                    <option
+                        v-for="unitType in unitTypes"
+                        :key="unitType"
+                        :value="unitType"
+                    >
+                        {{ unitType }}
+                    </option>
+                </select>
                 <span v-if="form.errors.unit_type" class="error">{{ form.errors.unit_type }}</span>
             </label>
 

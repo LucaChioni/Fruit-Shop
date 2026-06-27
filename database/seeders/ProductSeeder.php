@@ -37,7 +37,7 @@ class ProductSeeder extends Seeder
             [
                 'description' => 'Lattuga fresca.',
                 'price' => 1.30,
-                'unit_type' => 'piece',
+                'unit_type' => 'pz',
                 'is_active' => true,
             ]
         );
@@ -47,7 +47,7 @@ class ProductSeeder extends Seeder
             [
                 'description' => 'Vaschetta di fragole fresche.',
                 'price' => 3.80,
-                'unit_type' => 'box',
+                'unit_type' => 'vaschetta',
                 'is_active' => true,
             ]
         );
@@ -57,7 +57,7 @@ class ProductSeeder extends Seeder
             [
                 'description' => 'Mazzo di prezzemolo fresco.',
                 'price' => 0.90,
-                'unit_type' => 'bunch',
+                'unit_type' => 'pz',
                 'is_active' => true,
             ]
         );

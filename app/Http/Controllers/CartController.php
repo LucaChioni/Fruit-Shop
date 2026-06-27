@@ -40,6 +40,12 @@ class CartController extends Controller
         $validated = $request->validate([
             'quantities' => ['required', 'array'],
             'quantities.*' => ['required', 'numeric', 'min:0.01'],
+        ], [
+            'quantities.required' => 'Inserisci almeno una quantità da aggiornare.',
+            'quantities.array' => 'Le quantità inviate non sono valide.',
+            'quantities.*.required' => 'Inserisci una quantità per ogni prodotto.',
+            'quantities.*.numeric' => 'La quantità deve essere un numero.',
+            'quantities.*.min' => 'La quantità minima è 0,01.',
         ]);
 
         $cart = $cartService->getCurrentCart($request);

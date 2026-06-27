@@ -115,4 +115,20 @@ class CheckoutTest extends TestCase
 
         $this->assertSame(0, Order::count());
     }
+
+    public function test_checkout_customer_name_validation_uses_italian_message(): void
+    {
+        $cart = $this->createCart(['guest_token' => 'guest-token']);
+        $this->createCartItem($cart, $this->createProduct(), 1);
+
+        $response = $this
+            ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
+            ->post(route('checkout.store'), [
+                'customer_name' => '',
+            ]);
+
+        $response->assertSessionHasErrors([
+            'customer_name' => 'Inserisci il nome per il ritiro.',
+        ]);
+    }
 }

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Data\ProductData;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -24,7 +26,9 @@ class ProductController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('Admin/Products/Create');
+        return Inertia::render('Admin/Products/Create', [
+            'unitTypes' => ProductData::UNIT_TYPES,
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -40,6 +44,7 @@ class ProductController extends Controller
     {
         return Inertia::render('Admin/Products/Edit', [
             'product' => $this->productData($product),
+            'unitTypes' => ProductData::UNIT_TYPES,
         ]);
     }
 
@@ -58,8 +63,19 @@ class ProductController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
             'price' => ['required', 'numeric', 'min:0'],
-            'unit_type' => ['required', 'string', 'max:50'],
+            'unit_type' => ['required', Rule::in(ProductData::UNIT_TYPES)],
             'is_active' => ['required', 'boolean'],
+        ], [
+            'name.required' => 'Inserisci il nome del prodotto.',
+            'name.max' => 'Il nome del prodotto non può superare 255 caratteri.',
+            'description.max' => 'La descrizione non può superare 2000 caratteri.',
+            'price.required' => 'Inserisci il prezzo del prodotto.',
+            'price.numeric' => 'Il prezzo deve essere un numero.',
+            'price.min' => 'Il prezzo non può essere negativo.',
+            'unit_type.required' => 'Scegli l\'unità di misura.',
+            'unit_type.in' => 'Scegli un\'unità di misura valida.',
+            'is_active.required' => 'Indica se il prodotto è attivo.',
+            'is_active.boolean' => 'Il valore attivo/non attivo non è valido.',
         ]);
     }
 

@@ -31,6 +31,10 @@ class CheckoutController extends Controller
         $validated = $request->validate([
             'customer_name' => ['required', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:2000'],
+        ], [
+            'customer_name.required' => 'Inserisci il nome per il ritiro.',
+            'customer_name.max' => 'Il nome non può superare 255 caratteri.',
+            'notes.max' => 'Le note non possono superare 2000 caratteri.',
         ]);
 
         $cart = $cartService->getCurrentCart($request);

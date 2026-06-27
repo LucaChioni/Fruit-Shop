@@ -51,7 +51,8 @@ class ProductTest extends TestCase
         $response
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
-                ->component('Admin/Products/Create'));
+                ->component('Admin/Products/Create')
+                ->where('unitTypes', ['kg', 'pz', 'g', 'vaschetta']));
     }
 
     public function test_admin_can_create_product(): void
@@ -92,7 +93,8 @@ class ProductTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Admin/Products/Edit')
                 ->where('product.id', $product->id)
-                ->where('product.name', 'Mele'));
+                ->where('product.name', 'Mele')
+                ->where('unitTypes', ['kg', 'pz', 'g', 'vaschetta']));
     }
 
     public function test_admin_can_update_and_deactivate_product(): void
@@ -120,5 +122,26 @@ class ProductTest extends TestCase
         $this->assertSame('Mele aggiornate.', $product->description);
         $this->assertSame('2.90', $product->price);
         $this->assertFalse($product->is_active);
+    }
+
+    public function test_product_unit_type_must_be_valid(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->post(route('admin.products.store'), [
+                'name' => 'Prodotto test',
+                'description' => null,
+                'price' => 1.50,
+                'unit_type' => 'cassetta',
+                'is_active' => true,
+            ]);
+
+        $response->assertSessionHasErrors([
+            'unit_type' => 'Scegli un\'unità di misura valida.',
+        ]);
+
+        $this->assertSame(0, Product::count());
     }
 }
