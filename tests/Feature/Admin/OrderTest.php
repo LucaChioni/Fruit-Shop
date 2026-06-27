@@ -30,8 +30,10 @@ class OrderTest extends TestCase
                 ->component('Admin/Orders/Index')
                 ->has('orders', 2)
                 ->where('orders.0.id', $secondOrder->id)
+                ->where('orders.0.order_number', $secondOrder->order_number)
                 ->where('orders.0.customer_name', 'Secondo Cliente')
                 ->where('orders.1.id', $firstOrder->id)
+                ->where('orders.1.order_number', $firstOrder->order_number)
                 ->where('orders.1.customer_name', 'Primo Cliente'));
     }
 
@@ -58,6 +60,7 @@ class OrderTest extends TestCase
                 ->component('Orders/Show')
                 ->where('isAdminView', true)
                 ->where('order.id', $order->id)
+                ->where('order.order_number', $order->order_number)
                 ->where('order.customer_name', 'Cliente Admin')
                 ->has('order.items', 1)
                 ->where('orderStatuses', [

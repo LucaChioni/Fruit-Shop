@@ -29,7 +29,7 @@ const props = defineProps({
         >
             <div>
                 <h2 class="order-card-title">
-                    Ordine #{{ order.id }}
+                    Ordine {{ order.order_number ?? '#' + order.id }}
                 </h2>
 
                 <p class="order-card-meta">

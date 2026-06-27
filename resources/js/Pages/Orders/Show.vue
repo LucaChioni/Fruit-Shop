@@ -40,12 +40,13 @@ function updateStatus() {
         <header class="order-header">
             <h1 class="order-title">
                 <span v-if="isAdminView">Admin · </span>
-                Ordine #{{ order.id }}
+                Ordine {{ order.order_number ?? '#' + order.id }}
             </h1>
 
             <PageNav />
 
             <p class="order-meta">
+                Riferimento {{ order.order_number ?? '#' + order.id }} ·
                 {{ order.created_at }} · Stato: {{ order.status }}
             </p>
 

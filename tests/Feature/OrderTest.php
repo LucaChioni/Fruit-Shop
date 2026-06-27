@@ -33,6 +33,7 @@ class OrderTest extends TestCase
                 ->component('Orders/Index')
                 ->has('orders', 1)
                 ->where('orders.0.id', $order->id)
+                ->where('orders.0.order_number', $order->order_number)
                 ->where('orders.0.customer_name', 'Cliente Utente'));
     }
 
@@ -49,6 +50,7 @@ class OrderTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Orders/Show')
                 ->where('order.id', $order->id)
+                ->where('order.order_number', $order->order_number)
                 ->where('order.customer_name', 'Cliente Utente')
                 ->has('order.items', 1));
     }

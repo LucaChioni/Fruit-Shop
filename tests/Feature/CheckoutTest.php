@@ -64,6 +64,7 @@ class CheckoutTest extends TestCase
 
         $this->assertSame($user->id, $order->user_id);
         $this->assertSame('Cliente Test', $order->customer_name);
+        $this->assertNotNull($order->order_number);
         $this->assertSame('pending', $order->status);
         $this->assertSame('6.40', $order->total_amount);
         $this->assertSame(1, $order->items()->count());
@@ -94,6 +95,7 @@ class CheckoutTest extends TestCase
             ->assertRedirect(route('orders.show', $order));
 
         $this->assertNull($order->user_id);
+        $this->assertNotNull($order->order_number);
         $this->assertSame('Cliente Guest', $order->customer_name);
         $this->assertSame('4.20', $order->total_amount);
         $this->assertSame(1, $order->items()->count());
