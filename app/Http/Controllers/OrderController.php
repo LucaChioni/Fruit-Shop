@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\OrderData;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\Order;
 
 class OrderController extends Controller
 {
@@ -16,15 +17,7 @@ class OrderController extends Controller
             ->get();
 
         return Inertia::render('Orders/Index', [
-            'orders' => $orders->map(function ($order) {
-                return [
-                    'id' => $order->id,
-                    'status' => $order->status,
-                    'customer_name' => $order->customer_name,
-                    'total_amount' => $order->total_amount,
-                    'created_at' => $order->created_at->format('d/m/Y H:i'),
-                ];
-            }),
+            'orders' => OrderData::collection($orders),
         ]);
     }
 
@@ -44,24 +37,7 @@ class OrderController extends Controller
         }
 
         return Inertia::render('Orders/Show', [
-            'order' => [
-                'id' => $order->id,
-                'customer_name' => $order->customer_name,
-                'status' => $order->status,
-                'total_amount' => $order->total_amount,
-                'notes' => $order->notes,
-                'created_at' => $order->created_at->format('d/m/Y H:i'),
-                'items' => $order->items->map(function ($item) {
-                    return [
-                        'id' => $item->id,
-                        'product_name' => $item->product_name,
-                        'unit_type' => $item->unit_type,
-                        'unit_price' => $item->unit_price,
-                        'quantity' => $item->quantity,
-                        'line_total' => $item->line_total,
-                    ];
-                }),
-            ],
+            'order' => OrderData::detail($order),
         ]);
     }
 }

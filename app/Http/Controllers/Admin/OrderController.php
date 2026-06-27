@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Data\OrderData;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
@@ -11,14 +12,6 @@ use Inertia\Inertia;
 
 class OrderController extends Controller
 {
-    private const STATUSES = [
-        'pending',
-        'confirmed',
-        'ready',
-        'completed',
-        'cancelled',
-    ];
-
     public function index()
     {
         $orders = Order::query()
@@ -26,15 +19,7 @@ class OrderController extends Controller
             ->get();
 
         return Inertia::render('Admin/Orders/Index', [
-            'orders' => $orders->map(function ($order) {
-                return [
-                    'id' => $order->id,
-                    'customer_name' => $order->customer_name,
-                    'status' => $order->status,
-                    'total_amount' => $order->total_amount,
-                    'created_at' => $order->created_at->format('d/m/Y H:i'),
-                ];
-            }),
+            'orders' => OrderData::collection($orders),
         ]);
     }
 
@@ -43,33 +28,16 @@ class OrderController extends Controller
         $order->load('items');
 
         return Inertia::render('Orders/Show', [
-            'order' => [
-                'id' => $order->id,
-                'customer_name' => $order->customer_name,
-                'status' => $order->status,
-                'total_amount' => $order->total_amount,
-                'notes' => $order->notes,
-                'created_at' => $order->created_at->format('d/m/Y H:i'),
-                'items' => $order->items->map(function ($item) {
-                    return [
-                        'id' => $item->id,
-                        'product_name' => $item->product_name,
-                        'unit_type' => $item->unit_type,
-                        'unit_price' => $item->unit_price,
-                        'quantity' => $item->quantity,
-                        'line_total' => $item->line_total,
-                    ];
-                }),
-            ],
+            'order' => OrderData::detail($order),
             'isAdminView' => true,
-            'orderStatuses' => self::STATUSES,
+            'orderStatuses' => OrderData::STATUSES,
         ]);
     }
 
     public function updateStatus(Request $request, Order $order): RedirectResponse
     {
         $validated = $request->validate([
-            'status' => ['required', Rule::in(self::STATUSES)],
+            'status' => ['required', Rule::in(OrderData::STATUSES)],
         ]);
 
         $order->update([
