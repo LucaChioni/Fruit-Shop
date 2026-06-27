@@ -36,6 +36,14 @@ const page = usePage();
         >
             Tutti gli ordini
         </a>
+
+        <a
+            v-if="page.props.auth.user?.is_admin"
+            :href="route('admin.products.index')"
+            class="page-nav-link page-nav-link--admin"
+        >
+            Gestione prodotti
+        </a>
     </nav>
 </template>
 
