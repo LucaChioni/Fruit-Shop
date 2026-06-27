@@ -8,6 +8,26 @@ use App\Models\Order;
 
 class OrderController extends Controller
 {
+    public function index(Request $request)
+    {
+        $orders = $request->user()
+            ->orders()
+            ->latest()
+            ->get();
+
+        return Inertia::render('Orders/Index', [
+            'orders' => $orders->map(function ($order) {
+                return [
+                    'id' => $order->id,
+                    'status' => $order->status,
+                    'customer_name' => $order->customer_name,
+                    'total_amount' => $order->total_amount,
+                    'created_at' => $order->created_at->format('d/m/Y H:i'),
+                ];
+            }),
+        ]);
+    }
+
     public function show(Request $request, Order $order)
     {
         $order->load('items');
