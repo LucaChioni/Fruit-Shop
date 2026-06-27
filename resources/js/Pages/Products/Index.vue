@@ -1,10 +1,12 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3';
+import { useForm, usePage } from '@inertiajs/vue3';
 import PageNav from '@/Components/PageNav.vue';
 
-defineProps({
+const props = defineProps({
     products: Array,
 });
+
+const page = usePage();
 
 const form = useForm({
     product_id: null,
@@ -28,12 +30,12 @@ function addToCart(product) {
 
             <PageNav />
 
-            <div v-if="$page.props.flash?.success" class="flash-message flash-message--success">
-                {{ $page.props.flash.success }}
+            <div v-if="page.props.flash?.success" class="flash-message flash-message--success">
+                {{ page.props.flash.success }}
             </div>
 
-            <div v-if="$page.props.flash?.error" class="flash-message flash-message--error">
-                {{ $page.props.flash.error }}
+            <div v-if="page.props.flash?.error" class="flash-message flash-message--error">
+                {{ page.props.flash.error }}
             </div>
         </header>
 

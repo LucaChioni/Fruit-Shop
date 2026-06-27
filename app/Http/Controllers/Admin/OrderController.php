@@ -3,12 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class OrderController extends Controller
 {
+    private const STATUSES = [
+        'pending',
+        'confirmed',
+        'ready',
+        'completed',
+        'cancelled',
+    ];
+
     public function index()
     {
         $orders = Order::query()
@@ -52,6 +62,22 @@ class OrderController extends Controller
                 }),
             ],
             'isAdminView' => true,
+            'orderStatuses' => self::STATUSES,
         ]);
+    }
+
+    public function updateStatus(Request $request, Order $order): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => ['required', Rule::in(self::STATUSES)],
+        ]);
+
+        $order->update([
+            'status' => $validated['status'],
+        ]);
+
+        return redirect()
+            ->route('admin.orders.show', $order)
+            ->with('success', 'Stato ordine aggiornato.');
     }
 }

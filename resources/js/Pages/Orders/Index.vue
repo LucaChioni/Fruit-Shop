@@ -2,7 +2,7 @@
 import PageNav from '@/Components/PageNav.vue';
 import OrderList from '@/Components/OrderList.vue';
 
-defineProps({
+const props = defineProps({
     orders: Array,
 });
 </script>
