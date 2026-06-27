@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OrderPlaced;
+use App\Models\Order;
+use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
-use App\Models\Order;
-use App\Services\CartService;
 
 class CheckoutController extends Controller
 {
@@ -80,6 +82,8 @@ class CheckoutController extends Controller
         });
 
         $request->session()->put('last_order_id', $order->id);
+
+        Mail::to(config('mail.from.address'))->send(new OrderPlaced($order));
 
         return redirect()
             ->route('orders.show', $order)

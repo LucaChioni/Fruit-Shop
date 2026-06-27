@@ -2,10 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Mail\OrderPlaced;
 use App\Models\Order;
 use App\Models\User;
 use App\Services\CartService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\Feature\Concerns\CreatesShopModels;
 use Tests\TestCase;
@@ -43,6 +45,8 @@ class CheckoutTest extends TestCase
 
     public function test_checkout_store_creates_order_items_and_clears_cart(): void
     {
+        Mail::fake();
+
         $user = User::factory()->create();
         $cart = $this->createCart(['user_id' => $user->id]);
         $product = $this->createProduct(['name' => 'Pere', 'price' => 3.20, 'unit_type' => 'kg']);
@@ -73,10 +77,14 @@ class CheckoutTest extends TestCase
         $orderItem = $order->items()->firstOrFail();
         $this->assertSame('Pere', $orderItem->product_name);
         $this->assertSame('6.40', $orderItem->line_total);
+
+        Mail::assertSent(OrderPlaced::class, fn (OrderPlaced $mail) => $mail->order->is($order));
     }
 
     public function test_guest_checkout_store_creates_guest_order(): void
     {
+        Mail::fake();
+
         $cart = $this->createCart(['guest_token' => 'guest-token']);
         $product = $this->createProduct(['name' => 'Carote', 'price' => 1.40, 'unit_type' => 'kg']);
         $this->createCartItem($cart, $product, 3);
@@ -100,10 +108,14 @@ class CheckoutTest extends TestCase
         $this->assertSame('4.20', $order->total_amount);
         $this->assertSame(1, $order->items()->count());
         $this->assertSame(0, $cart->items()->count());
+
+        Mail::assertSent(OrderPlaced::class, fn (OrderPlaced $mail) => $mail->order->is($order));
     }
 
     public function test_checkout_store_redirects_when_cart_is_empty(): void
     {
+        Mail::fake();
+
         $response = $this
             ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
             ->post(route('checkout.store'), [
@@ -116,6 +128,7 @@ class CheckoutTest extends TestCase
             ->assertSessionHas('error', 'Il carrello è vuoto.');
 
         $this->assertSame(0, Order::count());
+        Mail::assertNothingSent();
     }
 
     public function test_checkout_customer_name_validation_uses_italian_message(): void
