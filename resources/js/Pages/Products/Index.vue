@@ -1,5 +1,6 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
+import PageNav from '@/Components/PageNav.vue';
 
 defineProps({
     products: Array,
@@ -25,8 +26,14 @@ function addToCart(product) {
         <header class="products-header">
             <h1 class="products-title">Prodotti</h1>
 
+            <PageNav />
+
             <div v-if="$page.props.flash?.success" class="flash-message flash-message--success">
                 {{ $page.props.flash.success }}
+            </div>
+
+            <div v-if="$page.props.flash?.error" class="flash-message flash-message--error">
+                {{ $page.props.flash.error }}
             </div>
         </header>
 
@@ -87,6 +94,10 @@ function addToCart(product) {
 
 .flash-message--success {
     color: #15803d;
+}
+
+.flash-message--error {
+    color: #b91c1c;
 }
 
 .empty-message {

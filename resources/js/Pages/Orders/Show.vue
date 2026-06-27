@@ -1,4 +1,6 @@
 <script setup>
+import PageNav from '@/Components/PageNav.vue';
+
 defineProps({
     order: Object,
 });
@@ -8,6 +10,8 @@ defineProps({
     <main class="order-page">
         <header class="order-header">
             <h1 class="order-title">Ordine #{{ order.id }}</h1>
+
+            <PageNav />
 
             <p class="order-meta">
                 {{ order.created_at }} · Stato: {{ order.status }}
@@ -57,10 +61,6 @@ defineProps({
             <span>Totale</span>
             <strong>{{ order.total_amount }} €</strong>
         </footer>
-
-        <a :href="route('products.index')" class="products-link">
-            Torna ai prodotti
-        </a>
     </main>
 </template>
 

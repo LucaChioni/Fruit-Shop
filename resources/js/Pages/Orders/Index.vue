@@ -1,4 +1,6 @@
 <script setup>
+import PageNav from '@/Components/PageNav.vue';
+
 defineProps({
     orders: Array,
 });
@@ -9,9 +11,7 @@ defineProps({
         <header class="orders-header">
             <h1 class="orders-title">I miei ordini</h1>
 
-            <a :href="route('products.index')" class="products-link">
-                Torna ai prodotti
-            </a>
+            <PageNav />
         </header>
 
         <section v-if="orders.length === 0" class="empty-orders">
@@ -65,14 +65,12 @@ defineProps({
     font-weight: 700;
 }
 
-.products-link,
-.order-link {
+.order-link { 
     color: #166534;
     font-weight: 600;
     text-decoration: none;
 }
 
-.products-link:hover,
 .order-link:hover {
     text-decoration: underline;
 }

@@ -1,5 +1,6 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
+import PageNav from '@/Components/PageNav.vue';
 
 const props = defineProps({
     items: Array,
@@ -32,9 +33,7 @@ function removeItem(item) {
         <header class="cart-header">
             <h1 class="cart-title">Carrello</h1>
 
-            <a :href="route('products.index')" class="products-link">
-                Torna ai prodotti
-            </a>
+            <PageNav />
 
             <div v-if="$page.props.flash?.success" class="flash-message flash-message--success">
                 {{ $page.props.flash.success }}
@@ -127,16 +126,6 @@ function removeItem(item) {
     margin: 0 0 8px;
     font-size: 28px;
     font-weight: 700;
-}
-
-.products-link {
-    color: #166534;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.products-link:hover {
-    text-decoration: underline;
 }
 
 .empty-cart {
@@ -242,6 +231,10 @@ function removeItem(item) {
     color: #15803d;
 }
 
+.flash-message--error {
+    color: #b91c1c;
+}
+
 .cart-item-actions {
     display: grid;
     gap: 8px;
@@ -280,9 +273,5 @@ function removeItem(item) {
 
 .checkout-link:hover {
     background: #14532d;
-}
-
-.flash-message--error {
-    color: #b91c1c;
 }
 </style>
