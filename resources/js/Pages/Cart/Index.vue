@@ -39,6 +39,9 @@ function removeItem(item) {
             <div v-if="$page.props.flash?.success" class="flash-message flash-message--success">
                 {{ $page.props.flash.success }}
             </div>
+            <div v-if="$page.props.flash?.error" class="flash-message flash-message--error">
+                {{ $page.props.flash.error }}
+            </div>
         </header>
 
         <section v-if="items.length === 0" class="empty-cart">
@@ -277,5 +280,9 @@ function removeItem(item) {
 
 .checkout-link:hover {
     background: #14532d;
+}
+
+.flash-message--error {
+    color: #b91c1c;
 }
 </style>

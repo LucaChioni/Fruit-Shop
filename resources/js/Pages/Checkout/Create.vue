@@ -1,8 +1,12 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
 
+const props = defineProps({
+    customerName: String,
+});
+
 const form = useForm({
-    customer_name: '',
+    customer_name: props.customerName ?? '',
     notes: '',
 });
 
@@ -24,6 +28,9 @@ function submitOrder() {
                     class="form-input"
                     required
                 />
+                <p v-if="form.errors.customer_name" class="form-error">
+                    {{ form.errors.customer_name }}
+                </p>
             </label>
 
             <label class="form-field">
@@ -33,6 +40,9 @@ function submitOrder() {
                     class="form-textarea"
                     rows="4"
                 />
+                <p v-if="form.errors.notes" class="form-error">
+                    {{ form.errors.notes }}
+                </p>
             </label>
 
             <button type="submit" class="submit-button">
@@ -86,5 +96,12 @@ function submitOrder() {
 
 .submit-button:hover {
     background: #14532d;
+}
+
+.form-error {
+    margin: 0;
+    color: #b91c1c;
+    font-size: 14px;
+    font-weight: 500;
 }
 </style>

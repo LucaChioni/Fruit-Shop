@@ -11,9 +11,19 @@ use App\Services\CartService;
 
 class CheckoutController extends Controller
 {
-    public function create()
+    public function create(Request $request, CartService $cartService)
     {
-        return Inertia::render('Checkout/Create');
+        $cart = $cartService->getCurrentCart($request);
+
+        if ($cart->items()->doesntExist()) {
+            return redirect()
+                ->route('cart.index')
+                ->with('error', 'Il carrello è vuoto.');
+        }
+
+        return Inertia::render('Checkout/Create', [
+            'customerName' => $request->user()?->name ?? '',
+        ]);
     }
 
     public function store(Request $request, CartService $cartService): RedirectResponse
