@@ -3,13 +3,20 @@ import PageNav from '@/Components/PageNav.vue';
 
 defineProps({
     order: Object,
+    isAdminView: {
+        type: Boolean,
+        default: false,
+    },
 });
 </script>
 
 <template>
     <main class="order-page">
         <header class="order-header">
-            <h1 class="order-title">Ordine #{{ order.id }}</h1>
+            <h1 class="order-title">
+                <span v-if="isAdminView">Admin · </span>
+                Ordine #{{ order.id }}
+            </h1>
 
             <PageNav />
 

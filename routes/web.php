@@ -9,6 +9,8 @@ use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -33,7 +35,6 @@ Route::get('/products', [ProductController::class, 'index'])->name('products.ind
 
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::patch('/cart', [CartController::class, 'update'])->name('cart.update');
-
 Route::post('/cart/items', [CartItemController::class, 'store'])->name('cart.items.store');
 Route::delete('/cart/items/{cartItem}', [CartItemController::class, 'destroy'])->name('cart.items.destroy');
 
@@ -42,5 +43,14 @@ Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.s
 
 Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
 Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+
+Route::middleware(['auth', 'admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
+    });
 
 require __DIR__.'/auth.php';

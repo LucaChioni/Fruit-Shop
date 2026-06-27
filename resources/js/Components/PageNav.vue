@@ -1,3 +1,8 @@
+<script setup>
+import { usePage } from '@inertiajs/vue3';
+
+const page = usePage();
+</script>
 <template>
     <nav class="page-nav">
         <a :href="route('products.index')" class="page-nav-link">
@@ -9,11 +14,27 @@
         </a>
 
         <a
-            v-if="$page.props.auth.user"
+            v-if="page.props.auth.user"
             :href="route('orders.index')"
             class="page-nav-link"
         >
             I miei ordini
+        </a>
+
+        <a
+            v-if="page.props.auth.user?.is_admin"
+            :href="route('admin.dashboard')"
+            class="page-nav-link page-nav-link--admin"
+        >
+            Admin
+        </a>
+
+        <a
+            v-if="page.props.auth.user?.is_admin"
+            :href="route('admin.orders.index')"
+            class="page-nav-link page-nav-link--admin"
+        >
+            Tutti gli ordini
         </a>
     </nav>
 </template>
@@ -33,5 +54,9 @@
 
 .page-nav-link:hover {
     text-decoration: underline;
+}
+
+.page-nav-link--admin {
+    color: #7c2d12;
 }
 </style>
