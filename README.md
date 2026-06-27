@@ -10,5 +10,4 @@ The goal of the project is to practice the Laravel ecosystem by building a small
 * Vue.js
 * Inertia.js
 * MySQL
-* Laravel Sail / Docker
-* Git
+* Sail / Docker
