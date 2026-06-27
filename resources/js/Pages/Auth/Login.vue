@@ -33,6 +33,11 @@ const submit = () => {
     <GuestLayout>
         <Head title="Log in" />
 
+        <div class="mb-6 rounded-lg bg-orange-50 p-4 text-sm text-orange-900">
+            Il checkout ospite resta disponibile. L'accesso serve per ritrovare
+            gli ordini cliente o per entrare nell'area admin.
+        </div>
+
         <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
             {{ status }}
         </div>
@@ -73,7 +78,7 @@ const submit = () => {
                 <label class="flex items-center">
                     <Checkbox name="remember" v-model:checked="form.remember" />
                     <span class="ms-2 text-sm text-gray-600"
-                        >Remember me</span
+                        >Ricordami</span
                     >
                 </label>
             </div>
@@ -84,7 +89,7 @@ const submit = () => {
                     :href="route('password.request')"
                     class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
-                    Forgot your password?
+                    Password dimenticata?
                 </Link>
 
                 <PrimaryButton
@@ -92,7 +97,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Log in
+                    Accedi
                 </PrimaryButton>
             </div>
         </form>
