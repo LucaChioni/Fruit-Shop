@@ -8,9 +8,20 @@ use App\Models\Order;
 
 class OrderController extends Controller
 {
-    public function show(Order $order)
+    public function show(Request $request, Order $order)
     {
         $order->load('items');
+        $user = $request->user();
+
+        if ($order->user_id !== null) {
+            if (! $user || $order->user_id !== $user->id) {
+                abort(403);
+            }
+        } else {
+            if ($request->session()->get('last_order_id') !== $order->id) {
+                abort(403);
+            }
+        }
 
         return Inertia::render('Orders/Show', [
             'order' => [

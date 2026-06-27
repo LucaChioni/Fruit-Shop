@@ -65,6 +65,8 @@ class CheckoutController extends Controller
             return $order;
         });
 
+        $request->session()->put('last_order_id', $order->id);
+
         return redirect()
             ->route('orders.show', $order)
             ->with('success', 'Ordine creato con successo.');
