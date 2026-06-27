@@ -66,7 +66,7 @@ class CheckoutController extends Controller
         });
 
         return redirect()
-            ->route('products.index')
+            ->route('orders.show', $order)
             ->with('success', 'Ordine creato con successo.');
     }
 }
