@@ -41,7 +41,7 @@ Route::delete('/cart/items/{cartItem}', [CartItemController::class, 'destroy'])-
 Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
-Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+Route::get('/orders', [OrderController::class, 'index'])->middleware('auth')->name('orders.index');
 Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
 
 Route::middleware(['auth', 'admin'])
