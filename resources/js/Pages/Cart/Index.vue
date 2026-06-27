@@ -46,7 +46,11 @@ function removeItem(item) {
         </header>
 
         <section v-if="items.length === 0" class="empty-cart">
-            <p>Il carrello è vuoto.</p>
+            <h2>Il carrello è vuoto</h2>
+            <p>Aggiungi frutta e verdura fresca prima di procedere al checkout.</p>
+            <a :href="route('products.index')" class="products-link">
+                Vai ai prodotti
+            </a>
         </section>
 
         <form v-else class="cart-content" @submit.prevent="updateCart">
@@ -67,8 +71,8 @@ function removeItem(item) {
                                 <input
                                     v-model="form.quantities[item.id]"
                                     type="number"
-                                    min="0.01"
-                                    step="0.01"
+                                    :min="item.quantity_step"
+                                    :step="item.quantity_step"
                                     class="quantity-input"
                                 />
                             </label>
@@ -109,7 +113,7 @@ function removeItem(item) {
                 Aggiorna carrello
             </button>
             <a :href="route('checkout.create')" class="checkout-link">
-                Vai al checkout
+                Procedi al checkout
             </a>
         </form>
     </main>
@@ -136,6 +140,16 @@ function removeItem(item) {
     border-radius: 12px;
     background: #fff;
     color: #555;
+}
+
+.empty-cart h2 {
+    margin: 0 0 8px;
+    color: #111827;
+    font-size: 20px;
+}
+
+.empty-cart p {
+    margin: 0 0 12px;
 }
 
 .cart-content {
@@ -265,15 +279,26 @@ function removeItem(item) {
 .checkout-link {
     justify-self: start;
     display: inline-block;
-    padding: 10px 16px;
-    border-radius: 8px;
+    padding: 14px 22px;
+    border-radius: 999px;
     background: #166534;
     color: white;
-    font-weight: 600;
+    font-weight: 700;
     text-decoration: none;
+    box-shadow: 0 10px 20px rgb(22 101 52 / 0.18);
 }
 
 .checkout-link:hover {
     background: #14532d;
+}
+
+.products-link {
+    color: #166534;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.products-link:hover {
+    text-decoration: underline;
 }
 </style>

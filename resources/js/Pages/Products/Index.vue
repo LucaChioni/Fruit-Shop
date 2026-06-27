@@ -8,6 +8,10 @@ const props = defineProps({
 
 const page = usePage();
 
+const quantities = Object.fromEntries(
+    props.products.map((product) => [product.id, product.quantity_step])
+);
+
 const form = useForm({
     product_id: null,
     quantity: 1,
@@ -15,7 +19,7 @@ const form = useForm({
 
 function addToCart(product) {
     form.product_id = product.id;
-    form.quantity = 1;
+    form.quantity = quantities[product.id] || product.quantity_step;
 
     form.post(route('cart.items.store'), {
         preserveScroll: true,
@@ -40,7 +44,7 @@ function addToCart(product) {
         </header>
 
         <p v-if="products.length === 0" class="empty-message">
-            Nessun prodotto disponibile.
+            Nessun prodotto disponibile al momento. Torna a trovarci più tardi.
         </p>
 
         <section v-else class="products-list">
@@ -62,14 +66,27 @@ function addToCart(product) {
                     </p>
                 </div>
 
-                <button
-                    type="button"
-                    class="add-to-cart-button"
-                    @click="addToCart(product)"
-                    :disabled="form.processing"
-                >
-                    Aggiungi al carrello
-                </button>
+                <div class="product-actions">
+                    <label class="quantity-label">
+                        Quantità
+                        <input
+                            v-model="quantities[product.id]"
+                            type="number"
+                            :min="product.quantity_step"
+                            :step="product.quantity_step"
+                            class="quantity-input"
+                        />
+                    </label>
+
+                    <button
+                        type="button"
+                        class="add-to-cart-button"
+                        @click="addToCart(product)"
+                        :disabled="form.processing"
+                    >
+                        Aggiungi al carrello
+                    </button>
+                </div>
             </article>
         </section>
     </main>
@@ -145,6 +162,26 @@ function addToCart(product) {
     color: white;
     font-weight: 600;
     cursor: pointer;
+}
+
+.product-actions {
+    display: grid;
+    gap: 10px;
+    justify-items: end;
+}
+
+.quantity-label {
+    display: grid;
+    gap: 6px;
+    color: #444;
+    font-weight: 600;
+}
+
+.quantity-input {
+    width: 110px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
 }
 
 .add-to-cart-button:hover {

@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\ProductData;
+use App\Services\CartService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Services\CartService;
 
 class CartController extends Controller
 {
@@ -19,8 +20,9 @@ class CartController extends Controller
                 'product_id' => $product->id,
                 'product_name' => $product->name,
                 'unit_type' => $product->unit_type,
-                'unit_price' => $product->price,
+                'unit_price' => number_format((float) $product->price, 2, '.', ''),
                 'quantity' => $item->quantity,
+                'quantity_step' => ProductData::quantityStep($product->unit_type),
                 'line_total' => number_format($item->quantity * $product->price, 2, '.', ''),
             ];
         });

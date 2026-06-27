@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\ProductData;
+use App\Models\Product;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Models\Product;
 
 class ProductController extends Controller
 {
@@ -16,7 +17,7 @@ class ProductController extends Controller
             ->get();
 
         return Inertia::render('Products/Index', [
-            'products' => $products,
+            'products' => $products->map(fn (Product $product) => ProductData::catalog($product)),
         ]);
     }
 }

@@ -34,7 +34,26 @@ class CartTest extends TestCase
                 ->has('items', 1)
                 ->where('items.0.id', $cartItem->id)
                 ->where('items.0.product_name', 'Mele')
+                ->where('items.0.unit_price', '2.50')
+                ->where('items.0.quantity_step', 0.1)
                 ->where('items.0.line_total', '5.00'));
+    }
+
+    public function test_piece_products_use_integer_quantity_step_in_cart(): void
+    {
+        $cart = $this->createCart(['guest_token' => 'guest-token']);
+        $product = $this->createProduct(['name' => 'Lattuga', 'unit_type' => 'pz']);
+        $this->createCartItem($cart, $product, 1);
+
+        $response = $this
+            ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
+            ->get(route('cart.index'));
+
+        $response
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('items.0.product_name', 'Lattuga')
+                ->where('items.0.quantity_step', 1));
     }
 
     public function test_authenticated_cart_index_uses_user_cart(): void
