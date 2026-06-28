@@ -2,6 +2,7 @@
 import { useForm } from '@inertiajs/vue3';
 import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
+import { useTranslations } from '@/i18n';
 
 const props = defineProps({
     customerName: String,
@@ -9,6 +10,8 @@ const props = defineProps({
     pickupAtMin: String,
     pickupAtMax: String,
 });
+
+const t = useTranslations();
 
 const form = useForm({
     customer_name: props.customerName ?? '',
@@ -23,13 +26,13 @@ function submitOrder() {
 
 <template>
     <PageContainer>
-        <h1 class="checkout-title">Checkout</h1>
+        <h1 class="checkout-title">{{ t('checkout.title', 'Checkout') }}</h1>
 
         <PageNav />
 
         <form class="checkout-form" @submit.prevent="submitOrder">
             <label class="form-field">
-                Nome
+                {{ t('checkout.name', 'Nome') }}
                 <input
                     v-model="form.customer_name"
                     type="text"
@@ -42,7 +45,7 @@ function submitOrder() {
             </label>
 
             <label class="form-field">
-                Data e ora di ritiro
+                {{ t('checkout.pickup', 'Data e ora di ritiro') }}
                 <input
                     v-model="form.pickup_at"
                     type="datetime-local"
@@ -52,7 +55,7 @@ function submitOrder() {
                     required
                 />
                 <span class="form-help">
-                    Ritiro almeno 2 ore dopo l'ordine, entro domani. Fasce: 11:00-13:00 e 16:00-19:30.
+                    {{ t('checkout.pickup_help', "Ritiro almeno 2 ore dopo l'ordine, entro domani. Fasce: 11:00-13:00 e 16:00-19:30.") }}
                 </span>
                 <p v-if="form.errors.pickup_at" class="form-error">
                     {{ form.errors.pickup_at }}
@@ -60,7 +63,7 @@ function submitOrder() {
             </label>
 
             <label class="form-field">
-                Note
+                {{ t('checkout.notes', 'Note') }}
                 <textarea
                     v-model="form.notes"
                     class="form-textarea"
@@ -72,7 +75,7 @@ function submitOrder() {
             </label>
 
             <button type="submit" class="submit-button">
-                Conferma ordine
+                {{ t('checkout.submit', 'Conferma ordine') }}
             </button>
         </form>
     </PageContainer>

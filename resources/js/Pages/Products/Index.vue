@@ -3,11 +3,14 @@ import { useForm } from '@inertiajs/vue3';
 import FlashMessage from '@/Components/FlashMessage.vue';
 import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
+import { useTranslations } from '@/i18n';
 
 const props = defineProps({
     products: Array,
     filters: Object,
 });
+
+const t = useTranslations();
 
 const quantities = Object.fromEntries(
     props.products.map((product) => [product.id, product.quantity_step])
@@ -31,7 +34,7 @@ function addToCart(product) {
 <template>
     <PageContainer>
         <header class="products-header">
-            <h1 class="products-title">Prodotti</h1>
+            <h1 class="products-title">{{ t('products.title', 'Prodotti') }}</h1>
 
             <PageNav />
 
@@ -40,31 +43,31 @@ function addToCart(product) {
 
         <form :action="route('products.index')" method="get" class="filters-form">
             <label class="filter-field">
-                Cerca
+                {{ t('products.search', 'Cerca') }}
                 <input
                     type="search"
                     name="search"
                     :value="filters.search"
                     class="filter-input"
-                    placeholder="Nome prodotto"
+                    :placeholder="t('products.search_placeholder', 'Nome prodotto')"
                 />
             </label>
 
             <label class="filter-field">
-                Ordina
+                {{ t('products.sort', 'Ordina') }}
                 <select name="sort" class="filter-input">
-                    <option value="name" :selected="filters.sort === 'name'">Nome</option>
-                    <option value="price_asc" :selected="filters.sort === 'price_asc'">Prezzo crescente</option>
-                    <option value="price_desc" :selected="filters.sort === 'price_desc'">Prezzo decrescente</option>
+                    <option value="name" :selected="filters.sort === 'name'">{{ t('products.sort_name', 'Nome') }}</option>
+                    <option value="price_asc" :selected="filters.sort === 'price_asc'">{{ t('products.sort_price_asc', 'Prezzo crescente') }}</option>
+                    <option value="price_desc" :selected="filters.sort === 'price_desc'">{{ t('products.sort_price_desc', 'Prezzo decrescente') }}</option>
                 </select>
             </label>
 
-            <button type="submit" class="filter-button">Applica</button>
-            <a :href="route('products.index')" class="reset-link">Reset</a>
+            <button type="submit" class="filter-button">{{ t('products.apply', 'Applica') }}</button>
+            <a :href="route('products.index')" class="reset-link">{{ t('products.reset', 'Reset') }}</a>
         </form>
 
         <p v-if="products.length === 0" class="empty-message">
-            Nessun prodotto disponibile al momento. Torna a trovarci più tardi.
+            {{ t('products.empty', 'Nessun prodotto disponibile al momento. Torna a trovarci più tardi.') }}
         </p>
 
         <section v-else class="products-list">
@@ -99,7 +102,7 @@ function addToCart(product) {
 
                 <div class="product-actions">
                     <label class="quantity-label">
-                        Quantità
+                        {{ t('products.quantity', 'Quantità') }}
                         <input
                             v-model="quantities[product.id]"
                             type="number"
@@ -115,7 +118,7 @@ function addToCart(product) {
                         @click="addToCart(product)"
                         :disabled="form.processing"
                     >
-                        Aggiungi al carrello
+                        {{ t('products.add_to_cart', 'Aggiungi al carrello') }}
                     </button>
                 </div>
             </article>

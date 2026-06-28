@@ -1,18 +1,20 @@
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3';
+import { useTranslations } from '@/i18n';
 
 const page = usePage();
+const t = useTranslations();
 </script>
 <template>
     <nav class="page-nav">
         <Link :href="route('products.index')" class="page-nav-link">
             <span class="nav-icon nav-icon--products" aria-hidden="true"></span>
-            Prodotti
+            {{ t('nav.products', 'Prodotti') }}
         </Link>
 
         <Link :href="route('cart.index')" class="page-nav-link">
             <span class="nav-icon nav-icon--cart" aria-hidden="true"></span>
-            Carrello
+            {{ t('nav.cart', 'Carrello') }}
         </Link>
 
         <Link
@@ -21,7 +23,7 @@ const page = usePage();
             class="page-nav-link"
         >
             <span class="nav-icon nav-icon--orders" aria-hidden="true"></span>
-            I miei ordini
+            {{ t('nav.orders', 'I miei ordini') }}
         </Link>
 
         <Link
@@ -30,7 +32,7 @@ const page = usePage();
             class="page-nav-link page-nav-link--admin"
         >
             <span class="nav-icon nav-icon--admin" aria-hidden="true"></span>
-            Admin
+            {{ t('nav.admin', 'Admin') }}
         </Link>
 
         <Link
@@ -39,7 +41,7 @@ const page = usePage();
             class="page-nav-link page-nav-link--auth"
         >
             <span class="nav-icon nav-icon--login" aria-hidden="true"></span>
-            Login
+            {{ t('nav.login', 'Login') }}
         </Link>
 
         <Link
@@ -48,7 +50,7 @@ const page = usePage();
             class="page-nav-link page-nav-link--auth"
         >
             <span class="nav-icon nav-icon--register" aria-hidden="true"></span>
-            Registrati
+            {{ t('nav.register', 'Registrati') }}
         </Link>
 
         <Link
@@ -59,20 +61,41 @@ const page = usePage();
             class="page-nav-link page-nav-link--button"
         >
             <span class="nav-icon nav-icon--logout" aria-hidden="true"></span>
-            Logout
+            {{ t('nav.logout', 'Logout') }}
         </Link>
 
         <Link :href="route('legal.privacy')" class="page-nav-link page-nav-link--legal">
-            Privacy
+            {{ t('nav.privacy', 'Privacy') }}
         </Link>
 
         <Link :href="route('legal.cookies')" class="page-nav-link page-nav-link--legal">
-            Cookie
+            {{ t('nav.cookies', 'Cookie') }}
         </Link>
 
         <Link :href="route('legal.terms')" class="page-nav-link page-nav-link--legal">
-            Condizioni
+            {{ t('nav.terms', 'Condizioni') }}
         </Link>
+
+        <span class="language-switcher" :aria-label="t('nav.language', 'Lingua')">
+            <Link
+                :href="route('language.update', 'it')"
+                method="post"
+                as="button"
+                class="language-button"
+                :class="{ 'language-button--active': page.props.locale === 'it' }"
+            >
+                IT
+            </Link>
+            <Link
+                :href="route('language.update', 'en')"
+                method="post"
+                as="button"
+                class="language-button"
+                :class="{ 'language-button--active': page.props.locale === 'en' }"
+            >
+                EN
+            </Link>
+        </span>
     </nav>
 </template>
 
@@ -167,5 +190,28 @@ const page = usePage();
 
 .page-nav-link--legal {
     color: #4b5563;
+}
+
+.language-switcher {
+    display: inline-flex;
+    overflow: hidden;
+    border: 1px solid #d1d5db;
+    border-radius: 999px;
+}
+
+.language-button {
+    padding: 4px 8px;
+    border: 0;
+    background: #fff;
+    color: #4b5563;
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.language-button--active {
+    background: #166534;
+    color: #fff;
 }
 </style>

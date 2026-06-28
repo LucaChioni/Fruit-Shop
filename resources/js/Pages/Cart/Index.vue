@@ -3,11 +3,14 @@ import { useForm } from '@inertiajs/vue3';
 import FlashMessage from '@/Components/FlashMessage.vue';
 import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
+import { useTranslations } from '@/i18n';
 
 const props = defineProps({
     items: Array,
     total: String,
 });
+
+const t = useTranslations();
 
 const form = useForm({
     quantities: Object.fromEntries(
@@ -33,7 +36,7 @@ function removeItem(item) {
 <template>
     <PageContainer>
         <header class="cart-header">
-            <h1 class="cart-title">Carrello</h1>
+            <h1 class="cart-title">{{ t('cart.title', 'Carrello') }}</h1>
 
             <PageNav />
 
@@ -41,10 +44,10 @@ function removeItem(item) {
         </header>
 
         <section v-if="items.length === 0" class="empty-cart">
-            <h2>Il carrello è vuoto</h2>
-            <p>Aggiungi frutta e verdura fresca prima di procedere al checkout.</p>
+            <h2>{{ t('cart.empty_title', 'Il carrello è vuoto') }}</h2>
+            <p>{{ t('cart.empty_text', 'Aggiungi frutta e verdura fresca prima di procedere al checkout.') }}</p>
             <a :href="route('products.index')" class="products-link">
-                Vai ai prodotti
+                {{ t('cart.go_products', 'Vai ai prodotti') }}
             </a>
         </section>
 
@@ -73,7 +76,7 @@ function removeItem(item) {
 
                         <div class="quantity-form">
                             <label class="quantity-label">
-                                Quantità
+                                {{ t('cart.quantity', 'Quantità') }}
                                 <input
                                     v-model="form.quantities[item.id]"
                                     type="number"
@@ -100,14 +103,14 @@ function removeItem(item) {
                             :disabled="deleteForm.processing"
                             @click="removeItem(item)"
                         >
-                            Rimuovi
+                            {{ t('cart.remove', 'Rimuovi') }}
                         </button>
                     </div>
                 </article>
             </div>
 
             <footer class="cart-summary">
-                <span>Totale</span>
+                <span>{{ t('cart.total', 'Totale') }}</span>
                 <strong>{{ total }} €</strong>
             </footer>
 
@@ -116,10 +119,10 @@ function removeItem(item) {
                 class="update-cart-button"
                 :disabled="form.processing"
             >
-                Aggiorna carrello
+                {{ t('cart.update', 'Aggiorna carrello') }}
             </button>
             <a :href="route('checkout.create')" class="checkout-link">
-                Procedi al checkout
+                {{ t('cart.checkout', 'Procedi al checkout') }}
             </a>
         </form>
     </PageContainer>

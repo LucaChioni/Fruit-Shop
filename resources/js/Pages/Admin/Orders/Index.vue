@@ -2,27 +2,30 @@
 import PageNav from '@/Components/PageNav.vue';
 import PageContainer from '@/Components/PageContainer.vue';
 import OrderList from '@/Components/OrderList.vue';
+import { useTranslations } from '@/i18n';
 
 const props = defineProps({
     orders: Array,
     filters: Object,
     orderStatuses: Array,
 });
+
+const t = useTranslations();
 </script>
 
 <template>
     <PageContainer>
         <header class="admin-orders-header">
-            <h1 class="admin-orders-title">Ordini ricevuti</h1>
+            <h1 class="admin-orders-title">{{ t('orders.admin_title', 'Ordini ricevuti') }}</h1>
 
             <PageNav />
         </header>
 
         <form :action="route('admin.orders.index')" method="get" class="filters-form">
             <label class="filter-field">
-                Stato
+                {{ t('orders.status', 'Stato') }}
                 <select name="status" class="filter-input">
-                    <option value="all" :selected="filters.status === 'all'">Tutti</option>
+                    <option value="all" :selected="filters.status === 'all'">{{ t('orders.all', 'Tutti') }}</option>
                     <option
                         v-for="status in orderStatuses"
                         :key="status"
@@ -44,26 +47,26 @@ const props = defineProps({
             </label>
 
             <label class="filter-field">
-                Ordina
+                {{ t('orders.sort', 'Ordina') }}
                 <select name="sort" class="filter-input">
-                    <option value="newest" :selected="filters.sort === 'newest'">Più recenti</option>
-                    <option value="oldest" :selected="filters.sort === 'oldest'">Meno recenti</option>
-                    <option value="total_desc" :selected="filters.sort === 'total_desc'">Totale decrescente</option>
-                    <option value="total_asc" :selected="filters.sort === 'total_asc'">Totale crescente</option>
+                    <option value="newest" :selected="filters.sort === 'newest'">{{ t('orders.newest', 'Più recenti') }}</option>
+                    <option value="oldest" :selected="filters.sort === 'oldest'">{{ t('orders.oldest', 'Meno recenti') }}</option>
+                    <option value="total_desc" :selected="filters.sort === 'total_desc'">{{ t('orders.total_desc', 'Totale decrescente') }}</option>
+                    <option value="total_asc" :selected="filters.sort === 'total_asc'">{{ t('orders.total_asc', 'Totale crescente') }}</option>
                 </select>
             </label>
 
-            <button type="submit" class="filter-button">Applica</button>
-            <a :href="route('admin.orders.index')" class="reset-link">Reset</a>
+            <button type="submit" class="filter-button">{{ t('orders.apply', 'Applica') }}</button>
+            <a :href="route('admin.orders.index')" class="reset-link">{{ t('orders.reset', 'Reset') }}</a>
         </form>
 
         <section v-if="orders.length === 0" class="empty-orders">
-            <p>Non ci sono ancora ordini.</p>
+            <p>{{ t('orders.empty', 'Non ci sono ancora ordini.') }}</p>
         </section>
 
         <OrderList
             :orders="orders"
-            empty-message="Non hai ancora effettuato ordini."
+            :empty-message="t('orders.empty', 'Non ci sono ancora ordini.')"
             :show-customer="true"
             detail-route-name="admin.orders.show"
         />

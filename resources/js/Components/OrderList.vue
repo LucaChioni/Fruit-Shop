@@ -1,4 +1,6 @@
 <script setup>
+import { useTranslations } from '@/i18n';
+
 const props = defineProps({
     orders: Array,
     emptyMessage: {
@@ -14,6 +16,8 @@ const props = defineProps({
         default: 'orders.show',
     },
 });
+
+const t = useTranslations();
 </script>
 
 <template>
@@ -37,11 +41,11 @@ const props = defineProps({
                 </p>
 
                 <p v-if="order.pickup_at" class="order-card-meta">
-                    Ritiro: {{ order.pickup_at }}
+                    {{ t('orders.pickup', 'Ritiro') }}: {{ order.pickup_at }}
                 </p>
 
                 <p v-if="showCustomer" class="order-card-customer">
-                    Cliente: {{ order.customer_name }}
+                    {{ t('orders.customer', 'Cliente') }}: {{ order.customer_name }}
                     <span
                         v-if="order.customer_type_label"
                         class="customer-type"
@@ -52,7 +56,7 @@ const props = defineProps({
                 </p>
 
                 <p v-if="showCustomer && order.customer_email" class="order-card-customer">
-                    Email: {{ order.customer_email }}
+                    {{ t('orders.email', 'Email') }}: {{ order.customer_email }}
                 </p>
             </div>
 
@@ -60,7 +64,7 @@ const props = defineProps({
                 <strong>{{ order.total_amount }} €</strong>
 
                 <a :href="route(detailRouteName, order.id)" class="order-link">
-                    Dettaglio
+                    {{ t('orders.detail', 'Dettaglio') }}
                 </a>
             </div>
         </article>
