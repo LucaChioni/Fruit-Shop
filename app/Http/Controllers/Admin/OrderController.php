@@ -15,6 +15,7 @@ class OrderController extends Controller
     public function index()
     {
         $orders = Order::query()
+            ->with('user')
             ->latest()
             ->get();
 

@@ -38,6 +38,17 @@ const props = defineProps({
 
                 <p v-if="showCustomer" class="order-card-customer">
                     Cliente: {{ order.customer_name }}
+                    <span
+                        v-if="order.customer_type_label"
+                        class="customer-type"
+                        :class="`customer-type--${order.customer_type}`"
+                    >
+                        {{ order.customer_type_label }}
+                    </span>
+                </p>
+
+                <p v-if="showCustomer && order.customer_email" class="order-card-customer">
+                    Email: {{ order.customer_email }}
                 </p>
             </div>
 
@@ -86,6 +97,25 @@ const props = defineProps({
 .order-card-customer {
     margin: 0 0 4px;
     color: #555;
+}
+
+.customer-type {
+    display: inline-flex;
+    margin-left: 8px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.customer-type--registered {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.customer-type--guest {
+    background: #ffedd5;
+    color: #9a3412;
 }
 
 .order-card-side {

@@ -16,7 +16,8 @@ class OrderTest extends TestCase
     public function test_admin_orders_index_shows_all_orders(): void
     {
         $admin = User::factory()->create(['is_admin' => true]);
-        $firstOrder = $this->createOrder(null, ['customer_name' => 'Primo Cliente']);
+        $customer = User::factory()->create(['email' => 'cliente@example.com']);
+        $firstOrder = $this->createOrder($customer, ['customer_name' => 'Primo Cliente']);
         $secondOrder = $this->createOrder(null, ['customer_name' => 'Secondo Cliente']);
 
         $firstOrder->forceFill(['created_at' => now()->subMinute()])->save();
@@ -32,9 +33,15 @@ class OrderTest extends TestCase
                 ->where('orders.0.id', $secondOrder->id)
                 ->where('orders.0.order_number', $secondOrder->order_number)
                 ->where('orders.0.customer_name', 'Secondo Cliente')
+                ->where('orders.0.customer_email', null)
+                ->where('orders.0.customer_type', 'guest')
+                ->where('orders.0.customer_type_label', 'Ospite')
                 ->where('orders.1.id', $firstOrder->id)
                 ->where('orders.1.order_number', $firstOrder->order_number)
-                ->where('orders.1.customer_name', 'Primo Cliente'));
+                ->where('orders.1.customer_name', 'Primo Cliente')
+                ->where('orders.1.customer_email', 'cliente@example.com')
+                ->where('orders.1.customer_type', 'registered')
+                ->where('orders.1.customer_type_label', 'Registrato'));
     }
 
     public function test_non_admin_cannot_access_admin_orders_index(): void
