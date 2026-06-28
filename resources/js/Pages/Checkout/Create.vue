@@ -3,10 +3,14 @@ import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
     customerName: String,
+    pickupAtDefault: String,
+    pickupAtMin: String,
+    pickupAtMax: String,
 });
 
 const form = useForm({
     customer_name: props.customerName ?? '',
+    pickup_at: props.pickupAtDefault ?? '',
     notes: '',
 });
 
@@ -30,6 +34,24 @@ function submitOrder() {
                 />
                 <p v-if="form.errors.customer_name" class="form-error">
                     {{ form.errors.customer_name }}
+                </p>
+            </label>
+
+            <label class="form-field">
+                Data e ora di ritiro
+                <input
+                    v-model="form.pickup_at"
+                    type="datetime-local"
+                    class="form-input"
+                    :min="pickupAtMin"
+                    :max="pickupAtMax"
+                    required
+                />
+                <span class="form-help">
+                    Ritiro almeno 2 ore dopo l'ordine, entro domani. Fasce: 11:00-13:00 e 16:00-19:30.
+                </span>
+                <p v-if="form.errors.pickup_at" class="form-error">
+                    {{ form.errors.pickup_at }}
                 </p>
             </label>
 
@@ -103,5 +125,11 @@ function submitOrder() {
     color: #b91c1c;
     font-size: 14px;
     font-weight: 500;
+}
+
+.form-help {
+    color: #666;
+    font-size: 14px;
+    font-weight: 400;
 }
 </style>

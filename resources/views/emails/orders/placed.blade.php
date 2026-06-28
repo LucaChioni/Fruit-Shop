@@ -2,6 +2,9 @@
 
 <p><strong>Cliente:</strong> {{ $order->customer_name }}</p>
 <p><strong>Stato:</strong> {{ $order->status }}</p>
+@if ($order->pickup_at)
+    <p><strong>Ritiro:</strong> {{ $order->pickup_at->format('d/m/Y H:i') }}</p>
+@endif
 <p><strong>Totale:</strong> {{ $order->total_amount }} €</p>
 
 @if ($order->notes)

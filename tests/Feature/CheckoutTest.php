@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\User;
 use App\Services\CartService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\Feature\Concerns\CreatesShopModels;
@@ -45,6 +46,7 @@ class CheckoutTest extends TestCase
 
     public function test_checkout_store_creates_order_items_and_clears_cart(): void
     {
+        $this->travelTo(Carbon::parse('2026-06-28 09:00:00'));
         Mail::fake();
         config(['mail.order_notifications.address' => 'admin@example.com']);
 
@@ -57,6 +59,7 @@ class CheckoutTest extends TestCase
             ->actingAs($user)
             ->post(route('checkout.store'), [
                 'customer_name' => 'Cliente Test',
+                'pickup_at' => '2026-06-28T12:00',
                 'notes' => 'Consegna pomeriggio',
             ]);
 
@@ -69,6 +72,7 @@ class CheckoutTest extends TestCase
 
         $this->assertSame($user->id, $order->user_id);
         $this->assertSame('Cliente Test', $order->customer_name);
+        $this->assertSame('2026-06-28 12:00:00', $order->pickup_at->format('Y-m-d H:i:s'));
         $this->assertNotNull($order->order_number);
         $this->assertSame('pending', $order->status);
         $this->assertSame('6.40', $order->total_amount);
@@ -86,6 +90,7 @@ class CheckoutTest extends TestCase
 
     public function test_guest_checkout_store_creates_guest_order(): void
     {
+        $this->travelTo(Carbon::parse('2026-06-28 09:00:00'));
         Mail::fake();
         config(['mail.order_notifications.address' => 'admin@example.com']);
 
@@ -97,6 +102,7 @@ class CheckoutTest extends TestCase
             ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
             ->post(route('checkout.store'), [
                 'customer_name' => 'Cliente Guest',
+                'pickup_at' => '2026-06-28T12:00',
             ]);
 
         $order = Order::firstOrFail();
@@ -119,6 +125,7 @@ class CheckoutTest extends TestCase
 
     public function test_checkout_store_does_not_duplicate_email_when_admin_is_customer(): void
     {
+        $this->travelTo(Carbon::parse('2026-06-28 09:00:00'));
         Mail::fake();
         config(['mail.order_notifications.address' => 'customer@example.com']);
 
@@ -130,6 +137,7 @@ class CheckoutTest extends TestCase
             ->actingAs($user)
             ->post(route('checkout.store'), [
                 'customer_name' => 'Cliente Test',
+                'pickup_at' => '2026-06-28T12:00',
             ]);
 
         $order = Order::firstOrFail();
@@ -170,6 +178,63 @@ class CheckoutTest extends TestCase
 
         $response->assertSessionHasErrors([
             'customer_name' => 'Inserisci il nome per il ritiro.',
+        ]);
+    }
+
+    public function test_checkout_pickup_time_must_be_at_least_two_hours_after_order(): void
+    {
+        $this->travelTo(Carbon::parse('2026-06-28 09:00:00'));
+
+        $cart = $this->createCart(['guest_token' => 'guest-token']);
+        $this->createCartItem($cart, $this->createProduct(), 1);
+
+        $response = $this
+            ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
+            ->post(route('checkout.store'), [
+                'customer_name' => 'Cliente Test',
+                'pickup_at' => '2026-06-28T10:30',
+            ]);
+
+        $response->assertSessionHasErrors([
+            'pickup_at' => 'Il ritiro deve essere almeno 2 ore dopo l\'ordine.',
+        ]);
+    }
+
+    public function test_checkout_pickup_time_must_be_in_opening_hours(): void
+    {
+        $this->travelTo(Carbon::parse('2026-06-28 09:00:00'));
+
+        $cart = $this->createCart(['guest_token' => 'guest-token']);
+        $this->createCartItem($cart, $this->createProduct(), 1);
+
+        $response = $this
+            ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
+            ->post(route('checkout.store'), [
+                'customer_name' => 'Cliente Test',
+                'pickup_at' => '2026-06-28T14:30',
+            ]);
+
+        $response->assertSessionHasErrors([
+            'pickup_at' => 'Scegli un orario di ritiro tra 11:00-13:00 o 16:00-19:30.',
+        ]);
+    }
+
+    public function test_checkout_pickup_time_must_be_no_later_than_next_day(): void
+    {
+        $this->travelTo(Carbon::parse('2026-06-28 09:00:00'));
+
+        $cart = $this->createCart(['guest_token' => 'guest-token']);
+        $this->createCartItem($cart, $this->createProduct(), 1);
+
+        $response = $this
+            ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
+            ->post(route('checkout.store'), [
+                'customer_name' => 'Cliente Test',
+                'pickup_at' => '2026-06-30T12:00',
+            ]);
+
+        $response->assertSessionHasErrors([
+            'pickup_at' => 'Il ritiro può essere al massimo entro il giorno successivo.',
         ]);
     }
 }

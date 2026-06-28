@@ -36,6 +36,10 @@ const props = defineProps({
                     {{ order.created_at }} · Stato: {{ order.status }}
                 </p>
 
+                <p v-if="order.pickup_at" class="order-card-meta">
+                    Ritiro: {{ order.pickup_at }}
+                </p>
+
                 <p v-if="showCustomer" class="order-card-customer">
                     Cliente: {{ order.customer_name }}
                     <span

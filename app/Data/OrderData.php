@@ -31,6 +31,7 @@ class OrderData
             'customer_type_label' => $order->user_id ? 'Registrato' : 'Ospite',
             'status' => $order->status,
             'total_amount' => $order->total_amount,
+            'pickup_at' => $order->pickup_at?->format('d/m/Y H:i'),
             'created_at' => $order->created_at->format('d/m/Y H:i'),
         ];
     }

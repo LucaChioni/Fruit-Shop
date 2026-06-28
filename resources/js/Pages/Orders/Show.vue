@@ -50,6 +50,10 @@ function updateStatus() {
                 {{ order.created_at }} · Stato: {{ order.status }}
             </p>
 
+            <p v-if="order.pickup_at" class="order-meta order-meta--pickup">
+                Ritiro: {{ order.pickup_at }}
+            </p>
+
             <div v-if="page.props.flash?.success" class="flash-message flash-message--success">
                 {{ page.props.flash.success }}
             </div>
@@ -146,6 +150,11 @@ function updateStatus() {
 .order-meta {
     margin: 0;
     color: #555;
+}
+
+.order-meta--pickup {
+    margin-top: 6px;
+    font-weight: 700;
 }
 
 .order-section {
