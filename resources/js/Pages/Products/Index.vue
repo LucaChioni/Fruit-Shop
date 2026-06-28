@@ -73,6 +73,17 @@ function addToCart(product) {
                 :key="product.id"
                 class="product-card"
             >
+                <img
+                    v-if="product.image_url"
+                    :src="product.image_url"
+                    :alt="product.name"
+                    class="product-image"
+                    loading="lazy"
+                />
+                <div v-else class="product-image product-image--placeholder">
+                    {{ product.name.charAt(0) }}
+                </div>
+
                 <div>
                     <h2 class="product-name">{{ product.name }}</h2>
 
@@ -171,18 +182,33 @@ function addToCart(product) {
 
 .products-list {
     display: grid;
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
 }
 
 .product-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    padding: 20px;
+    display: grid;
+    gap: 14px;
+    padding: 16px;
     border: 1px solid #ddd;
     border-radius: 12px;
     background: #fff;
+}
+
+.product-image {
+    width: 100%;
+    height: 130px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: #ecfdf5;
+}
+
+.product-image--placeholder {
+    display: grid;
+    place-items: center;
+    color: #166534;
+    font-size: 28px;
+    font-weight: 800;
 }
 
 .product-name {
@@ -213,7 +239,7 @@ function addToCart(product) {
 .product-actions {
     display: grid;
     gap: 10px;
-    justify-items: end;
+    justify-items: start;
 }
 
 .quantity-label {

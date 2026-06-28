@@ -55,6 +55,17 @@ function removeItem(item) {
                     :key="item.id"
                     class="cart-item"
                 >
+                    <img
+                        v-if="item.product_image_url"
+                        :src="item.product_image_url"
+                        :alt="item.product_name"
+                        class="cart-item-image"
+                        loading="lazy"
+                    />
+                    <div v-else class="cart-item-image cart-item-image--placeholder">
+                        {{ item.product_name.charAt(0) }}
+                    </div>
+
                     <div>
                         <h2 class="cart-item-name">
                             {{ item.product_name }}
@@ -150,18 +161,33 @@ function removeItem(item) {
 
 .cart-items {
     display: grid;
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
 }
 
 .cart-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    padding: 20px;
+    display: grid;
+    gap: 12px;
+    padding: 16px;
     border: 1px solid #ddd;
     border-radius: 12px;
     background: #fff;
+}
+
+.cart-item-image {
+    width: 100%;
+    height: 110px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: #ecfdf5;
+}
+
+.cart-item-image--placeholder {
+    display: grid;
+    place-items: center;
+    color: #166534;
+    font-size: 24px;
+    font-weight: 800;
 }
 
 .cart-item-name {
@@ -230,9 +256,10 @@ function removeItem(item) {
 }
 
 .cart-item-actions {
-    display: grid;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 8px;
-    justify-items: end;
 }
 
 .remove-item-button {

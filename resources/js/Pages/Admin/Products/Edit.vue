@@ -1,6 +1,7 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
 import PageNav from '@/Components/PageNav.vue';
+import PageContainer from '@/Components/PageContainer.vue';
 
 const props = defineProps({
     product: Object,
@@ -10,6 +11,7 @@ const props = defineProps({
 const form = useForm({
     name: props.product.name,
     description: props.product.description ?? '',
+    image_url: props.product.image_url ?? '',
     price: props.product.price,
     unit_type: props.product.unit_type,
     is_active: props.product.is_active,
@@ -21,7 +23,7 @@ function submit() {
 </script>
 
 <template>
-    <main class="product-form-page">
+    <PageContainer>
         <header class="product-form-header">
             <h1 class="product-form-title">Modifica prodotto</h1>
 
@@ -39,6 +41,12 @@ function submit() {
                 Descrizione
                 <textarea v-model="form.description" class="input textarea"></textarea>
                 <span v-if="form.errors.description" class="error">{{ form.errors.description }}</span>
+            </label>
+
+            <label class="field">
+                URL immagine
+                <input v-model="form.image_url" type="url" class="input" placeholder="https://..." />
+                <span v-if="form.errors.image_url" class="error">{{ form.errors.image_url }}</span>
             </label>
 
             <label class="field">
@@ -70,14 +78,10 @@ function submit() {
                 Salva prodotto
             </button>
         </form>
-    </main>
+    </PageContainer>
 </template>
 
 <style scoped>
-.product-form-page {
-    padding: 40px;
-}
-
 .product-form-header {
     margin-bottom: 24px;
 }

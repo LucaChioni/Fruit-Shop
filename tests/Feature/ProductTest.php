@@ -15,7 +15,7 @@ class ProductTest extends TestCase
     public function test_products_index_shows_only_active_products_ordered_by_name(): void
     {
         $this->createProduct(['name' => 'Zucchine']);
-        $this->createProduct(['name' => 'Arance', 'price' => 2.5, 'unit_type' => 'kg']);
+        $this->createProduct(['name' => 'Arance', 'price' => 2.5, 'unit_type' => 'kg', 'image_url' => 'https://example.com/arance.jpg']);
         $this->createProduct(['name' => 'Banane', 'is_active' => false]);
 
         $response = $this->get(route('products.index'));
@@ -26,6 +26,7 @@ class ProductTest extends TestCase
                 ->component('Products/Index')
                 ->has('products', 2)
                 ->where('products.0.name', 'Arance')
+                ->where('products.0.image_url', 'https://example.com/arance.jpg')
                 ->where('products.0.price', '2.50')
                 ->where('products.0.quantity_step', 0.1)
                 ->where('products.1.name', 'Zucchine')

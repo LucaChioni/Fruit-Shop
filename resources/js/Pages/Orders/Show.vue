@@ -1,6 +1,7 @@
 <script setup>
 import { useForm, usePage } from '@inertiajs/vue3';
 import PageNav from '@/Components/PageNav.vue';
+import PageContainer from '@/Components/PageContainer.vue';
 
 const props = defineProps({
     order: Object,
@@ -36,7 +37,7 @@ function updateStatus() {
 </script>
 
 <template>
-    <main class="order-page">
+    <PageContainer>
         <header class="order-header">
             <h1 class="order-title">
                 <span v-if="isAdminView">Admin · </span>
@@ -129,14 +130,10 @@ function updateStatus() {
             <span>Totale</span>
             <strong>{{ order.total_amount }} €</strong>
         </footer>
-    </main>
+    </PageContainer>
 </template>
 
 <style scoped>
-.order-page {
-    padding: 40px;
-}
-
 .order-header {
     margin-bottom: 24px;
 }

@@ -1,5 +1,7 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
+import PageContainer from '@/Components/PageContainer.vue';
+import PageNav from '@/Components/PageNav.vue';
 
 const props = defineProps({
     customerName: String,
@@ -20,8 +22,10 @@ function submitOrder() {
 </script>
 
 <template>
-    <main class="checkout-page">
+    <PageContainer>
         <h1 class="checkout-title">Checkout</h1>
+
+        <PageNav />
 
         <form class="checkout-form" @submit.prevent="submitOrder">
             <label class="form-field">
@@ -71,14 +75,10 @@ function submitOrder() {
                 Conferma ordine
             </button>
         </form>
-    </main>
+    </PageContainer>
 </template>
 
 <style scoped>
-.checkout-page {
-    padding: 40px;
-}
-
 .checkout-title {
     margin: 0 0 24px;
     font-size: 28px;

@@ -78,14 +78,14 @@ const props = defineProps({
 
 .orders-list {
     display: grid;
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
 }
 
 .order-card {
-    display: flex;
-    justify-content: space-between;
-    gap: 24px;
-    padding: 20px;
+    display: grid;
+    gap: 14px;
+    padding: 16px;
     border: 1px solid #ddd;
     border-radius: 12px;
     background: #fff;
@@ -123,9 +123,10 @@ const props = defineProps({
 }
 
 .order-card-side {
-    display: grid;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 8px;
-    justify-items: end;
 }
 
 .order-link {

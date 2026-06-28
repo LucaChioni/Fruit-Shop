@@ -15,10 +15,12 @@ class CartController extends Controller
         $cart->load('items.product');
         $items = $cart->items->map(function ($item) {
             $product = $item->product;
+
             return [
                 'id' => $item->id,
                 'product_id' => $product->id,
                 'product_name' => $product->name,
+                'product_image_url' => $product->image_url,
                 'unit_type' => $product->unit_type,
                 'unit_price' => number_format((float) $product->price, 2, '.', ''),
                 'quantity' => $item->quantity,

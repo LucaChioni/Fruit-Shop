@@ -1,5 +1,6 @@
 <script setup>
 import PageNav from '@/Components/PageNav.vue';
+import PageContainer from '@/Components/PageContainer.vue';
 import OrderList from '@/Components/OrderList.vue';
 
 const props = defineProps({
@@ -10,7 +11,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <main class="orders-page">
+    <PageContainer>
         <header class="orders-header">
             <h1 class="orders-title">I miei ordini</h1>
 
@@ -53,14 +54,10 @@ const props = defineProps({
             :show-customer="true"
             detail-route-name="orders.show"
         />
-    </main>
+    </PageContainer>
 </template>
 
 <style scoped>
-.orders-page {
-    padding: 40px;
-}
-
 .orders-header {
     margin-bottom: 24px;
 }

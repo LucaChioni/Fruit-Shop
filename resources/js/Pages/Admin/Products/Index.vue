@@ -79,6 +79,17 @@ function deleteProduct(product) {
                 :key="product.id"
                 class="product-card"
             >
+                <img
+                    v-if="product.image_url"
+                    :src="product.image_url"
+                    :alt="product.name"
+                    class="product-image"
+                    loading="lazy"
+                />
+                <div v-else class="product-image product-image--placeholder">
+                    {{ product.name.charAt(0) }}
+                </div>
+
                 <div>
                     <h2 class="product-title">{{ product.name }}</h2>
                     <p class="product-meta">
@@ -196,20 +207,36 @@ function deleteProduct(product) {
 
 .products-list {
     display: grid;
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
 }
 
 .product-card {
-    display: flex;
-    justify-content: space-between;
-    gap: 24px;
+    display: grid;
+    gap: 12px;
+}
+
+.product-image {
+    width: 100%;
+    height: 120px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: #fff7ed;
+}
+
+.product-image--placeholder {
+    display: grid;
+    place-items: center;
+    color: #7c2d12;
+    font-size: 26px;
+    font-weight: 800;
 }
 
 .product-actions {
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
-    justify-content: flex-end;
+    justify-content: flex-start;
     gap: 12px;
 }
 

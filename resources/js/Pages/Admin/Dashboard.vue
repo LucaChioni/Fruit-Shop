@@ -1,5 +1,6 @@
 <script setup>
 import PageNav from '@/Components/PageNav.vue';
+import PageContainer from '@/Components/PageContainer.vue';
 
 defineProps({
     stats: Object,
@@ -8,7 +9,7 @@ defineProps({
 </script>
 
 <template>
-    <main class="admin-page">
+    <PageContainer>
         <header class="admin-header">
             <h1 class="admin-title">Admin</h1>
 
@@ -70,14 +71,10 @@ defineProps({
                 </article>
             </div>
         </section>
-    </main>
+    </PageContainer>
 </template>
 
 <style scoped>
-.admin-page {
-    padding: 40px;
-}
-
 .admin-header {
     margin-bottom: 24px;
 }
@@ -89,7 +86,7 @@ defineProps({
 }
 
 .admin-card {
-    padding: 20px;
+    padding: 16px;
     border: 1px solid #ddd;
     border-radius: 12px;
     background: #fff;
@@ -140,20 +137,18 @@ defineProps({
 
 .latest-orders {
     display: grid;
-    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 10px;
 }
 
 .latest-order {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     gap: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #eee;
-}
-
-.latest-order:last-child {
-    padding-bottom: 0;
-    border-bottom: 0;
+    padding: 12px;
+    border: 1px solid #eee;
+    border-radius: 10px;
 }
 
 .latest-order p,
