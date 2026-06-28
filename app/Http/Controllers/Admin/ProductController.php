@@ -15,12 +15,25 @@ class ProductController extends Controller
 {
     public function index(): Response
     {
+        $filters = [
+            'search' => request()->string('search')->toString(),
+            'status' => request()->string('status', 'all')->toString(),
+            'sort' => request()->string('sort', 'name')->toString(),
+        ];
+
         $products = Product::query()
-            ->orderBy('name')
+            ->when($filters['search'], fn ($query, $search) => $query->where('name', 'like', "%{$search}%"))
+            ->when($filters['status'] === 'active', fn ($query) => $query->where('is_active', true))
+            ->when($filters['status'] === 'inactive', fn ($query) => $query->where('is_active', false))
+            ->when($filters['sort'] === 'price_asc', fn ($query) => $query->orderBy('price'))
+            ->when($filters['sort'] === 'price_desc', fn ($query) => $query->orderByDesc('price'))
+            ->when($filters['sort'] === 'newest', fn ($query) => $query->latest())
+            ->when(! in_array($filters['sort'], ['price_asc', 'price_desc', 'newest'], true), fn ($query) => $query->orderBy('name'))
             ->get();
 
         return Inertia::render('Admin/Products/Index', [
             'products' => $products->map(fn (Product $product) => $this->productData($product)),
+            'filters' => $filters,
         ]);
     }
 

@@ -6,6 +6,7 @@ import PageNav from '@/Components/PageNav.vue';
 
 const props = defineProps({
     products: Array,
+    filters: Object,
 });
 
 const quantities = Object.fromEntries(
@@ -36,6 +37,31 @@ function addToCart(product) {
 
             <FlashMessage />
         </header>
+
+        <form :action="route('products.index')" method="get" class="filters-form">
+            <label class="filter-field">
+                Cerca
+                <input
+                    type="search"
+                    name="search"
+                    :value="filters.search"
+                    class="filter-input"
+                    placeholder="Nome prodotto"
+                />
+            </label>
+
+            <label class="filter-field">
+                Ordina
+                <select name="sort" class="filter-input">
+                    <option value="name" :selected="filters.sort === 'name'">Nome</option>
+                    <option value="price_asc" :selected="filters.sort === 'price_asc'">Prezzo crescente</option>
+                    <option value="price_desc" :selected="filters.sort === 'price_desc'">Prezzo decrescente</option>
+                </select>
+            </label>
+
+            <button type="submit" class="filter-button">Applica</button>
+            <a :href="route('products.index')" class="reset-link">Reset</a>
+        </form>
 
         <p v-if="products.length === 0" class="empty-message">
             Nessun prodotto disponibile al momento. Torna a trovarci più tardi.
@@ -99,6 +125,48 @@ function addToCart(product) {
 
 .empty-message {
     color: #666;
+}
+
+.filters-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.filter-field {
+    display: grid;
+    gap: 6px;
+    font-weight: 600;
+}
+
+.filter-input {
+    min-width: 180px;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font: inherit;
+}
+
+.filter-button {
+    padding: 9px 14px;
+    border: 0;
+    border-radius: 8px;
+    background: #166534;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.reset-link {
+    color: #166534;
+    font-weight: 600;
+    text-decoration: none;
 }
 
 .products-list {

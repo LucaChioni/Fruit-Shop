@@ -6,6 +6,7 @@ import PageNav from '@/Components/PageNav.vue';
 
 defineProps({
     products: Array,
+    filters: Object,
 });
 
 function deleteProduct(product) {
@@ -32,6 +33,41 @@ function deleteProduct(product) {
                 Nuovo prodotto
             </a>
         </header>
+
+        <form :action="route('admin.products.index')" method="get" class="filters-form">
+            <label class="filter-field">
+                Cerca
+                <input
+                    type="search"
+                    name="search"
+                    :value="filters.search"
+                    class="filter-input"
+                    placeholder="Nome prodotto"
+                />
+            </label>
+
+            <label class="filter-field">
+                Stato
+                <select name="status" class="filter-input">
+                    <option value="all" :selected="filters.status === 'all'">Tutti</option>
+                    <option value="active" :selected="filters.status === 'active'">Attivi</option>
+                    <option value="inactive" :selected="filters.status === 'inactive'">Disattivati</option>
+                </select>
+            </label>
+
+            <label class="filter-field">
+                Ordina
+                <select name="sort" class="filter-input">
+                    <option value="name" :selected="filters.sort === 'name'">Nome</option>
+                    <option value="newest" :selected="filters.sort === 'newest'">Più recenti</option>
+                    <option value="price_asc" :selected="filters.sort === 'price_asc'">Prezzo crescente</option>
+                    <option value="price_desc" :selected="filters.sort === 'price_desc'">Prezzo decrescente</option>
+                </select>
+            </label>
+
+            <button type="submit" class="filter-button">Applica</button>
+            <a :href="route('admin.products.index')" class="reset-link">Reset</a>
+        </form>
 
         <section v-if="products.length === 0" class="empty-products">
             <p>Non ci sono prodotti.</p>
@@ -114,6 +150,48 @@ function deleteProduct(product) {
     border: 1px solid #ddd;
     border-radius: 12px;
     background: #fff;
+}
+
+.filters-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.filter-field {
+    display: grid;
+    gap: 6px;
+    font-weight: 600;
+}
+
+.filter-input {
+    min-width: 180px;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font: inherit;
+}
+
+.filter-button {
+    padding: 9px 14px;
+    border: 0;
+    border-radius: 8px;
+    background: #7c2d12;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.reset-link {
+    color: #7c2d12;
+    font-weight: 600;
+    text-decoration: none;
 }
 
 .products-list {

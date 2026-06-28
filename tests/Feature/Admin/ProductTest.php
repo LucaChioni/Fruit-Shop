@@ -30,7 +30,35 @@ class ProductTest extends TestCase
                 ->where('products.0.name', 'Arance')
                 ->where('products.0.is_active', false)
                 ->where('products.1.name', 'Zucchine')
-                ->where('products.1.is_active', true));
+                ->where('products.1.is_active', true)
+                ->where('filters.search', '')
+                ->where('filters.status', 'all')
+                ->where('filters.sort', 'name'));
+    }
+
+    public function test_admin_products_index_can_be_filtered_and_sorted(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $this->createProduct(['name' => 'Arance Navel', 'price' => 3.20, 'is_active' => false]);
+        $this->createProduct(['name' => 'Arance Tarocco', 'price' => 2.80, 'is_active' => false]);
+        $this->createProduct(['name' => 'Zucchine', 'price' => 1.90, 'is_active' => true]);
+
+        $response = $this->actingAs($admin)->get(route('admin.products.index', [
+            'search' => 'Arance',
+            'status' => 'inactive',
+            'sort' => 'price_asc',
+        ]));
+
+        $response
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Admin/Products/Index')
+                ->has('products', 2)
+                ->where('products.0.name', 'Arance Tarocco')
+                ->where('products.1.name', 'Arance Navel')
+                ->where('filters.search', 'Arance')
+                ->where('filters.status', 'inactive')
+                ->where('filters.sort', 'price_asc'));
     }
 
     public function test_non_admin_cannot_access_admin_products_index(): void

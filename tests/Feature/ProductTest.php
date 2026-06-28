@@ -28,6 +28,30 @@ class ProductTest extends TestCase
                 ->where('products.0.name', 'Arance')
                 ->where('products.0.price', '2.50')
                 ->where('products.0.quantity_step', 0.1)
-                ->where('products.1.name', 'Zucchine'));
+                ->where('products.1.name', 'Zucchine')
+                ->where('filters.search', '')
+                ->where('filters.sort', 'name'));
+    }
+
+    public function test_products_index_can_be_filtered_and_sorted(): void
+    {
+        $this->createProduct(['name' => 'Arance Navel', 'price' => 3.20]);
+        $this->createProduct(['name' => 'Arance Tarocco', 'price' => 2.80]);
+        $this->createProduct(['name' => 'Zucchine', 'price' => 1.90]);
+
+        $response = $this->get(route('products.index', [
+            'search' => 'Arance',
+            'sort' => 'price_desc',
+        ]));
+
+        $response
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Products/Index')
+                ->has('products', 2)
+                ->where('products.0.name', 'Arance Navel')
+                ->where('products.1.name', 'Arance Tarocco')
+                ->where('filters.search', 'Arance')
+                ->where('filters.sort', 'price_desc'));
     }
 }

@@ -11,13 +11,24 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
+        $filters = [
+            'status' => $request->string('status', 'all')->toString(),
+            'sort' => $request->string('sort', 'newest')->toString(),
+        ];
+
         $orders = $request->user()
             ->orders()
-            ->latest()
+            ->when($filters['status'] !== 'all', fn ($query) => $query->where('status', $filters['status']))
+            ->when($filters['sort'] === 'oldest', fn ($query) => $query->oldest())
+            ->when($filters['sort'] === 'total_desc', fn ($query) => $query->orderByDesc('total_amount'))
+            ->when($filters['sort'] === 'total_asc', fn ($query) => $query->orderBy('total_amount'))
+            ->when(! in_array($filters['sort'], ['oldest', 'total_desc', 'total_asc'], true), fn ($query) => $query->latest())
             ->get();
 
         return Inertia::render('Orders/Index', [
             'orders' => OrderData::collection($orders),
+            'filters' => $filters,
+            'orderStatuses' => OrderData::STATUSES,
         ]);
     }
 

@@ -34,7 +34,32 @@ class OrderTest extends TestCase
                 ->has('orders', 1)
                 ->where('orders.0.id', $order->id)
                 ->where('orders.0.order_number', $order->order_number)
-                ->where('orders.0.customer_name', 'Cliente Utente'));
+                ->where('orders.0.customer_name', 'Cliente Utente')
+                ->where('filters.status', 'all')
+                ->where('filters.sort', 'newest'));
+    }
+
+    public function test_orders_index_can_be_filtered_and_sorted(): void
+    {
+        $user = User::factory()->create();
+        $this->createOrder($user, ['customer_name' => 'Pending', 'status' => 'pending', 'total_amount' => 20]);
+        $lowerTotal = $this->createOrder($user, ['customer_name' => 'Completed Low', 'status' => 'completed', 'total_amount' => 10]);
+        $higherTotal = $this->createOrder($user, ['customer_name' => 'Completed High', 'status' => 'completed', 'total_amount' => 30]);
+
+        $response = $this->actingAs($user)->get(route('orders.index', [
+            'status' => 'completed',
+            'sort' => 'total_desc',
+        ]));
+
+        $response
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Orders/Index')
+                ->has('orders', 2)
+                ->where('orders.0.id', $higherTotal->id)
+                ->where('orders.1.id', $lowerTotal->id)
+                ->where('filters.status', 'completed')
+                ->where('filters.sort', 'total_desc'));
     }
 
     public function test_order_show_allows_owner(): void

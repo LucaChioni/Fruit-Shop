@@ -41,7 +41,36 @@ class OrderTest extends TestCase
                 ->where('orders.1.customer_name', 'Primo Cliente')
                 ->where('orders.1.customer_email', 'cliente@example.com')
                 ->where('orders.1.customer_type', 'registered')
-                ->where('orders.1.customer_type_label', 'Registrato'));
+                ->where('orders.1.customer_type_label', 'Registrato')
+                ->where('filters.status', 'all')
+                ->where('filters.customer_type', 'all')
+                ->where('filters.sort', 'newest'));
+    }
+
+    public function test_admin_orders_index_can_be_filtered_and_sorted(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $customer = User::factory()->create();
+        $this->createOrder(null, ['customer_name' => 'Ospite', 'status' => 'confirmed', 'total_amount' => 99]);
+        $lowerTotal = $this->createOrder($customer, ['customer_name' => 'Registrato Low', 'status' => 'confirmed', 'total_amount' => 10]);
+        $higherTotal = $this->createOrder($customer, ['customer_name' => 'Registrato High', 'status' => 'confirmed', 'total_amount' => 30]);
+
+        $response = $this->actingAs($admin)->get(route('admin.orders.index', [
+            'status' => 'confirmed',
+            'customer_type' => 'registered',
+            'sort' => 'total_desc',
+        ]));
+
+        $response
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Admin/Orders/Index')
+                ->has('orders', 2)
+                ->where('orders.0.id', $higherTotal->id)
+                ->where('orders.1.id', $lowerTotal->id)
+                ->where('filters.status', 'confirmed')
+                ->where('filters.customer_type', 'registered')
+                ->where('filters.sort', 'total_desc'));
     }
 
     public function test_non_admin_cannot_access_admin_orders_index(): void
