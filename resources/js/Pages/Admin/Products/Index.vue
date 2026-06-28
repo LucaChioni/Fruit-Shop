@@ -1,4 +1,5 @@
 <script setup>
+import { router } from '@inertiajs/vue3';
 import FlashMessage from '@/Components/FlashMessage.vue';
 import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
@@ -7,6 +8,15 @@ defineProps({
     products: Array,
 });
 
+function deleteProduct(product) {
+    if (!confirm(`Eliminare ${product.name}?`)) {
+        return;
+    }
+
+    router.delete(route('admin.products.destroy', product.id), {
+        preserveScroll: true,
+    });
+}
 </script>
 
 <template>
@@ -46,9 +56,19 @@ defineProps({
                     </p>
                 </div>
 
-                <a :href="route('admin.products.edit', product.id)" class="edit-link">
-                    Modifica
-                </a>
+                <div class="product-actions">
+                    <a :href="route('admin.products.edit', product.id)" class="edit-link">
+                        Modifica
+                    </a>
+
+                    <button
+                        type="button"
+                        class="delete-button"
+                        @click="deleteProduct(product)"
+                    >
+                        Elimina
+                    </button>
+                </div>
             </article>
         </section>
     </PageContainer>
@@ -72,8 +92,19 @@ defineProps({
     text-decoration: none;
 }
 
+.delete-button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #b91c1c;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+}
+
 .create-link:hover,
-.edit-link:hover {
+.edit-link:hover,
+.delete-button:hover {
     text-decoration: underline;
 }
 
@@ -94,6 +125,14 @@ defineProps({
     display: flex;
     justify-content: space-between;
     gap: 24px;
+}
+
+.product-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    justify-content: flex-end;
+    gap: 12px;
 }
 
 .product-title {

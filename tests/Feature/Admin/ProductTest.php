@@ -124,6 +124,39 @@ class ProductTest extends TestCase
         $this->assertFalse($product->is_active);
     }
 
+    public function test_admin_can_delete_product(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $product = $this->createProduct(['name' => 'Mele']);
+
+        $response = $this
+            ->actingAs($admin)
+            ->delete(route('admin.products.destroy', $product));
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('admin.products.index'));
+
+        $this->assertDatabaseMissing('products', [
+            'id' => $product->id,
+        ]);
+    }
+
+    public function test_non_admin_cannot_delete_product(): void
+    {
+        $user = User::factory()->create();
+        $product = $this->createProduct(['name' => 'Mele']);
+
+        $this
+            ->actingAs($user)
+            ->delete(route('admin.products.destroy', $product))
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('products', [
+            'id' => $product->id,
+        ]);
+    }
+
     public function test_product_unit_type_must_be_valid(): void
     {
         $admin = User::factory()->create(['is_admin' => true]);
