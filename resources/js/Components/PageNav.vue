@@ -61,6 +61,18 @@ const page = usePage();
             <span class="nav-icon nav-icon--logout" aria-hidden="true"></span>
             Logout
         </Link>
+
+        <Link :href="route('legal.privacy')" class="page-nav-link page-nav-link--legal">
+            Privacy
+        </Link>
+
+        <Link :href="route('legal.cookies')" class="page-nav-link page-nav-link--legal">
+            Cookie
+        </Link>
+
+        <Link :href="route('legal.terms')" class="page-nav-link page-nav-link--legal">
+            Condizioni
+        </Link>
     </nav>
 </template>
 
@@ -151,5 +163,9 @@ const page = usePage();
     color: #374151;
     cursor: pointer;
     font: inherit;
+}
+
+.page-nav-link--legal {
+    color: #4b5563;
 }
 </style>

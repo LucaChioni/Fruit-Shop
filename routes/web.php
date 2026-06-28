@@ -34,6 +34,10 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 
+Route::get('/privacy', fn () => Inertia::render('Legal/Privacy'))->name('legal.privacy');
+Route::get('/cookie-policy', fn () => Inertia::render('Legal/Cookies'))->name('legal.cookies');
+Route::get('/condizioni', fn () => Inertia::render('Legal/Terms'))->name('legal.terms');
+
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::patch('/cart', [CartController::class, 'update'])->name('cart.update');
 Route::post('/cart/items', [CartItemController::class, 'store'])->name('cart.items.store');
