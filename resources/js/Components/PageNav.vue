@@ -1,49 +1,75 @@
 <script setup>
-import { usePage } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 
 const page = usePage();
 </script>
 <template>
     <nav class="page-nav">
-        <a :href="route('products.index')" class="page-nav-link">
+        <Link :href="route('products.index')" class="page-nav-link">
             Prodotti
-        </a>
+        </Link>
 
-        <a :href="route('cart.index')" class="page-nav-link">
+        <Link :href="route('cart.index')" class="page-nav-link">
             Carrello
-        </a>
+        </Link>
 
-        <a
+        <Link
             v-if="page.props.auth.user"
             :href="route('orders.index')"
             class="page-nav-link"
         >
             I miei ordini
-        </a>
+        </Link>
 
-        <a
+        <Link
             v-if="page.props.auth.user?.is_admin"
             :href="route('admin.dashboard')"
             class="page-nav-link page-nav-link--admin"
         >
             Admin
-        </a>
+        </Link>
 
-        <a
+        <Link
             v-if="page.props.auth.user?.is_admin"
             :href="route('admin.orders.index')"
             class="page-nav-link page-nav-link--admin"
         >
             Tutti gli ordini
-        </a>
+        </Link>
 
-        <a
+        <Link
             v-if="page.props.auth.user?.is_admin"
             :href="route('admin.products.index')"
             class="page-nav-link page-nav-link--admin"
         >
             Gestione prodotti
-        </a>
+        </Link>
+
+        <Link
+            v-if="!page.props.auth.user"
+            :href="route('login')"
+            class="page-nav-link page-nav-link--auth"
+        >
+            Login
+        </Link>
+
+        <Link
+            v-if="!page.props.auth.user"
+            :href="route('register')"
+            class="page-nav-link page-nav-link--auth"
+        >
+            Registrati
+        </Link>
+
+        <Link
+            v-if="page.props.auth.user"
+            :href="route('logout')"
+            method="post"
+            as="button"
+            class="page-nav-link page-nav-link--button"
+        >
+            Logout
+        </Link>
     </nav>
 </template>
 
@@ -66,5 +92,18 @@ const page = usePage();
 
 .page-nav-link--admin {
     color: #7c2d12;
+}
+
+.page-nav-link--auth {
+    color: #1d4ed8;
+}
+
+.page-nav-link--button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #374151;
+    cursor: pointer;
+    font: inherit;
 }
 </style>
