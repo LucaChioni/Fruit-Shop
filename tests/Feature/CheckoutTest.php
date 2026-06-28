@@ -46,8 +46,9 @@ class CheckoutTest extends TestCase
     public function test_checkout_store_creates_order_items_and_clears_cart(): void
     {
         Mail::fake();
+        config(['mail.order_notifications.address' => 'admin@example.com']);
 
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email' => 'customer@example.com']);
         $cart = $this->createCart(['user_id' => $user->id]);
         $product = $this->createProduct(['name' => 'Pere', 'price' => 3.20, 'unit_type' => 'kg']);
         $this->createCartItem($cart, $product, 2);
@@ -78,12 +79,15 @@ class CheckoutTest extends TestCase
         $this->assertSame('Pere', $orderItem->product_name);
         $this->assertSame('6.40', $orderItem->line_total);
 
-        Mail::assertSent(OrderPlaced::class, fn (OrderPlaced $mail) => $mail->order->is($order));
+        Mail::assertSent(OrderPlaced::class, 2);
+        Mail::assertSent(OrderPlaced::class, fn (OrderPlaced $mail) => $mail->order->is($order) && $mail->hasTo('admin@example.com'));
+        Mail::assertSent(OrderPlaced::class, fn (OrderPlaced $mail) => $mail->order->is($order) && $mail->hasTo('customer@example.com'));
     }
 
     public function test_guest_checkout_store_creates_guest_order(): void
     {
         Mail::fake();
+        config(['mail.order_notifications.address' => 'admin@example.com']);
 
         $cart = $this->createCart(['guest_token' => 'guest-token']);
         $product = $this->createProduct(['name' => 'Carote', 'price' => 1.40, 'unit_type' => 'kg']);
@@ -109,7 +113,29 @@ class CheckoutTest extends TestCase
         $this->assertSame(1, $order->items()->count());
         $this->assertSame(0, $cart->items()->count());
 
-        Mail::assertSent(OrderPlaced::class, fn (OrderPlaced $mail) => $mail->order->is($order));
+        Mail::assertSent(OrderPlaced::class, 1);
+        Mail::assertSent(OrderPlaced::class, fn (OrderPlaced $mail) => $mail->order->is($order) && $mail->hasTo('admin@example.com'));
+    }
+
+    public function test_checkout_store_does_not_duplicate_email_when_admin_is_customer(): void
+    {
+        Mail::fake();
+        config(['mail.order_notifications.address' => 'customer@example.com']);
+
+        $user = User::factory()->create(['email' => 'customer@example.com']);
+        $cart = $this->createCart(['user_id' => $user->id]);
+        $this->createCartItem($cart, $this->createProduct(), 1);
+
+        $this
+            ->actingAs($user)
+            ->post(route('checkout.store'), [
+                'customer_name' => 'Cliente Test',
+            ]);
+
+        $order = Order::firstOrFail();
+
+        Mail::assertSent(OrderPlaced::class, 1);
+        Mail::assertSent(OrderPlaced::class, fn (OrderPlaced $mail) => $mail->order->is($order) && $mail->hasTo('customer@example.com'));
     }
 
     public function test_checkout_store_redirects_when_cart_is_empty(): void

@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Mail\OrderPlaced;
 use App\Models\Order;
 use App\Services\CartService;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
@@ -83,7 +83,14 @@ class CheckoutController extends Controller
 
         $request->session()->put('last_order_id', $order->id);
 
-        Mail::to(config('mail.from.address'))->send(new OrderPlaced($order));
+        $recipients = collect([
+            config('mail.order_notifications.address'),
+            $request->user()?->email,
+        ])->filter()->unique();
+
+        foreach ($recipients as $recipient) {
+            Mail::to($recipient)->send(new OrderPlaced($order));
+        }
 
         return redirect()
             ->route('orders.show', $order)
