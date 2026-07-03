@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -39,11 +40,7 @@ Route::get('/products', [ProductController::class, 'index'])->name('products.ind
 Route::get('/privacy', fn () => Inertia::render('Legal/Privacy'))->name('legal.privacy');
 Route::get('/cookie-policy', fn () => Inertia::render('Legal/Cookies'))->name('legal.cookies');
 Route::get('/condizioni', fn () => Inertia::render('Legal/Terms'))->name('legal.terms');
-Route::post('/language/{locale}', function (string $locale) {
-    abort_unless(in_array($locale, ['it', 'en'], true), 404);
-    session(['locale' => $locale]);
-    return back();
-})->name('language.update');
+Route::post('/language/{locale}', LanguageController::class)->name('language.update');
 
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::patch('/cart', [CartController::class, 'update'])->name('cart.update');
