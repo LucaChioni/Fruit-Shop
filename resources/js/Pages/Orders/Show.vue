@@ -2,6 +2,7 @@
 import { useForm, usePage } from '@inertiajs/vue3';
 import PageNav from '@/Components/PageNav.vue';
 import PageContainer from '@/Components/PageContainer.vue';
+import { useTranslations } from '@/i18n';
 
 const props = defineProps({
     order: Object,
@@ -17,13 +18,7 @@ const props = defineProps({
 
 const page = usePage();
 
-const statusLabels = {
-    pending: 'In attesa',
-    confirmed: 'Confermato',
-    ready: 'Pronto',
-    completed: 'Completato',
-    cancelled: 'Annullato',
-};
+const t = useTranslations();
 
 const statusForm = useForm({
     status: props.order.status,
@@ -82,7 +77,7 @@ function updateStatus() {
                             :key="status"
                             :value="status"
                         >
-                            {{ statusLabels[status] ?? status }}
+                            {{ t(`orders.${status}`, status) }}
                         </option>
                     </select>
                 </label>

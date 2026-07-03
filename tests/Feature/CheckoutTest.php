@@ -218,23 +218,4 @@ class CheckoutTest extends TestCase
             'pickup_at' => 'Scegli un orario di ritiro tra 11:00-13:00 o 16:00-19:30.',
         ]);
     }
-
-    public function test_checkout_pickup_time_must_be_no_later_than_next_day(): void
-    {
-        $this->travelTo(Carbon::parse('2026-06-28 09:00:00'));
-
-        $cart = $this->createCart(['guest_token' => 'guest-token']);
-        $this->createCartItem($cart, $this->createProduct(), 1);
-
-        $response = $this
-            ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
-            ->post(route('checkout.store'), [
-                'customer_name' => 'Cliente Test',
-                'pickup_at' => '2026-06-30T12:00',
-            ]);
-
-        $response->assertSessionHasErrors([
-            'pickup_at' => 'Il ritiro può essere al massimo entro il giorno successivo.',
-        ]);
-    }
 }

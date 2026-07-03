@@ -9,8 +9,6 @@ class OrderData
 {
     public const STATUSES = [
         'pending',
-        'confirmed',
-        'ready',
         'completed',
         'cancelled',
     ];
@@ -28,7 +26,6 @@ class OrderData
             'customer_name' => $order->customer_name,
             'customer_email' => $order->user?->email,
             'customer_type' => $order->user_id ? 'registered' : 'guest',
-            'customer_type_label' => $order->user_id ? 'Registrato' : 'Ospite',
             'status' => $order->status,
             'total_amount' => $order->total_amount,
             'pickup_at' => $order->pickup_at?->format('d/m/Y H:i'),

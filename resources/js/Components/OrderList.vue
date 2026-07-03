@@ -46,17 +46,13 @@ const t = useTranslations();
 
                 <p v-if="showCustomer" class="order-card-customer">
                     {{ t('orders.customer', 'Cliente') }}: {{ order.customer_name }}
-                    <span
-                        v-if="order.customer_type_label"
-                        class="customer-type"
-                        :class="`customer-type--${order.customer_type}`"
-                    >
-                        {{ order.customer_type_label }}
-                    </span>
                 </p>
 
                 <p v-if="showCustomer && order.customer_email" class="order-card-customer">
                     {{ t('orders.email', 'Email') }}: {{ order.customer_email }}
+                </p>
+                <p v-else class="customer-type" :class="`customer-type-guest`">
+                    {{ t('orders.guest', 'Ospite') }}
                 </p>
             </div>
 
@@ -116,12 +112,12 @@ const t = useTranslations();
     font-weight: 700;
 }
 
-.customer-type--registered {
+.customer-type-registered {
     background: #dcfce7;
     color: #166534;
 }
 
-.customer-type--guest {
+.customer-type-guest {
     background: #ffedd5;
     color: #9a3412;
 }

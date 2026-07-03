@@ -8,7 +8,6 @@ const props = defineProps({
     customerName: String,
     pickupAtDefault: String,
     pickupAtMin: String,
-    pickupAtMax: String,
 });
 
 const t = useTranslations();
@@ -51,11 +50,10 @@ function submitOrder() {
                     type="datetime-local"
                     class="form-input"
                     :min="pickupAtMin"
-                    :max="pickupAtMax"
                     required
                 />
                 <span class="form-help">
-                    {{ t('checkout.pickup_help', "Ritiro almeno 2 ore dopo l'ordine, entro domani. Fasce: 11:00-13:00 e 16:00-19:30.") }}
+                    {{ t('checkout.pickup_help', "Il ritiro non è possibile prima di 2 ore dall'ordine. Fasce: 11:00-13:00 e 16:00-19:30.") }}
                 </span>
                 <p v-if="form.errors.pickup_at" class="form-error">
                     {{ form.errors.pickup_at }}

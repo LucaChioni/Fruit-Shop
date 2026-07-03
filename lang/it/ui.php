@@ -36,7 +36,7 @@ return [
     'checkout.title' => 'Checkout',
     'checkout.name' => 'Nome',
     'checkout.pickup' => 'Data e ora di ritiro',
-    'checkout.pickup_help' => 'Ritiro almeno 2 ore dopo l\'ordine, entro domani. Fasce: 11:00-13:00 e 16:00-19:30.',
+    'checkout.pickup_help' => 'Il ritiro non è possibile prima di 2 ore dall\'ordine. Fasce: 11:00-13:00 e 16:00-19:30.',
     'checkout.notes' => 'Note',
     'checkout.submit' => 'Conferma ordine',
     'orders.title' => 'I miei ordini',
@@ -55,4 +55,8 @@ return [
     'orders.pickup' => 'Ritiro',
     'orders.customer' => 'Cliente',
     'orders.email' => 'Email',
+    'orders.guest' => 'Ospite',
+    'orders.pending' => 'In attesa',
+    'orders.completed' => 'Completato',
+    'orders.cancelled' => 'Annullato',
 ];

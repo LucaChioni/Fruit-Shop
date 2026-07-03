@@ -18,7 +18,7 @@ defineProps({
 
         <section class="stats-grid">
             <article class="admin-card">
-                <span class="stat-label">Ordini pending</span>
+                <span class="stat-label">Ordini in attesa</span>
                 <strong class="stat-value">{{ stats.pending_orders }}</strong>
             </article>
 

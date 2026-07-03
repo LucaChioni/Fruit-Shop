@@ -30,7 +30,6 @@ class CheckoutController extends Controller
             'customerName' => $request->user()?->name ?? '',
             'pickupAtDefault' => $this->earliestPickupAt()->format('Y-m-d\TH:i'),
             'pickupAtMin' => now()->addHours(2)->format('Y-m-d\TH:i'),
-            'pickupAtMax' => now()->addDay()->setTime(19, 30)->format('Y-m-d\TH:i'),
         ]);
     }
 
@@ -133,7 +132,6 @@ class CheckoutController extends Controller
     private function validatePickupAt(CarbonInterface $pickupAt): void
     {
         $minimum = now()->addHours(2);
-        $maximum = now()->addDay()->endOfDay();
         $minutes = ($pickupAt->hour * 60) + $pickupAt->minute;
         $isOpen = ($minutes >= 11 * 60 && $minutes <= 13 * 60)
             || ($minutes >= 16 * 60 && $minutes <= (19 * 60) + 30);
@@ -141,12 +139,6 @@ class CheckoutController extends Controller
         if ($pickupAt->lt($minimum)) {
             throw ValidationException::withMessages([
                 'pickup_at' => 'Il ritiro deve essere almeno 2 ore dopo l\'ordine.',
-            ]);
-        }
-
-        if ($pickupAt->gt($maximum)) {
-            throw ValidationException::withMessages([
-                'pickup_at' => 'Il ritiro può essere al massimo entro il giorno successivo.',
             ]);
         }
 

@@ -36,7 +36,7 @@ return [
     'checkout.title' => 'Checkout',
     'checkout.name' => 'Name',
     'checkout.pickup' => 'Pickup date and time',
-    'checkout.pickup_help' => 'Pickup at least 2 hours after ordering, no later than tomorrow. Slots: 11:00-13:00 and 16:00-19:30.',
+    'checkout.pickup_help' => 'Pickup is not possible before 2 hours from the order. Time slots: 11:00-13:00 and 16:00-19:30.',
     'checkout.notes' => 'Notes',
     'checkout.submit' => 'Place order',
     'orders.title' => 'My orders',
@@ -55,4 +55,8 @@ return [
     'orders.pickup' => 'Pickup',
     'orders.customer' => 'Customer',
     'orders.email' => 'Email',
+    'orders.guest' => 'Guest',
+    'orders.pending' => 'Pending',
+    'orders.completed' => 'Completed',
+    'orders.cancelled' => 'Cancelled',
 ];

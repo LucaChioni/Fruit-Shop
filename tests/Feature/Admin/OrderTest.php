@@ -35,13 +35,11 @@ class OrderTest extends TestCase
                 ->where('orders.0.customer_name', 'Secondo Cliente')
                 ->where('orders.0.customer_email', null)
                 ->where('orders.0.customer_type', 'guest')
-                ->where('orders.0.customer_type_label', 'Ospite')
                 ->where('orders.1.id', $firstOrder->id)
                 ->where('orders.1.order_number', $firstOrder->order_number)
                 ->where('orders.1.customer_name', 'Primo Cliente')
                 ->where('orders.1.customer_email', 'cliente@example.com')
                 ->where('orders.1.customer_type', 'registered')
-                ->where('orders.1.customer_type_label', 'Registrato')
                 ->where('filters.status', 'all')
                 ->where('filters.customer_type', 'all')
                 ->where('filters.sort', 'newest'));
@@ -51,12 +49,12 @@ class OrderTest extends TestCase
     {
         $admin = User::factory()->create(['is_admin' => true]);
         $customer = User::factory()->create();
-        $this->createOrder(null, ['customer_name' => 'Ospite', 'status' => 'confirmed', 'total_amount' => 99]);
-        $lowerTotal = $this->createOrder($customer, ['customer_name' => 'Registrato Low', 'status' => 'confirmed', 'total_amount' => 10]);
-        $higherTotal = $this->createOrder($customer, ['customer_name' => 'Registrato High', 'status' => 'confirmed', 'total_amount' => 30]);
+        $this->createOrder(null, ['customer_name' => 'Ospite', 'status' => 'completed', 'total_amount' => 99]);
+        $lowerTotal = $this->createOrder($customer, ['customer_name' => 'Registrato Low', 'status' => 'completed', 'total_amount' => 10]);
+        $higherTotal = $this->createOrder($customer, ['customer_name' => 'Registrato High', 'status' => 'completed', 'total_amount' => 30]);
 
         $response = $this->actingAs($admin)->get(route('admin.orders.index', [
-            'status' => 'confirmed',
+            'status' => 'completed',
             'customer_type' => 'registered',
             'sort' => 'total_desc',
         ]));
@@ -68,7 +66,7 @@ class OrderTest extends TestCase
                 ->has('orders', 2)
                 ->where('orders.0.id', $higherTotal->id)
                 ->where('orders.1.id', $lowerTotal->id)
-                ->where('filters.status', 'confirmed')
+                ->where('filters.status', 'completed')
                 ->where('filters.customer_type', 'registered')
                 ->where('filters.sort', 'total_desc'));
     }
@@ -101,8 +99,6 @@ class OrderTest extends TestCase
                 ->has('order.items', 1)
                 ->where('orderStatuses', [
                     'pending',
-                    'confirmed',
-                    'ready',
                     'completed',
                     'cancelled',
                 ]));
@@ -126,14 +122,14 @@ class OrderTest extends TestCase
         $response = $this
             ->actingAs($admin)
             ->patch(route('admin.orders.status.update', $order), [
-                'status' => 'confirmed',
+                'status' => 'completed',
             ]);
 
         $response
             ->assertSessionHasNoErrors()
             ->assertRedirect(route('admin.orders.show', $order));
 
-        $this->assertSame('confirmed', $order->refresh()->status);
+        $this->assertSame('completed', $order->refresh()->status);
     }
 
     public function test_non_admin_cannot_update_order_status(): void
@@ -144,7 +140,7 @@ class OrderTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->patch(route('admin.orders.status.update', $order), [
-                'status' => 'confirmed',
+                'status' => 'completed',
             ]);
 
         $response->assertForbidden();
