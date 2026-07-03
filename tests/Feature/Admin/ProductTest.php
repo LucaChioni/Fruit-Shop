@@ -5,6 +5,8 @@ namespace Tests\Feature\Admin;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\Feature\Concerns\CreatesShopModels;
 use Tests\TestCase;
@@ -87,13 +89,14 @@ class ProductTest extends TestCase
     public function test_admin_can_create_product(): void
     {
         $admin = User::factory()->create(['is_admin' => true]);
+        Storage::fake('public');
 
         $response = $this
             ->actingAs($admin)
             ->post(route('admin.products.store'), [
                 'name' => 'Fragole',
                 'description' => 'Vaschetta di fragole fresche.',
-                'image_url' => 'https://example.com/fragole.jpg',
+                'image' => UploadedFile::fake()->image('fragole.jpg'),
                 'price' => 3.80,
                 'unit_type' => 'vaschetta',
                 'is_active' => true,
@@ -106,7 +109,10 @@ class ProductTest extends TestCase
         $product = Product::firstOrFail();
 
         $this->assertSame('Fragole', $product->name);
-        $this->assertSame('https://example.com/fragole.jpg', $product->image_url);
+        $this->assertStringContainsString('/storage/products/', $product->image_url);
+        Storage::disk('public')->assertExists(
+            substr(parse_url($product->image_url, PHP_URL_PATH), strlen('/storage/'))
+        );
         $this->assertSame('3.80', $product->price);
         $this->assertSame('vaschetta', $product->unit_type);
         $this->assertTrue($product->is_active);
@@ -132,13 +138,15 @@ class ProductTest extends TestCase
     {
         $admin = User::factory()->create(['is_admin' => true]);
         $product = $this->createProduct(['name' => 'Mele', 'is_active' => true]);
+        Storage::fake('public');
 
         $response = $this
             ->actingAs($admin)
-            ->patch(route('admin.products.update', $product), [
+            ->post(route('admin.products.update', $product), [
+                '_method' => 'patch',
                 'name' => 'Mele Golden',
                 'description' => 'Mele aggiornate.',
-                'image_url' => 'https://example.com/mele.jpg',
+                'image' => UploadedFile::fake()->image('mele.jpg'),
                 'price' => 2.90,
                 'unit_type' => 'kg',
                 'is_active' => false,
@@ -152,7 +160,10 @@ class ProductTest extends TestCase
 
         $this->assertSame('Mele Golden', $product->name);
         $this->assertSame('Mele aggiornate.', $product->description);
-        $this->assertSame('https://example.com/mele.jpg', $product->image_url);
+        $this->assertStringContainsString('/storage/products/', $product->image_url);
+        Storage::disk('public')->assertExists(
+            substr(parse_url($product->image_url, PHP_URL_PATH), strlen('/storage/'))
+        );
         $this->assertSame('2.90', $product->price);
         $this->assertFalse($product->is_active);
     }

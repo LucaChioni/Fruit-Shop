@@ -10,14 +10,20 @@ defineProps({
 const form = useForm({
     name: '',
     description: '',
-    image_url: '',
+    image: null,
     price: '',
     unit_type: 'kg',
     is_active: true,
 });
 
+function setImage(event) {
+    form.image = event.target.files[0] ?? null;
+}
+
 function submit() {
-    form.post(route('admin.products.store'));
+    form.post(route('admin.products.store'), {
+        forceFormData: true,
+    });
 }
 </script>
 
@@ -29,7 +35,7 @@ function submit() {
             <PageNav />
         </header>
 
-        <form class="product-form" @submit.prevent="submit">
+        <form class="product-form" enctype="multipart/form-data" @submit.prevent="submit">
             <label class="field">
                 Nome
                 <input v-model="form.name" type="text" class="input" />
@@ -43,9 +49,9 @@ function submit() {
             </label>
 
             <label class="field">
-                URL immagine
-                <input v-model="form.image_url" type="url" class="input" placeholder="https://..." />
-                <span v-if="form.errors.image_url" class="error">{{ form.errors.image_url }}</span>
+                Immagine
+                <input name="image" type="file" accept="image/*" class="input" @change="setImage" />
+                <span v-if="form.errors.image" class="error">{{ form.errors.image }}</span>
             </label>
 
             <label class="field">

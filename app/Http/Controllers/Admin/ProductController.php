@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -63,7 +64,13 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product): RedirectResponse
     {
-        $product->update($this->validatedProductData($request));
+        $data = $this->validatedProductData($request);
+
+        if (array_key_exists('image_url', $data)) {
+            $this->deleteStoredProductImage($product);
+        }
+
+        $product->update($data);
 
         return redirect()
             ->route('admin.products.index')
@@ -72,6 +79,8 @@ class ProductController extends Controller
 
     public function destroy(Product $product): RedirectResponse
     {
+        $this->deleteStoredProductImage($product);
+
         $product->delete();
 
         return redirect()
@@ -81,10 +90,10 @@ class ProductController extends Controller
 
     private function validatedProductData(Request $request): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
-            'image_url' => ['nullable', 'url', 'max:2048'],
+            'image' => ['nullable', 'image', 'max:2048'],
             'price' => ['required', 'numeric', 'min:0'],
             'unit_type' => ['required', Rule::in(ProductData::UNIT_TYPES)],
             'is_active' => ['required', 'boolean'],
@@ -92,8 +101,8 @@ class ProductController extends Controller
             'name.required' => 'Inserisci il nome del prodotto.',
             'name.max' => 'Il nome del prodotto non può superare 255 caratteri.',
             'description.max' => 'La descrizione non può superare 2000 caratteri.',
-            'image_url.url' => 'Inserisci un URL immagine valido.',
-            'image_url.max' => 'L\'URL immagine non può superare 2048 caratteri.',
+            'image.image' => 'Carica un file immagine valido.',
+            'image.max' => 'L\'immagine non può superare 2 MB.',
             'price.required' => 'Inserisci il prezzo del prodotto.',
             'price.numeric' => 'Il prezzo deve essere un numero.',
             'price.min' => 'Il prezzo non può essere negativo.',
@@ -102,6 +111,17 @@ class ProductController extends Controller
             'is_active.required' => 'Indica se il prodotto è attivo.',
             'is_active.boolean' => 'Il valore attivo/non attivo non è valido.',
         ]);
+
+        unset($data['image']);
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+            $disk = Storage::disk('public');
+            $data['image_url'] = $disk->url($path);
+        }
+
+        return $data;
     }
 
     private function productData(Product $product): array
@@ -115,5 +135,18 @@ class ProductController extends Controller
             'unit_type' => $product->unit_type,
             'is_active' => $product->is_active,
         ];
+    }
+
+    private function deleteStoredProductImage(Product $product): void
+    {
+        $path = parse_url((string) $product->image_url, PHP_URL_PATH);
+
+        if (! is_string($path) || ! str_starts_with($path, '/storage/')) {
+            return;
+        }
+
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        $disk = Storage::disk('public');
+        $disk->delete(substr($path, strlen('/storage/')));
     }
 }

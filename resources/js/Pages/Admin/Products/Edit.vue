@@ -11,14 +11,23 @@ const props = defineProps({
 const form = useForm({
     name: props.product.name,
     description: props.product.description ?? '',
-    image_url: props.product.image_url ?? '',
+    image: null,
     price: props.product.price,
     unit_type: props.product.unit_type,
     is_active: props.product.is_active,
 });
 
+function setImage(event) {
+    form.image = event.target.files[0] ?? null;
+}
+
 function submit() {
-    form.patch(route('admin.products.update', props.product.id));
+    form.transform((data) => ({
+        ...data,
+        _method: 'patch',
+    })).post(route('admin.products.update', props.product.id), {
+        forceFormData: true,
+    });
 }
 </script>
 
@@ -30,7 +39,7 @@ function submit() {
             <PageNav />
         </header>
 
-        <form class="product-form" @submit.prevent="submit">
+        <form class="product-form" enctype="multipart/form-data" @submit.prevent="submit">
             <label class="field">
                 Nome
                 <input v-model="form.name" type="text" class="input" />
@@ -44,9 +53,16 @@ function submit() {
             </label>
 
             <label class="field">
-                URL immagine
-                <input v-model="form.image_url" type="url" class="input" placeholder="https://..." />
-                <span v-if="form.errors.image_url" class="error">{{ form.errors.image_url }}</span>
+                Immagine
+                <img
+                    v-if="product.image_url"
+                    :src="product.image_url"
+                    :alt="product.name"
+                    class="current-image"
+                />
+                <input name="image" type="file" accept="image/*" class="input" @change="setImage" />
+                <span class="help-text">Lascia vuoto per mantenere l'immagine attuale.</span>
+                <span v-if="form.errors.image" class="error">{{ form.errors.image }}</span>
             </label>
 
             <label class="field">
@@ -123,6 +139,20 @@ function submit() {
 
 .textarea {
     min-height: 100px;
+}
+
+.current-image {
+    width: 160px;
+    height: 100px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #fff7ed;
+}
+
+.help-text {
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 400;
 }
 
 .submit-button {
