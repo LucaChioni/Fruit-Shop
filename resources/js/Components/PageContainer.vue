@@ -1,6 +1,11 @@
+<script setup>
+import LegalFooter from '@/Components/LegalFooter.vue';
+</script>
+
 <template>
     <main class="page-container">
         <slot />
+        <LegalFooter />
     </main>
 </template>
 

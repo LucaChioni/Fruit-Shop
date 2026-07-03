@@ -64,18 +64,6 @@ const t = useTranslations();
             {{ t('nav.logout', 'Logout') }}
         </Link>
 
-        <Link :href="route('legal.privacy')" class="page-nav-link page-nav-link--legal">
-            {{ t('nav.privacy', 'Privacy') }}
-        </Link>
-
-        <Link :href="route('legal.cookies')" class="page-nav-link page-nav-link--legal">
-            {{ t('nav.cookies', 'Cookie') }}
-        </Link>
-
-        <Link :href="route('legal.terms')" class="page-nav-link page-nav-link--legal">
-            {{ t('nav.terms', 'Condizioni') }}
-        </Link>
-
         <span class="language-switcher" :aria-label="t('nav.language', 'Lingua')">
             <Link
                 :href="route('language.update', 'it')"
@@ -186,10 +174,6 @@ const t = useTranslations();
     color: #374151;
     cursor: pointer;
     font: inherit;
-}
-
-.page-nav-link--legal {
-    color: #4b5563;
 }
 
 .language-switcher {
