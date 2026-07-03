@@ -41,7 +41,12 @@ function addToCart(product) {
             <FlashMessage />
         </header>
 
-        <form :action="route('products.index')" method="get" class="filters-form">
+        <form
+            :action="route('products.index')"
+            method="get"
+            class="filters-form"
+            @change="$event.currentTarget.submit()"
+        >
             <label class="filter-field">
                 {{ t('products.search', 'Cerca') }}
                 <input
@@ -61,9 +66,6 @@ function addToCart(product) {
                     <option value="price_desc" :selected="filters.sort === 'price_desc'">{{ t('products.sort_price_desc', 'Prezzo decrescente') }}</option>
                 </select>
             </label>
-
-            <button type="submit" class="filter-button">{{ t('products.apply', 'Applica') }}</button>
-            <a :href="route('products.index')" class="reset-link">{{ t('products.reset', 'Reset') }}</a>
         </form>
 
         <p v-if="products.length === 0" class="empty-message">
@@ -165,22 +167,6 @@ function addToCart(product) {
     border: 1px solid #ccc;
     border-radius: 8px;
     font: inherit;
-}
-
-.filter-button {
-    padding: 9px 14px;
-    border: 0;
-    border-radius: 8px;
-    background: #166534;
-    color: white;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.reset-link {
-    color: #166534;
-    font-weight: 600;
-    text-decoration: none;
 }
 
 .products-list {

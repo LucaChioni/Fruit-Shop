@@ -34,7 +34,12 @@ function deleteProduct(product) {
             </a>
         </header>
 
-        <form :action="route('admin.products.index')" method="get" class="filters-form">
+        <form
+            :action="route('admin.products.index')"
+            method="get"
+            class="filters-form"
+            @change="$event.currentTarget.submit()"
+        >
             <label class="filter-field">
                 Cerca
                 <input
@@ -64,9 +69,6 @@ function deleteProduct(product) {
                     <option value="price_desc" :selected="filters.sort === 'price_desc'">Prezzo decrescente</option>
                 </select>
             </label>
-
-            <button type="submit" class="filter-button">Applica</button>
-            <a :href="route('admin.products.index')" class="reset-link">Reset</a>
         </form>
 
         <section v-if="products.length === 0" class="empty-products">
@@ -187,22 +189,6 @@ function deleteProduct(product) {
     border: 1px solid #ccc;
     border-radius: 8px;
     font: inherit;
-}
-
-.filter-button {
-    padding: 9px 14px;
-    border: 0;
-    border-radius: 8px;
-    background: #7c2d12;
-    color: white;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.reset-link {
-    color: #7c2d12;
-    font-weight: 600;
-    text-decoration: none;
 }
 
 .products-list {

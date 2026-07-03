@@ -21,7 +21,12 @@ const t = useTranslations();
             <PageNav />
         </header>
 
-        <form :action="route('orders.index')" method="get" class="filters-form">
+        <form
+            :action="route('orders.index')"
+            method="get"
+            class="filters-form"
+            @change="$event.currentTarget.submit()"
+        >
             <label class="filter-field">
                 {{ t('orders.status', 'Stato') }}
                 <select name="status" class="filter-input">
@@ -46,9 +51,6 @@ const t = useTranslations();
                     <option value="total_asc" :selected="filters.sort === 'total_asc'">{{ t('orders.total_asc', 'Totale crescente') }}</option>
                 </select>
             </label>
-
-            <button type="submit" class="filter-button">{{ t('orders.apply', 'Applica') }}</button>
-            <a :href="route('orders.index')" class="reset-link">{{ t('orders.reset', 'Reset') }}</a>
         </form>
 
         <OrderList
@@ -97,19 +99,4 @@ const t = useTranslations();
     font: inherit;
 }
 
-.filter-button {
-    padding: 9px 14px;
-    border: 0;
-    border-radius: 8px;
-    background: #166534;
-    color: white;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.reset-link {
-    color: #166534;
-    font-weight: 600;
-    text-decoration: none;
-}
 </style>
