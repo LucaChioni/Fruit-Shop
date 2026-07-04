@@ -168,6 +168,38 @@ class ProductTest extends TestCase
         $this->assertFalse($product->is_active);
     }
 
+    public function test_admin_can_remove_product_image(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        Storage::fake('public');
+        Storage::disk('public')->put('products/mele.jpg', 'image');
+        $product = $this->createProduct([
+            'name' => 'Mele',
+            'image_url' => Storage::disk('public')->url('products/mele.jpg'),
+        ]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->post(route('admin.products.update', $product), [
+                '_method' => 'patch',
+                'name' => 'Mele',
+                'description' => $product->description,
+                'remove_image' => true,
+                'price' => $product->price,
+                'unit_type' => $product->unit_type,
+                'is_active' => $product->is_active,
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('admin.products.index'));
+
+        $product->refresh();
+
+        $this->assertNull($product->image_url);
+        Storage::disk('public')->assertMissing('products/mele.jpg');
+    }
+
     public function test_admin_can_delete_product(): void
     {
         $admin = User::factory()->create(['is_admin' => true]);

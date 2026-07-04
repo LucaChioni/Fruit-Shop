@@ -1,5 +1,6 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
+import { onBeforeUnmount, ref } from 'vue';
 import PageNav from '@/Components/PageNav.vue';
 import PageContainer from '@/Components/PageContainer.vue';
 
@@ -12,14 +13,49 @@ const form = useForm({
     name: props.product.name,
     description: props.product.description ?? '',
     image: null,
+    remove_image: false,
     price: props.product.price,
     unit_type: props.product.unit_type,
     is_active: props.product.is_active,
 });
 
-function setImage(event) {
-    form.image = event.target.files[0] ?? null;
+const imagePreviewUrl = ref(props.product.image_url);
+const imageInput = ref(null);
+let temporaryImagePreviewUrl = null;
+
+function revokeTemporaryImagePreview() {
+    if (temporaryImagePreviewUrl) {
+        URL.revokeObjectURL(temporaryImagePreviewUrl);
+        temporaryImagePreviewUrl = null;
+    }
 }
+
+function setImage(event) {
+    revokeTemporaryImagePreview();
+
+    form.image = event.target.files[0] ?? null;
+    imagePreviewUrl.value = form.remove_image ? null : props.product.image_url;
+
+    if (form.image) {
+        form.remove_image = false;
+        temporaryImagePreviewUrl = URL.createObjectURL(form.image);
+        imagePreviewUrl.value = temporaryImagePreviewUrl;
+    }
+}
+
+function removeImage() {
+    revokeTemporaryImagePreview();
+
+    form.image = null;
+    form.remove_image = true;
+    imagePreviewUrl.value = null;
+
+    if (imageInput.value) {
+        imageInput.value.value = '';
+    }
+}
+
+onBeforeUnmount(revokeTemporaryImagePreview);
 
 function submit() {
     form.transform((data) => ({
@@ -55,13 +91,22 @@ function submit() {
             <label class="field">
                 Immagine
                 <img
-                    v-if="product.image_url"
-                    :src="product.image_url"
+                    v-if="imagePreviewUrl"
+                    :src="imagePreviewUrl"
                     :alt="product.name"
                     class="current-image"
                 />
-                <input name="image" type="file" accept="image/*" class="input" @change="setImage" />
-                <span class="help-text">Lascia vuoto per mantenere l'immagine attuale.</span>
+                <input ref="imageInput" name="image" type="file" accept="image/*" class="input" @change="setImage" />
+                <button
+                    v-if="imagePreviewUrl"
+                    type="button"
+                    class="remove-image-button"
+                    @click="removeImage"
+                >
+                    Rimuovi immagine
+                </button>
+                <span v-if="form.remove_image" class="help-text">L'immagine attuale sarà rimossa al salvataggio.</span>
+                <span v-else class="help-text">Lascia vuoto per mantenere l'immagine attuale.</span>
                 <span v-if="form.errors.image" class="error">{{ form.errors.image }}</span>
             </label>
 
@@ -153,6 +198,17 @@ function submit() {
     color: #6b7280;
     font-size: 14px;
     font-weight: 400;
+}
+
+.remove-image-button {
+    justify-self: start;
+    padding: 8px 12px;
+    border: 1px solid #b91c1c;
+    border-radius: 8px;
+    background: #fff;
+    color: #b91c1c;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 .submit-button {

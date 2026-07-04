@@ -90,10 +90,15 @@ class ProductController extends Controller
 
     private function validatedProductData(Request $request): array
     {
+        $request->merge([
+            'remove_image' => $request->boolean('remove_image'),
+        ]);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
             'image' => ['nullable', 'image', 'max:2048'],
+            'remove_image' => ['nullable', 'boolean'],
             'price' => ['required', 'numeric', 'min:0'],
             'unit_type' => ['required', Rule::in(ProductData::UNIT_TYPES)],
             'is_active' => ['required', 'boolean'],
@@ -113,8 +118,12 @@ class ProductController extends Controller
         ]);
 
         unset($data['image']);
+        $removeImage = (bool) ($data['remove_image'] ?? false);
+        unset($data['remove_image']);
 
-        if ($request->hasFile('image')) {
+        if ($removeImage) {
+            $data['image_url'] = null;
+        } elseif ($request->hasFile('image')) {
             $path = $request->file('image')->store('products', 'public');
             /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
             $disk = Storage::disk('public');
