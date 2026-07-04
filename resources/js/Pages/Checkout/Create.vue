@@ -1,6 +1,9 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { useForm, usePage } from '@inertiajs/vue3';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import flatpickr from 'flatpickr';
+import { Italian } from 'flatpickr/dist/l10n/it.js';
+import 'flatpickr/dist/flatpickr.css';
 import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
 import { useTranslations } from '@/i18n';
@@ -14,10 +17,14 @@ const props = defineProps({
 });
 
 const t = useTranslations();
+const page = usePage();
 const pickupAtDefaultParts = props.pickupAtDefault?.split('T') ?? ['', ''];
 const pickupAtMinDate = props.pickupAtMin?.split('T')[0] ?? '';
 const closedPickupDates = new Set(props.closedPickupDates ?? []);
 const pickupDateError = ref('');
+const dateInputLocale = computed(() => page.props.locale === 'it' ? 'it-IT' : 'en-US');
+const pickupDateInput = ref(null);
+let pickupDatePicker = null;
 
 const form = useForm({
     customer_name: props.customerName ?? '',
@@ -52,6 +59,40 @@ function validatePickupDate() {
         pickupDateError.value = 'Il ritiro non è disponibile la domenica o nei giorni festivi.';
     }
 }
+
+function setupPickupDatePicker() {
+    if (! pickupDateInput.value) {
+        return;
+    }
+
+    pickupDatePicker?.destroy();
+    pickupDatePicker = flatpickr(pickupDateInput.value, {
+        allowInput: false,
+        altInput: true,
+        altFormat: page.props.locale === 'it' ? 'd/m/Y' : 'm/d/Y',
+        dateFormat: 'Y-m-d',
+        defaultDate: form.pickup_date || null,
+        disable: [...closedPickupDates],
+        locale: page.props.locale === 'it' ? Italian : 'default',
+        maxDate: props.pickupDateMax,
+        minDate: pickupAtMinDate,
+        onChange: (selectedDates, dateValue) => {
+            form.pickup_date = dateValue;
+            validatePickupDate();
+        },
+    });
+}
+
+onMounted(setupPickupDatePicker);
+
+onBeforeUnmount(() => {
+    pickupDatePicker?.destroy();
+});
+
+watch(dateInputLocale, async () => {
+    await nextTick();
+    setupPickupDatePicker();
+});
 </script>
 
 <template>
@@ -78,13 +119,13 @@ function validatePickupDate() {
                 {{ t('checkout.pickup', 'Data e ora di ritiro') }}
                 <div class="pickup-fields">
                     <input
+                        ref="pickupDateInput"
                         v-model="form.pickup_date"
-                        type="date"
+                        type="text"
                         class="form-input"
-                        :min="pickupAtMinDate"
-                        :max="pickupDateMax"
+                        :lang="dateInputLocale"
+                        :placeholder="page.props.locale === 'it' ? 'gg/mm/aaaa' : 'mm/dd/yyyy'"
                         required
-                        @change="validatePickupDate"
                     />
                     <input
                         v-model="form.pickup_time"

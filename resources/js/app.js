@@ -1,12 +1,20 @@
 import '../css/app.css';
 import './bootstrap';
 
-import { createInertiaApp } from '@inertiajs/vue3';
+import { createInertiaApp, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+
+function setDocumentLocale(locale) {
+    document.documentElement.lang = locale === 'it' ? 'it-IT' : 'en-US';
+}
+
+router.on('navigate', (event) => {
+    setDocumentLocale(event.detail.page.props.locale);
+});
 
 createInertiaApp({
     title: (title) => title ? `${title} - ${appName}` : appName,
@@ -16,6 +24,8 @@ createInertiaApp({
             import.meta.glob('./Pages/**/*.vue'),
         ),
     setup({ el, App, props, plugin }) {
+        setDocumentLocale(props.initialPage.props.locale);
+
         return createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
