@@ -12,6 +12,9 @@ defineProps({
     status: {
         type: String,
     },
+    canDeleteAccount: {
+        type: Boolean,
+    },
 });
 </script>
 
@@ -48,7 +51,17 @@ defineProps({
                 <div
                     class="bg-white p-4 shadow sm:rounded-lg sm:p-8"
                 >
-                    <DeleteUserForm class="max-w-xl" />
+                    <DeleteUserForm v-if="canDeleteAccount" class="max-w-xl" />
+
+                    <section v-else class="max-w-xl space-y-2">
+                        <h2 class="text-lg font-medium text-gray-900">
+                            Elimina account
+                        </h2>
+
+                        <p class="text-sm text-gray-600">
+                            Gli account amministratore non possono essere eliminati.
+                        </p>
+                    </section>
                 </div>
             </div>
         </div>

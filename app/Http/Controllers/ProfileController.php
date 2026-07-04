@@ -21,6 +21,7 @@ class ProfileController extends Controller
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
+            'canDeleteAccount' => ! $request->user()->is_admin,
         ]);
     }
 
@@ -45,6 +46,8 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        abort_if($request->user()->is_admin, 403);
+
         $request->validate([
             'password' => ['required', 'current_password'],
         ]);

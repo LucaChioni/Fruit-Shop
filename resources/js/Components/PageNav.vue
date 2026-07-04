@@ -36,6 +36,15 @@ const t = useTranslations();
         </Link>
 
         <Link
+            v-if="page.props.auth.user"
+            :href="route('profile.edit')"
+            class="page-nav-link page-nav-link--settings"
+        >
+            <span class="nav-icon nav-icon--settings" aria-hidden="true"></span>
+            {{ t('nav.settings', 'Impostazioni') }}
+        </Link>
+
+        <Link
             v-if="!page.props.auth.user"
             :href="route('login')"
             class="page-nav-link page-nav-link--auth"
@@ -141,13 +150,15 @@ const t = useTranslations();
 
 .nav-icon--admin,
 .nav-icon--login,
-.nav-icon--logout {
+.nav-icon--logout,
+.nav-icon--settings {
     border-radius: 50%;
 }
 
 .nav-icon--admin::after,
 .nav-icon--login::after,
-.nav-icon--logout::after {
+.nav-icon--logout::after,
+.nav-icon--settings::after {
     position: absolute;
     inset: 4px;
     border-radius: 50%;
@@ -165,6 +176,10 @@ const t = useTranslations();
 
 .page-nav-link--auth {
     color: #1d4ed8;
+}
+
+.page-nav-link--settings {
+    color: #4b5563;
 }
 
 .page-nav-link--button {

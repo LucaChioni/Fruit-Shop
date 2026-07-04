@@ -5,6 +5,7 @@ return [
     'nav.cart' => 'Cart',
     'nav.orders' => 'My orders',
     'nav.admin' => 'Admin',
+    'nav.settings' => 'Settings',
     'nav.login' => 'Log in',
     'nav.register' => 'Register',
     'nav.logout' => 'Log out',
