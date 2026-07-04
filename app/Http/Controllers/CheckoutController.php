@@ -13,9 +13,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
+use Yasumi\Yasumi;
 
 class CheckoutController extends Controller
 {
+    private array $italianHolidayProviders = [];
+
     public function create(Request $request, CartService $cartService)
     {
         $cart = $cartService->getCurrentCart($request);
@@ -30,6 +33,8 @@ class CheckoutController extends Controller
             'customerName' => $request->user()?->name ?? '',
             'pickupAtDefault' => $this->earliestPickupAt()->format('Y-m-d\TH:i'),
             'pickupAtMin' => now()->addHours(2)->format('Y-m-d\TH:i'),
+            'pickupDateMax' => now()->addDays(369)->format('Y-m-d'),
+            'closedPickupDates' => $this->closedPickupDates(now()->startOfDay()),
         ]);
     }
 
@@ -112,21 +117,32 @@ class CheckoutController extends Controller
     private function earliestPickupAt(): CarbonInterface
     {
         $pickupAt = now()->addHours(2)->seconds(0);
-        $minutes = ($pickupAt->hour * 60) + $pickupAt->minute;
 
-        if ($minutes < 11 * 60) {
-            return $pickupAt->setTime(11, 0);
+        while (true) {
+            if ($this->isClosedPickupDate($pickupAt)) {
+                $pickupAt = $pickupAt->addDay()->setTime(11, 0);
+
+                continue;
+            }
+
+            $minutes = ($pickupAt->hour * 60) + $pickupAt->minute;
+
+            if ($minutes < 11 * 60) {
+                return $pickupAt->setTime(11, 0);
+            }
+
+            if ($minutes > 13 * 60 && $minutes < 16 * 60) {
+                return $pickupAt->setTime(16, 0);
+            }
+
+            if ($minutes > (19 * 60) + 30) {
+                $pickupAt = $pickupAt->addDay()->setTime(11, 0);
+
+                continue;
+            }
+
+            return $pickupAt;
         }
-
-        if ($minutes > 13 * 60 && $minutes < 16 * 60) {
-            return $pickupAt->setTime(16, 0);
-        }
-
-        if ($minutes > (19 * 60) + 30) {
-            return $pickupAt->addDay()->setTime(11, 0);
-        }
-
-        return $pickupAt;
     }
 
     private function validatePickupAt(CarbonInterface $pickupAt): void
@@ -142,10 +158,43 @@ class CheckoutController extends Controller
             ]);
         }
 
+        if ($this->isClosedPickupDate($pickupAt)) {
+            throw ValidationException::withMessages([
+                'pickup_at' => 'Il ritiro non è disponibile la domenica o nei giorni festivi.',
+            ]);
+        }
+
         if (! $isOpen) {
             throw ValidationException::withMessages([
                 'pickup_at' => 'Scegli un orario di ritiro tra 11:00-13:00 o 16:00-19:30.',
             ]);
         }
+    }
+
+    private function isClosedPickupDate(CarbonInterface $date): bool
+    {
+        return $date->isSunday() || $this->italianHolidays($date->year)->isHoliday($date);
+    }
+
+    private function closedPickupDates(CarbonInterface $startFrom): array
+    {
+        $dates = [];
+        $date = Carbon::parse($startFrom)->startOfDay();
+
+        for ($day = 0; $day < 370; $day++) {
+            if ($this->isClosedPickupDate($date)) {
+                $dates[] = $date->toDateString();
+            }
+
+            $date->addDay();
+        }
+
+        return $dates;
+    }
+
+    private function italianHolidays(int $year)
+    {
+        return $this->italianHolidayProviders[$year]
+            ??= Yasumi::create('Italy', $year, 'it_IT');
     }
 }

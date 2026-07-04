@@ -9,6 +9,7 @@
     ],
     "license": "MIT",
     "require": {
+        "azuyalabs/yasumi": "^2.11",
         "php": "^8.3",
         "inertiajs/inertia-laravel": "^2.0",
         "laravel/framework": "^13.8",

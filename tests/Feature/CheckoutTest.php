@@ -44,6 +44,27 @@ class CheckoutTest extends TestCase
                 ->where('customerName', 'Giulia Verdi'));
     }
 
+    public function test_checkout_create_skips_closed_dates_for_default_pickup(): void
+    {
+        $this->travelTo(Carbon::parse('2026-12-24 23:00:00'));
+
+        $cart = $this->createCart(['guest_token' => 'guest-token']);
+        $this->createCartItem($cart, $this->createProduct(), 1);
+
+        $response = $this
+            ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
+            ->get(route('checkout.create'));
+
+        $response
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Checkout/Create')
+                ->where('pickupAtDefault', '2026-12-28T11:00')
+                ->where('closedPickupDates.0', '2026-12-25')
+                ->where('closedPickupDates.1', '2026-12-26')
+                ->where('closedPickupDates.2', '2026-12-27'));
+    }
+
     public function test_checkout_store_creates_order_items_and_clears_cart(): void
     {
         $this->travelTo(Carbon::parse('2026-06-28 09:00:00'));
@@ -59,7 +80,7 @@ class CheckoutTest extends TestCase
             ->actingAs($user)
             ->post(route('checkout.store'), [
                 'customer_name' => 'Cliente Test',
-                'pickup_at' => '2026-06-28T12:00',
+                'pickup_at' => '2026-06-29T12:00',
                 'notes' => 'Consegna pomeriggio',
             ]);
 
@@ -72,7 +93,7 @@ class CheckoutTest extends TestCase
 
         $this->assertSame($user->id, $order->user_id);
         $this->assertSame('Cliente Test', $order->customer_name);
-        $this->assertSame('2026-06-28 12:00:00', $order->pickup_at->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-06-29 12:00:00', $order->pickup_at->format('Y-m-d H:i:s'));
         $this->assertNotNull($order->order_number);
         $this->assertSame('pending', $order->status);
         $this->assertSame('6.40', $order->total_amount);
@@ -102,7 +123,7 @@ class CheckoutTest extends TestCase
             ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
             ->post(route('checkout.store'), [
                 'customer_name' => 'Cliente Guest',
-                'pickup_at' => '2026-06-28T12:00',
+                'pickup_at' => '2026-06-29T12:00',
             ]);
 
         $order = Order::firstOrFail();
@@ -137,7 +158,7 @@ class CheckoutTest extends TestCase
             ->actingAs($user)
             ->post(route('checkout.store'), [
                 'customer_name' => 'Cliente Test',
-                'pickup_at' => '2026-06-28T12:00',
+                'pickup_at' => '2026-06-29T12:00',
             ]);
 
         $order = Order::firstOrFail();
@@ -211,11 +232,49 @@ class CheckoutTest extends TestCase
             ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
             ->post(route('checkout.store'), [
                 'customer_name' => 'Cliente Test',
-                'pickup_at' => '2026-06-28T14:30',
+                'pickup_at' => '2026-06-29T14:30',
             ]);
 
         $response->assertSessionHasErrors([
             'pickup_at' => 'Scegli un orario di ritiro tra 11:00-13:00 o 16:00-19:30.',
+        ]);
+    }
+
+    public function test_checkout_pickup_date_cannot_be_sunday(): void
+    {
+        $this->travelTo(Carbon::parse('2026-06-26 09:00:00'));
+
+        $cart = $this->createCart(['guest_token' => 'guest-token']);
+        $this->createCartItem($cart, $this->createProduct(), 1);
+
+        $response = $this
+            ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
+            ->post(route('checkout.store'), [
+                'customer_name' => 'Cliente Test',
+                'pickup_at' => '2026-06-28T12:00',
+            ]);
+
+        $response->assertSessionHasErrors([
+            'pickup_at' => 'Il ritiro non è disponibile la domenica o nei giorni festivi.',
+        ]);
+    }
+
+    public function test_checkout_pickup_date_cannot_be_holiday(): void
+    {
+        $this->travelTo(Carbon::parse('2026-12-24 09:00:00'));
+
+        $cart = $this->createCart(['guest_token' => 'guest-token']);
+        $this->createCartItem($cart, $this->createProduct(), 1);
+
+        $response = $this
+            ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
+            ->post(route('checkout.store'), [
+                'customer_name' => 'Cliente Test',
+                'pickup_at' => '2026-12-25T12:00',
+            ]);
+
+        $response->assertSessionHasErrors([
+            'pickup_at' => 'Il ritiro non è disponibile la domenica o nei giorni festivi.',
         ]);
     }
 }
