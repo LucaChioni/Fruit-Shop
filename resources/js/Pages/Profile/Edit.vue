@@ -19,41 +19,40 @@ defineProps({
 </script>
 
 <template>
-    <Head title="Profile" />
+    <Head title="Il Giardino della Frutta" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2
                 class="text-xl font-semibold leading-tight text-gray-800"
             >
-                Profile
+                Il Giardino della Frutta
             </h2>
         </template>
 
         <div class="py-12">
-            <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
+            <div class="w-full space-y-6 px-4 sm:px-6 lg:px-8">
                 <div
                     class="bg-white p-4 shadow sm:rounded-lg sm:p-8"
                 >
                     <UpdateProfileInformationForm
                         :must-verify-email="mustVerifyEmail"
                         :status="status"
-                        class="max-w-xl"
                     />
                 </div>
 
                 <div
                     class="bg-white p-4 shadow sm:rounded-lg sm:p-8"
                 >
-                    <UpdatePasswordForm class="max-w-xl" />
+                    <UpdatePasswordForm />
                 </div>
 
                 <div
                     class="bg-white p-4 shadow sm:rounded-lg sm:p-8"
                 >
-                    <DeleteUserForm v-if="canDeleteAccount" class="max-w-xl" />
+                    <DeleteUserForm v-if="canDeleteAccount" />
 
-                    <section v-else class="max-w-xl space-y-2">
+                    <section v-else class="space-y-2">
                         <h2 class="text-lg font-medium text-gray-900">
                             Elimina account
                         </h2>

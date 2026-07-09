@@ -16,7 +16,7 @@ const t = useTranslations();
 <template>
     <PageContainer>
         <header class="orders-header">
-            <h1 class="orders-title">{{ t('orders.title', 'I miei ordini') }}</h1>
+            <h1 class="orders-title">Il Giardino della Frutta</h1>
 
             <PageNav />
         </header>

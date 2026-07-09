@@ -11,7 +11,7 @@ defineProps({
 <template>
     <PageContainer>
         <header class="admin-header">
-            <h1 class="admin-title">Admin</h1>
+            <h1 class="admin-title">Il Giardino della Frutta</h1>
 
             <PageNav />
         </header>

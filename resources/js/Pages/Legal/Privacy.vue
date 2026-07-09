@@ -4,9 +4,9 @@ import PageNav from '@/Components/PageNav.vue';
 </script>
 
 <template>
-    <PageContainer>
+    <PageContainer narrow>
         <header class="legal-header">
-            <h1>Privacy e GDPR</h1>
+            <h1>Il Giardino della Frutta</h1>
             <PageNav />
         </header>
 

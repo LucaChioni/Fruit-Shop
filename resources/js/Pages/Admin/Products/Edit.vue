@@ -70,7 +70,7 @@ function submit() {
 <template>
     <PageContainer>
         <header class="product-form-header">
-            <h1 class="product-form-title">Modifica prodotto</h1>
+            <h1 class="product-form-title">Il Giardino della Frutta</h1>
 
             <PageNav />
         </header>
@@ -155,7 +155,6 @@ function submit() {
 
 .product-form {
     display: grid;
-    max-width: 640px;
     gap: 16px;
     padding: 20px;
     border: 1px solid #ddd;

@@ -34,7 +34,7 @@ function addToCart(product) {
 <template>
     <PageContainer>
         <header class="products-header">
-            <h1 class="products-title">{{ t('products.title', 'Prodotti') }}</h1>
+            <h1 class="products-title">Il Giardino della Frutta</h1>
 
             <PageNav />
 

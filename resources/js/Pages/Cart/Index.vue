@@ -36,7 +36,7 @@ function removeItem(item) {
 <template>
     <PageContainer>
         <header class="cart-header">
-            <h1 class="cart-title">{{ t('cart.title', 'Carrello') }}</h1>
+            <h1 class="cart-title">Il Giardino della Frutta</h1>
 
             <PageNav />
 

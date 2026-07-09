@@ -34,10 +34,7 @@ function updateStatus() {
 <template>
     <PageContainer>
         <header class="order-header">
-            <h1 class="order-title">
-                <span v-if="isAdminView">Admin · </span>
-                Ordine {{ order.order_number ?? '#' + order.id }}
-            </h1>
+            <h1 class="order-title">Il Giardino della Frutta</h1>
 
             <PageNav />
 

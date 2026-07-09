@@ -105,8 +105,9 @@ const companyInfo = [
     flex-wrap: wrap;
     align-items: flex-start;
     justify-content: space-between;
+    width: min(1120px, 100%);
     gap: 20px;
-    margin-top: 40px;
+    margin: 40px auto 0;
     padding-top: 20px;
     border-top: 1px solid #e5e7eb;
     color: #6b7280;

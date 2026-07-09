@@ -7,140 +7,167 @@ const t = useTranslations();
 </script>
 <template>
     <nav class="page-nav">
-        <Link
-            :href="route('products.index')"
-            as="button"
-            type="button"
-            class="page-nav-button"
-            :class="{
-                'page-nav-button--active': route().current('dashboard') || route().current('products.index'),
-            }"
-            :aria-current="(route().current('dashboard') || route().current('products.index')) ? 'page' : undefined"
-        >
-            <span class="nav-icon nav-icon--products" aria-hidden="true"></span>
-            {{ t('nav.products', 'Prodotti') }}
-        </Link>
-
-        <Link
-            :href="route('cart.index')"
-            as="button"
-            type="button"
-            class="page-nav-button"
-            :class="{
-                'page-nav-button--active': route().current('cart.*') || route().current('checkout.*'),
-            }"
-            :aria-current="(route().current('cart.*') || route().current('checkout.*')) ? 'page' : undefined"
-        >
-            <span class="nav-icon nav-icon--cart" aria-hidden="true"></span>
-            {{ t('nav.cart', 'Carrello') }}
-        </Link>
-
-        <Link
-            v-if="page.props.auth.user"
-            :href="route('orders.index')"
-            as="button"
-            type="button"
-            class="page-nav-button"
-            :class="{ 'page-nav-button--active': route().current('orders.*') }"
-            :aria-current="route().current('orders.*') ? 'page' : undefined"
-        >
-            <span class="nav-icon nav-icon--orders" aria-hidden="true"></span>
-            {{ t('nav.orders', 'I miei ordini') }}
-        </Link>
-
-        <Link
-            v-if="page.props.auth.user?.is_admin"
-            :href="route('admin.dashboard')"
-            as="button"
-            type="button"
-            class="page-nav-button page-nav-button--admin"
-            :class="{ 'page-nav-button--active': route().current('admin.*') }"
-            :aria-current="route().current('admin.*') ? 'page' : undefined"
-        >
-            <span class="nav-icon nav-icon--admin" aria-hidden="true"></span>
-            {{ t('nav.admin', 'Admin') }}
-        </Link>
-
-        <Link
-            v-if="page.props.auth.user"
-            :href="route('profile.edit')"
-            as="button"
-            type="button"
-            class="page-nav-button page-nav-button--settings"
-            :class="{ 'page-nav-button--active': route().current('profile.*') }"
-            :aria-current="route().current('profile.*') ? 'page' : undefined"
-        >
-            <span class="nav-icon nav-icon--settings" aria-hidden="true"></span>
-            {{ t('nav.settings', 'Impostazioni') }}
-        </Link>
-
-        <Link
-            v-if="!page.props.auth.user"
-            :href="route('login')"
-            as="button"
-            type="button"
-            class="page-nav-button page-nav-button--auth"
-            :class="{ 'page-nav-button--active': route().current('login') }"
-            :aria-current="route().current('login') ? 'page' : undefined"
-        >
-            <span class="nav-icon nav-icon--login" aria-hidden="true"></span>
-            {{ t('nav.login', 'Login') }}
-        </Link>
-
-        <Link
-            v-if="!page.props.auth.user"
-            :href="route('register')"
-            as="button"
-            type="button"
-            class="page-nav-button page-nav-button--auth"
-            :class="{ 'page-nav-button--active': route().current('register') }"
-            :aria-current="route().current('register') ? 'page' : undefined"
-        >
-            <span class="nav-icon nav-icon--register" aria-hidden="true"></span>
-            {{ t('nav.register', 'Registrati') }}
-        </Link>
-
-        <Link
-            v-if="page.props.auth.user"
-            :href="route('logout')"
-            method="post"
-            as="button"
-            type="button"
-            class="page-nav-button page-nav-button--logout"
-        >
-            <span class="nav-icon nav-icon--logout" aria-hidden="true"></span>
-            {{ t('nav.logout', 'Logout') }}
-        </Link>
-
-        <span class="language-switcher" :aria-label="t('nav.language', 'Lingua')">
+        <div class="page-nav-group page-nav-group--main">
             <Link
-                :href="route('language.update', 'it')"
+                :href="route('products.index')"
+                as="button"
+                type="button"
+                class="page-nav-button"
+                :class="{
+                    'page-nav-button--active': route().current('dashboard') || route().current('products.index'),
+                }"
+                :aria-current="(route().current('dashboard') || route().current('products.index')) ? 'page' : undefined"
+            >
+                <span class="nav-icon nav-icon--products" aria-hidden="true"></span>
+                {{ t('nav.products', 'Prodotti') }}
+            </Link>
+
+            <Link
+                :href="route('cart.index')"
+                as="button"
+                type="button"
+                class="page-nav-button"
+                :class="{
+                    'page-nav-button--active': route().current('cart.*') || route().current('checkout.*'),
+                }"
+                :aria-current="(route().current('cart.*') || route().current('checkout.*')) ? 'page' : undefined"
+            >
+                <span class="nav-icon nav-icon--cart" aria-hidden="true"></span>
+                {{ t('nav.cart', 'Carrello') }}
+            </Link>
+        </div>
+
+        <div class="page-nav-group page-nav-group--account">
+            <Link
+                v-if="page.props.auth.user"
+                :href="route('orders.index')"
+                as="button"
+                type="button"
+                class="page-nav-button"
+                :class="{ 'page-nav-button--active': route().current('orders.*') }"
+                :aria-current="route().current('orders.*') ? 'page' : undefined"
+            >
+                <span class="nav-icon nav-icon--orders" aria-hidden="true"></span>
+                {{ t('nav.orders', 'I miei ordini') }}
+            </Link>
+
+            <Link
+                v-if="page.props.auth.user?.is_admin"
+                :href="route('admin.dashboard')"
+                as="button"
+                type="button"
+                class="page-nav-button page-nav-button--admin"
+                :class="{ 'page-nav-button--active': route().current('admin.*') }"
+                :aria-current="route().current('admin.*') ? 'page' : undefined"
+            >
+                <span class="nav-icon nav-icon--admin" aria-hidden="true"></span>
+                {{ t('nav.admin', 'Admin') }}
+            </Link>
+
+            <Link
+                v-if="page.props.auth.user"
+                :href="route('profile.edit')"
+                as="button"
+                type="button"
+                class="page-nav-button page-nav-button--settings"
+                :class="{ 'page-nav-button--active': route().current('profile.*') }"
+                :aria-current="route().current('profile.*') ? 'page' : undefined"
+            >
+                <span class="nav-icon nav-icon--settings" aria-hidden="true"></span>
+                {{ t('nav.settings', 'Impostazioni') }}
+            </Link>
+
+            <Link
+                v-if="!page.props.auth.user"
+                :href="route('login')"
+                as="button"
+                type="button"
+                class="page-nav-button page-nav-button--auth"
+                :class="{ 'page-nav-button--active': route().current('login') }"
+                :aria-current="route().current('login') ? 'page' : undefined"
+            >
+                <span class="nav-icon nav-icon--login" aria-hidden="true"></span>
+                {{ t('nav.login', 'Login') }}
+            </Link>
+
+            <Link
+                v-if="!page.props.auth.user"
+                :href="route('register')"
+                as="button"
+                type="button"
+                class="page-nav-button page-nav-button--auth"
+                :class="{ 'page-nav-button--active': route().current('register') }"
+                :aria-current="route().current('register') ? 'page' : undefined"
+            >
+                <span class="nav-icon nav-icon--register" aria-hidden="true"></span>
+                {{ t('nav.register', 'Registrati') }}
+            </Link>
+
+            <Link
+                v-if="page.props.auth.user"
+                :href="route('logout')"
                 method="post"
                 as="button"
-                class="language-button"
-                :class="{ 'language-button--active': page.props.locale === 'it' }"
+                type="button"
+                class="page-nav-button page-nav-button--logout"
             >
-                IT
+                <span class="nav-icon nav-icon--logout" aria-hidden="true"></span>
+                {{ t('nav.logout', 'Logout') }}
             </Link>
-            <Link
-                :href="route('language.update', 'en')"
-                method="post"
-                as="button"
-                class="language-button"
-                :class="{ 'language-button--active': page.props.locale === 'en' }"
-            >
-                EN
-            </Link>
-        </span>
+
+            <span class="language-switcher" :aria-label="t('nav.language', 'Lingua')">
+                <Link
+                    :href="route('language.update', 'it')"
+                    method="post"
+                    as="button"
+                    class="language-button"
+                    :class="{ 'language-button--active': page.props.locale === 'it' }"
+                >
+                    IT
+                </Link>
+                <Link
+                    :href="route('language.update', 'en')"
+                    method="post"
+                    as="button"
+                    class="language-button"
+                    :class="{ 'language-button--active': page.props.locale === 'en' }"
+                >
+                    EN
+                </Link>
+            </span>
+        </div>
     </nav>
 </template>
 
 <style scoped>
 .page-nav {
+    box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
-    gap: 16px;
+    align-items: flex-start;
+    gap: 16px 32px;
+    width: 100vw;
+    margin-right: calc(50% - 50vw);
     margin-bottom: 12px;
+    margin-left: calc(50% - 50vw);
+    padding: 0 24px;
+}
+
+.page-nav-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+}
+
+.page-nav-group--main {
+    flex: 0 0 auto;
+}
+
+.page-nav-group--account {
+    flex: 1 1 360px;
+    justify-content: flex-end;
+    margin-left: auto;
 }
 
 .page-nav-button {
@@ -279,5 +306,11 @@ const t = useTranslations();
 .language-button--active {
     background: #166534;
     color: #fff;
+}
+
+@media (max-width: 640px) {
+    .page-nav {
+        padding: 0 16px;
+    }
 }
 </style>

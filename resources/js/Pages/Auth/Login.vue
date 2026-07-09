@@ -31,7 +31,7 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Log in" />
+        <Head title="Il Giardino della Frutta" />
 
         <div class="mb-6 rounded-lg bg-orange-50 p-4 text-sm text-orange-900">
             Il checkout ospite resta disponibile. L'accesso serve per ritrovare

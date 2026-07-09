@@ -23,7 +23,7 @@ function deleteProduct(product) {
 <template>
     <PageContainer>
         <header class="admin-products-header">
-            <h1 class="admin-products-title">Gestione prodotti</h1>
+            <h1 class="admin-products-title">Il Giardino della Frutta</h1>
 
             <PageNav />
 

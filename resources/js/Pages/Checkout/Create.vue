@@ -97,7 +97,7 @@ watch(dateInputLocale, async () => {
 
 <template>
     <PageContainer>
-        <h1 class="checkout-title">{{ t('checkout.title', 'Checkout') }}</h1>
+        <h1 class="checkout-title">Il Giardino della Frutta</h1>
 
         <PageNav />
 
@@ -174,7 +174,6 @@ watch(dateInputLocale, async () => {
 .checkout-form {
     display: grid;
     gap: 16px;
-    max-width: 480px;
 }
 
 .form-field {

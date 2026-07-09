@@ -22,7 +22,7 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Register" />
+        <Head title="Il Giardino della Frutta" />
 
         <div class="mb-6 rounded-lg bg-green-50 p-4 text-sm text-green-900">
             La registrazione è facoltativa: puoi ordinare anche come ospite.
