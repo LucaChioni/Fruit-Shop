@@ -101,6 +101,7 @@ const companyInfo = [
 
 <style scoped>
 .legal-footer {
+    position: relative;
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
@@ -109,9 +110,18 @@ const companyInfo = [
     gap: 20px;
     margin: 40px auto 0;
     padding-top: 20px;
-    border-top: 1px solid #e5e7eb;
     color: #6b7280;
     font-size: 14px;
+}
+
+.legal-footer::before {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 95vw;
+    border-top: 1px solid #e5e7eb;
+    content: '';
+    transform: translateX(-50%);
 }
 
 .legal-footer-brand {
