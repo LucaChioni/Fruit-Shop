@@ -7,12 +7,30 @@ const t = useTranslations();
 </script>
 <template>
     <nav class="page-nav">
-        <Link :href="route('products.index')" class="page-nav-link">
+        <Link
+            :href="route('products.index')"
+            as="button"
+            type="button"
+            class="page-nav-button"
+            :class="{
+                'page-nav-button--active': route().current('dashboard') || route().current('products.index'),
+            }"
+            :aria-current="(route().current('dashboard') || route().current('products.index')) ? 'page' : undefined"
+        >
             <span class="nav-icon nav-icon--products" aria-hidden="true"></span>
             {{ t('nav.products', 'Prodotti') }}
         </Link>
 
-        <Link :href="route('cart.index')" class="page-nav-link">
+        <Link
+            :href="route('cart.index')"
+            as="button"
+            type="button"
+            class="page-nav-button"
+            :class="{
+                'page-nav-button--active': route().current('cart.*') || route().current('checkout.*'),
+            }"
+            :aria-current="(route().current('cart.*') || route().current('checkout.*')) ? 'page' : undefined"
+        >
             <span class="nav-icon nav-icon--cart" aria-hidden="true"></span>
             {{ t('nav.cart', 'Carrello') }}
         </Link>
@@ -20,7 +38,11 @@ const t = useTranslations();
         <Link
             v-if="page.props.auth.user"
             :href="route('orders.index')"
-            class="page-nav-link"
+            as="button"
+            type="button"
+            class="page-nav-button"
+            :class="{ 'page-nav-button--active': route().current('orders.*') }"
+            :aria-current="route().current('orders.*') ? 'page' : undefined"
         >
             <span class="nav-icon nav-icon--orders" aria-hidden="true"></span>
             {{ t('nav.orders', 'I miei ordini') }}
@@ -29,7 +51,11 @@ const t = useTranslations();
         <Link
             v-if="page.props.auth.user?.is_admin"
             :href="route('admin.dashboard')"
-            class="page-nav-link page-nav-link--admin"
+            as="button"
+            type="button"
+            class="page-nav-button page-nav-button--admin"
+            :class="{ 'page-nav-button--active': route().current('admin.*') }"
+            :aria-current="route().current('admin.*') ? 'page' : undefined"
         >
             <span class="nav-icon nav-icon--admin" aria-hidden="true"></span>
             {{ t('nav.admin', 'Admin') }}
@@ -38,7 +64,11 @@ const t = useTranslations();
         <Link
             v-if="page.props.auth.user"
             :href="route('profile.edit')"
-            class="page-nav-link page-nav-link--settings"
+            as="button"
+            type="button"
+            class="page-nav-button page-nav-button--settings"
+            :class="{ 'page-nav-button--active': route().current('profile.*') }"
+            :aria-current="route().current('profile.*') ? 'page' : undefined"
         >
             <span class="nav-icon nav-icon--settings" aria-hidden="true"></span>
             {{ t('nav.settings', 'Impostazioni') }}
@@ -47,7 +77,11 @@ const t = useTranslations();
         <Link
             v-if="!page.props.auth.user"
             :href="route('login')"
-            class="page-nav-link page-nav-link--auth"
+            as="button"
+            type="button"
+            class="page-nav-button page-nav-button--auth"
+            :class="{ 'page-nav-button--active': route().current('login') }"
+            :aria-current="route().current('login') ? 'page' : undefined"
         >
             <span class="nav-icon nav-icon--login" aria-hidden="true"></span>
             {{ t('nav.login', 'Login') }}
@@ -56,7 +90,11 @@ const t = useTranslations();
         <Link
             v-if="!page.props.auth.user"
             :href="route('register')"
-            class="page-nav-link page-nav-link--auth"
+            as="button"
+            type="button"
+            class="page-nav-button page-nav-button--auth"
+            :class="{ 'page-nav-button--active': route().current('register') }"
+            :aria-current="route().current('register') ? 'page' : undefined"
         >
             <span class="nav-icon nav-icon--register" aria-hidden="true"></span>
             {{ t('nav.register', 'Registrati') }}
@@ -67,7 +105,8 @@ const t = useTranslations();
             :href="route('logout')"
             method="post"
             as="button"
-            class="page-nav-link page-nav-link--button"
+            type="button"
+            class="page-nav-button page-nav-button--logout"
         >
             <span class="nav-icon nav-icon--logout" aria-hidden="true"></span>
             {{ t('nav.logout', 'Logout') }}
@@ -104,13 +143,23 @@ const t = useTranslations();
     margin-bottom: 12px;
 }
 
-.page-nav-link {
+.page-nav-button {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    width: 148px;
+    height: 42px;
+    gap: 8px;
+    padding: 0 14px;
+    border: 1px solid #bbf7d0;
+    border-radius: 999px;
+    background: #fff;
     color: #166534;
+    cursor: pointer;
+    font: inherit;
     font-weight: 600;
     text-decoration: none;
+    transition: background 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
 }
 
 .nav-icon {
@@ -166,29 +215,47 @@ const t = useTranslations();
     content: '';
 }
 
-.page-nav-link:hover {
-    text-decoration: underline;
+.page-nav-button:hover,
+.page-nav-button:focus-visible {
+    border-color: #22c55e;
+    background: #f0fdf4;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
 }
 
-.page-nav-link--admin {
+.page-nav-button--active {
+    border-color: #166534;
+    background: #166534;
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(22, 101, 52, 0.18);
+}
+
+.page-nav-button--active:hover,
+.page-nav-button--active:focus-visible {
+    border-color: #14532d;
+    background: #14532d;
+}
+
+.page-nav-button--admin {
     color: #7c2d12;
 }
 
-.page-nav-link--auth {
+.page-nav-button--auth {
     color: #1d4ed8;
 }
 
-.page-nav-link--settings {
+.page-nav-button--settings {
     color: #4b5563;
 }
 
-.page-nav-link--button {
-    padding: 0;
-    border: 0;
-    background: transparent;
+.page-nav-button--logout {
     color: #374151;
-    cursor: pointer;
-    font: inherit;
+}
+
+.page-nav-button--active.page-nav-button--admin,
+.page-nav-button--active.page-nav-button--auth,
+.page-nav-button--active.page-nav-button--settings {
+    color: #fff;
 }
 
 .language-switcher {
