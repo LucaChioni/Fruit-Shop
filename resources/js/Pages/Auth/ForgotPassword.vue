@@ -5,6 +5,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
+import { useTranslations } from '@/i18n';
 
 defineProps({
     status: {
@@ -16,6 +17,8 @@ const form = useForm({
     email: '',
 });
 
+const t = useTranslations();
+
 const submit = () => {
     form.post(route('password.email'));
 };
@@ -26,9 +29,7 @@ const submit = () => {
         <Head title="Il Giardino della Frutta" />
 
         <div class="mb-4 text-sm text-gray-600">
-            Forgot your password? No problem. Just let us know your email
-            address and we will email you a password reset link that will allow
-            you to choose a new one.
+            {{ t('auth.forgot_password_text', 'Hai dimenticato la password? Nessun problema. Inserisci la tua email e ti invieremo un link per crearne una nuova.') }}
         </div>
 
         <div
@@ -40,7 +41,7 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" :value="t('legal.email', 'Email')" />
 
                 <TextInput
                     id="email"
@@ -60,7 +61,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Email Password Reset Link
+                    {{ t('auth.email_password_reset_link', 'Invia link di reset') }}
                 </PrimaryButton>
             </div>
         </form>

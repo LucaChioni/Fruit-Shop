@@ -26,7 +26,7 @@ class CheckoutController extends Controller
         if ($cart->items()->doesntExist()) {
             return redirect()
                 ->route('cart.index')
-                ->with('error', 'Il carrello è vuoto.');
+                ->with('error', __('ui.flash.cart_empty'));
         }
 
         return Inertia::render('Checkout/Create', [
@@ -45,7 +45,7 @@ class CheckoutController extends Controller
         $cart->load('items.product');
 
         if ($cart->items->isEmpty()) {
-            return redirect()->route('cart.index')->with('error', 'Il carrello è vuoto.');
+            return redirect()->route('cart.index')->with('error', __('ui.flash.cart_empty'));
         }
 
         $validated = $request->validate([
@@ -53,11 +53,11 @@ class CheckoutController extends Controller
             'pickup_at' => ['required', 'date'],
             'notes' => ['nullable', 'string', 'max:2000'],
         ], [
-            'customer_name.required' => 'Inserisci il nome per il ritiro.',
-            'customer_name.max' => 'Il nome non può superare 255 caratteri.',
-            'pickup_at.required' => 'Scegli data e ora di ritiro.',
-            'pickup_at.date' => 'Scegli una data e ora di ritiro valida.',
-            'notes.max' => 'Le note non possono superare 2000 caratteri.',
+            'customer_name.required' => __('ui.validation.customer_name_required'),
+            'customer_name.max' => __('ui.validation.customer_name_max'),
+            'pickup_at.required' => __('ui.validation.pickup_required'),
+            'pickup_at.date' => __('ui.validation.pickup_date'),
+            'notes.max' => __('ui.validation.notes_max'),
         ]);
 
         $pickupAt = Carbon::parse($validated['pickup_at'])->seconds(0);
@@ -111,7 +111,7 @@ class CheckoutController extends Controller
 
         return redirect()
             ->route('orders.show', $order)
-            ->with('success', 'Ordine creato con successo.');
+            ->with('success', __('ui.flash.order_created'));
     }
 
     private function earliestPickupAt(): CarbonInterface
@@ -154,7 +154,7 @@ class CheckoutController extends Controller
 
         if ($pickupAt->lt($minimum)) {
             throw ValidationException::withMessages([
-                'pickup_at' => 'Il ritiro deve essere almeno 2 ore dopo l\'ordine.',
+                'pickup_at' => __('ui.validation.pickup_minimum'),
             ]);
         }
 
@@ -166,7 +166,7 @@ class CheckoutController extends Controller
 
         if (! $isOpen) {
             throw ValidationException::withMessages([
-                'pickup_at' => 'Scegli un orario di ritiro tra 11:00-13:00 o 16:00-19:30.',
+                'pickup_at' => __('ui.validation.pickup_time_slot'),
             ]);
         }
     }

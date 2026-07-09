@@ -1,6 +1,9 @@
 <script setup>
 import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
+import { useTranslations } from '@/i18n';
+
+const t = useTranslations();
 </script>
 
 <template>
@@ -12,23 +15,23 @@ import PageNav from '@/Components/PageNav.vue';
 
         <section class="legal-card">
             <p>
-                Questa informativa descrive come Fruit Shop tratta i dati personali necessari per gestire account, carrelli e ordini con ritiro in negozio.
+                {{ t('legal.privacy.intro', 'Questa informativa descrive come Fruit Shop tratta i dati personali necessari per gestire account, carrelli e ordini con ritiro in negozio.') }}
             </p>
 
-            <h2>Dati trattati</h2>
-            <p>Nome, email, dati account, contenuto degli ordini, note inserite nel checkout e dati tecnici necessari al funzionamento del sito.</p>
+            <h2>{{ t('legal.privacy.data_title', 'Dati trattati') }}</h2>
+            <p>{{ t('legal.privacy.data_text', 'Nome, email, dati account, contenuto degli ordini, note inserite nel checkout e dati tecnici necessari al funzionamento del sito.') }}</p>
 
-            <h2>Finalità</h2>
-            <p>I dati sono usati per creare e gestire ordini, comunicazioni operative, sicurezza dell'applicazione e obblighi amministrativi.</p>
+            <h2>{{ t('legal.privacy.purpose_title', 'Finalità') }}</h2>
+            <p>{{ t('legal.privacy.purpose_text', "I dati sono usati per creare e gestire ordini, comunicazioni operative, sicurezza dell'applicazione e obblighi amministrativi.") }}</p>
 
-            <h2>Base giuridica</h2>
-            <p>La base principale è l'esecuzione del servizio richiesto dall'utente. Alcuni dati possono essere conservati per obblighi di legge o legittimo interesse alla sicurezza.</p>
+            <h2>{{ t('legal.privacy.legal_basis_title', 'Base giuridica') }}</h2>
+            <p>{{ t('legal.privacy.legal_basis_text', "La base principale è l'esecuzione del servizio richiesto dall'utente. Alcuni dati possono essere conservati per obblighi di legge o legittimo interesse alla sicurezza.") }}</p>
 
-            <h2>Conservazione e diritti</h2>
-            <p>Puoi chiedere accesso, rettifica, cancellazione, limitazione o portabilità dei dati scrivendo al titolare del negozio. Gli ordini possono essere conservati per obblighi contabili.</p>
+            <h2>{{ t('legal.privacy.retention_title', 'Conservazione e diritti') }}</h2>
+            <p>{{ t('legal.privacy.retention_text', 'Puoi chiedere accesso, rettifica, cancellazione, limitazione o portabilità dei dati scrivendo al titolare del negozio. Gli ordini possono essere conservati per obblighi contabili.') }}</p>
 
-            <h2>Terze parti</h2>
-            <p>In sviluppo le email possono essere intercettate da Mailpit. In produzione possono essere usati provider tecnici per hosting, email e manutenzione.</p>
+            <h2>{{ t('legal.privacy.third_parties_title', 'Terze parti') }}</h2>
+            <p>{{ t('legal.privacy.third_parties_text', 'In sviluppo le email possono essere intercettate da Mailpit. In produzione possono essere usati provider tecnici per hosting, email e manutenzione.') }}</p>
         </section>
     </PageContainer>
 </template>

@@ -51,7 +51,7 @@ class ProductController extends Controller
 
         return redirect()
             ->route('admin.products.index')
-            ->with('success', 'Prodotto creato.');
+            ->with('success', __('ui.flash.product_created'));
     }
 
     public function edit(Product $product): Response
@@ -74,7 +74,7 @@ class ProductController extends Controller
 
         return redirect()
             ->route('admin.products.index')
-            ->with('success', 'Prodotto aggiornato.');
+            ->with('success', __('ui.flash.product_updated'));
     }
 
     public function destroy(Product $product): RedirectResponse
@@ -85,7 +85,7 @@ class ProductController extends Controller
 
         return redirect()
             ->route('admin.products.index')
-            ->with('success', 'Prodotto eliminato.');
+            ->with('success', __('ui.flash.product_deleted'));
     }
 
     private function validatedProductData(Request $request): array
@@ -103,18 +103,18 @@ class ProductController extends Controller
             'unit_type' => ['required', Rule::in(ProductData::UNIT_TYPES)],
             'is_active' => ['required', 'boolean'],
         ], [
-            'name.required' => 'Inserisci il nome del prodotto.',
-            'name.max' => 'Il nome del prodotto non può superare 255 caratteri.',
-            'description.max' => 'La descrizione non può superare 2000 caratteri.',
-            'image.image' => 'Carica un file immagine valido.',
-            'image.max' => 'L\'immagine non può superare 2 MB.',
-            'price.required' => 'Inserisci il prezzo del prodotto.',
-            'price.numeric' => 'Il prezzo deve essere un numero.',
-            'price.min' => 'Il prezzo non può essere negativo.',
-            'unit_type.required' => 'Scegli l\'unità di misura.',
-            'unit_type.in' => 'Scegli un\'unità di misura valida.',
-            'is_active.required' => 'Indica se il prodotto è attivo.',
-            'is_active.boolean' => 'Il valore attivo/non attivo non è valido.',
+            'name.required' => __('ui.validation.product_name_required'),
+            'name.max' => __('ui.validation.product_name_max'),
+            'description.max' => __('ui.validation.product_description_max'),
+            'image.image' => __('ui.validation.image_valid'),
+            'image.max' => __('ui.validation.image_max'),
+            'price.required' => __('ui.validation.price_required'),
+            'price.numeric' => __('ui.validation.price_numeric'),
+            'price.min' => __('ui.validation.price_min'),
+            'unit_type.required' => __('ui.validation.unit_type_required'),
+            'unit_type.in' => __('ui.validation.unit_type_in'),
+            'is_active.required' => __('ui.validation.is_active_required'),
+            'is_active.boolean' => __('ui.validation.is_active_boolean'),
         ]);
 
         unset($data['image']);
@@ -137,8 +137,10 @@ class ProductController extends Controller
     {
         return [
             'id' => $product->id,
-            'name' => $product->name,
-            'description' => $product->description,
+            'name' => ProductData::translatedName($product),
+            'source_name' => $product->name,
+            'description' => ProductData::translatedDescription($product),
+            'source_description' => $product->description,
             'image_url' => $product->image_url,
             'price' => $product->price,
             'unit_type' => $product->unit_type,

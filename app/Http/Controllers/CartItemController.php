@@ -16,11 +16,11 @@ class CartItemController extends Controller
             'product_id' => ['required', 'exists:products,id'],
             'quantity' => ['required', 'numeric', 'min:0.01'],
         ], [
-            'product_id.required' => 'Seleziona un prodotto da aggiungere al carrello.',
-            'product_id.exists' => 'Il prodotto selezionato non esiste.',
-            'quantity.required' => 'Inserisci la quantità.',
-            'quantity.numeric' => 'La quantità deve essere un numero.',
-            'quantity.min' => 'La quantità minima è 0,01.',
+            'product_id.required' => __('ui.validation.product_required'),
+            'product_id.exists' => __('ui.validation.product_exists'),
+            'quantity.required' => __('ui.validation.quantity_required'),
+            'quantity.numeric' => __('ui.validation.quantity_numeric'),
+            'quantity.min' => __('ui.validation.quantity_min'),
         ]);
 
         $product = Product::query()
@@ -46,7 +46,7 @@ class CartItemController extends Controller
 
         return redirect()
             ->route('products.index')
-            ->with('success', 'Prodotto aggiunto al carrello.');
+            ->with('success', __('ui.flash.product_added'));
     }
 
     public function destroy(Request $request, CartService $cartService, CartItem $cartItem): RedirectResponse
@@ -61,6 +61,6 @@ class CartItemController extends Controller
 
         return redirect()
             ->route('cart.index')
-            ->with('success', 'Prodotto rimosso dal carrello.');
+            ->with('success', __('ui.flash.product_removed'));
     }
 }

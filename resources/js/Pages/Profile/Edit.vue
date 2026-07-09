@@ -5,6 +5,7 @@ import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
 import { Head } from '@inertiajs/vue3';
+import { useTranslations } from '@/i18n';
 
 defineProps({
     mustVerifyEmail: {
@@ -17,6 +18,8 @@ defineProps({
         type: Boolean,
     },
 });
+
+const t = useTranslations();
 </script>
 
 <template>
@@ -45,11 +48,11 @@ defineProps({
 
                 <div v-else class="space-y-2">
                     <h2 class="text-lg font-medium text-gray-900">
-                        Elimina account
+                        {{ t('settings.delete_account', 'Elimina account') }}
                     </h2>
 
                     <p class="text-sm text-gray-600">
-                        Gli account amministratore non possono essere eliminati.
+                        {{ t('settings.admin_delete_disabled', 'Gli account amministratore non possono essere eliminati.') }}
                     </p>
                 </div>
             </section>

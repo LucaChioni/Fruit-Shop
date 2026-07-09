@@ -37,17 +37,17 @@ const t = useTranslations();
                         :value="status"
                         :selected="filters.status === status"
                     >
-                        {{ status }}
+                        {{ t(`orders.${status}`, status) }}
                     </option>
                 </select>
             </label>
 
             <label class="filter-field">
-                Cliente
+                {{ t('orders.customer', 'Cliente') }}
                 <select name="customer_type" class="filter-input">
-                    <option value="all" :selected="filters.customer_type === 'all'">Tutti</option>
-                    <option value="registered" :selected="filters.customer_type === 'registered'">Registrati</option>
-                    <option value="guest" :selected="filters.customer_type === 'guest'">Ospiti</option>
+                    <option value="all" :selected="filters.customer_type === 'all'">{{ t('orders.all', 'Tutti') }}</option>
+                    <option value="registered" :selected="filters.customer_type === 'registered'">{{ t('orders.registered', 'Registrati') }}</option>
+                    <option value="guest" :selected="filters.customer_type === 'guest'">{{ t('orders.guests', 'Ospiti') }}</option>
                 </select>
             </label>
 

@@ -37,7 +37,7 @@ const t = useTranslations();
                         :value="status"
                         :selected="filters.status === status"
                     >
-                        {{ status }}
+                        {{ t(`orders.${status}`, status) }}
                     </option>
                 </select>
             </label>

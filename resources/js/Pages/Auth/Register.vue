@@ -6,6 +6,7 @@ import PageNav from '@/Components/PageNav.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { useTranslations } from '@/i18n';
 
 const form = useForm({
     name: '',
@@ -13,6 +14,8 @@ const form = useForm({
     password: '',
     password_confirmation: '',
 });
+
+const t = useTranslations();
 
 const submit = () => {
     form.post(route('register'), {
@@ -32,13 +35,12 @@ const submit = () => {
 
         <section class="auth-card">
             <div class="mb-6 rounded-lg bg-green-50 p-4 text-sm text-green-900">
-                La registrazione è facoltativa: puoi ordinare anche come ospite.
-                Gli account creati da qui sono account cliente, non admin.
+                {{ t('auth.register_help', 'La registrazione è facoltativa: puoi ordinare anche come ospite. Gli account creati da qui sono account cliente, non admin.') }}
             </div>
 
             <form @submit.prevent="submit">
                 <div>
-                    <InputLabel for="name" value="Nome" />
+                    <InputLabel for="name" :value="t('auth.name', 'Nome')" />
 
                     <TextInput
                         id="name"
@@ -54,7 +56,7 @@ const submit = () => {
                 </div>
 
                 <div class="mt-4">
-                    <InputLabel for="email" value="Email" />
+                    <InputLabel for="email" :value="t('legal.email', 'Email')" />
 
                     <TextInput
                         id="email"
@@ -69,7 +71,7 @@ const submit = () => {
                 </div>
 
                 <div class="mt-4">
-                    <InputLabel for="password" value="Password" />
+                    <InputLabel for="password" :value="t('auth.password', 'Password')" />
 
                     <TextInput
                         id="password"
@@ -86,7 +88,7 @@ const submit = () => {
                 <div class="mt-4">
                     <InputLabel
                         for="password_confirmation"
-                        value="Conferma password"
+                        :value="t('auth.confirm_password', 'Conferma password')"
                     />
 
                     <TextInput
@@ -109,7 +111,7 @@ const submit = () => {
                         :href="route('login')"
                         class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     >
-                        Hai già un account?
+                        {{ t('auth.already_registered', 'Hai già un account?') }}
                     </Link>
 
                     <PrimaryButton
@@ -117,7 +119,7 @@ const submit = () => {
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                     >
-                        Registrati
+                        {{ t('auth.register', 'Registrati') }}
                     </PrimaryButton>
                 </div>
             </form>

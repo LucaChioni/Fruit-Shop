@@ -39,7 +39,7 @@ class OrderData
             'notes' => $order->notes,
             'items' => $order->items->map(fn ($item) => [
                 'id' => $item->id,
-                'product_name' => $item->product_name,
+                'product_name' => ProductData::translatedName($item->product_name),
                 'unit_type' => $item->unit_type,
                 'unit_price' => $item->unit_price,
                 'quantity' => $item->quantity,

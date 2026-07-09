@@ -19,7 +19,7 @@ class CartController extends Controller
             return [
                 'id' => $item->id,
                 'product_id' => $product->id,
-                'product_name' => $product->name,
+                'product_name' => ProductData::translatedName($product),
                 'product_image_url' => $product->image_url,
                 'unit_type' => $product->unit_type,
                 'unit_price' => number_format((float) $product->price, 2, '.', ''),
@@ -45,11 +45,11 @@ class CartController extends Controller
             'quantities' => ['required', 'array'],
             'quantities.*' => ['required', 'numeric', 'min:0.01'],
         ], [
-            'quantities.required' => 'Inserisci almeno una quantità da aggiornare.',
-            'quantities.array' => 'Le quantità inviate non sono valide.',
-            'quantities.*.required' => 'Inserisci una quantità per ogni prodotto.',
-            'quantities.*.numeric' => 'La quantità deve essere un numero.',
-            'quantities.*.min' => 'La quantità minima è 0,01.',
+            'quantities.required' => __('ui.validation.quantities_required'),
+            'quantities.array' => __('ui.validation.quantities_array'),
+            'quantities.*.required' => __('ui.validation.quantity_each_required'),
+            'quantities.*.numeric' => __('ui.validation.quantity_numeric'),
+            'quantities.*.min' => __('ui.validation.quantity_min'),
         ]);
 
         $cart = $cartService->getCurrentCart($request);
@@ -64,6 +64,6 @@ class CartController extends Controller
 
         return redirect()
             ->route('cart.index')
-            ->with('success', 'Carrello aggiornato.');
+            ->with('success', __('ui.flash.cart_updated'));
     }
 }

@@ -7,6 +7,7 @@ import PageNav from '@/Components/PageNav.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { useTranslations } from '@/i18n';
 
 defineProps({
     canResetPassword: {
@@ -22,6 +23,8 @@ const form = useForm({
     password: '',
     remember: false,
 });
+
+const t = useTranslations();
 
 const submit = () => {
     form.post(route('login'), {
@@ -41,8 +44,7 @@ const submit = () => {
 
         <section class="auth-card">
             <div class="mb-6 rounded-lg bg-orange-50 p-4 text-sm text-orange-900">
-                Il checkout ospite resta disponibile. L'accesso serve per ritrovare
-                gli ordini cliente o per entrare nell'area admin.
+                {{ t('auth.login_help', "Il checkout ospite resta disponibile. L'accesso serve per ritrovare gli ordini cliente o per entrare nell'area admin.") }}
             </div>
 
             <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
@@ -51,7 +53,7 @@ const submit = () => {
 
             <form @submit.prevent="submit">
                 <div>
-                    <InputLabel for="email" value="Email" />
+                    <InputLabel for="email" :value="t('legal.email', 'Email')" />
 
                     <TextInput
                         id="email"
@@ -67,7 +69,7 @@ const submit = () => {
                 </div>
 
                 <div class="mt-4">
-                    <InputLabel for="password" value="Password" />
+                    <InputLabel for="password" :value="t('auth.password', 'Password')" />
 
                     <TextInput
                         id="password"
@@ -85,7 +87,7 @@ const submit = () => {
                     <label class="flex items-center">
                         <Checkbox name="remember" v-model:checked="form.remember" />
                         <span class="ms-2 text-sm text-gray-600"
-                            >Ricordami</span
+                            >{{ t('auth.remember', 'Ricordami') }}</span
                         >
                     </label>
                 </div>
@@ -96,7 +98,7 @@ const submit = () => {
                         :href="route('password.request')"
                         class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     >
-                        Password dimenticata?
+                        {{ t('auth.forgot_password', 'Password dimenticata?') }}
                     </Link>
 
                     <PrimaryButton
@@ -104,7 +106,7 @@ const submit = () => {
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                     >
-                        Accedi
+                        {{ t('auth.login', 'Accedi') }}
                     </PrimaryButton>
                 </div>
             </form>

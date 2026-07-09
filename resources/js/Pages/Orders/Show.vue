@@ -39,12 +39,12 @@ function updateStatus() {
             <PageNav />
 
             <p class="order-meta">
-                Riferimento {{ order.order_number ?? '#' + order.id }} ·
-                {{ order.created_at }} · Stato: {{ order.status }}
+                {{ t('orders.reference', 'Riferimento') }} {{ order.order_number ?? '#' + order.id }} ·
+                {{ order.created_at }} · {{ t('orders.status', 'Stato') }}: {{ t(`orders.${order.status}`, order.status) }}
             </p>
 
             <p v-if="order.pickup_at" class="order-meta order-meta--pickup">
-                Ritiro: {{ order.pickup_at }}
+                {{ t('orders.pickup', 'Ritiro') }}: {{ order.pickup_at }}
             </p>
 
             <div v-if="page.props.flash?.success" class="flash-message flash-message--success">
@@ -53,21 +53,21 @@ function updateStatus() {
         </header>
 
         <section class="order-section">
-            <h2>Cliente</h2>
+            <h2>{{ t('orders.customer', 'Cliente') }}</h2>
 
             <p>{{ order.customer_name }}</p>
 
             <p v-if="order.notes">
-                Note: {{ order.notes }}
+                {{ t('orders.notes', 'Note') }}: {{ order.notes }}
             </p>
         </section>
 
         <section v-if="isAdminView" class="order-section">
-            <h2>Gestione stato</h2>
+            <h2>{{ t('orders.manage_status', 'Gestione stato') }}</h2>
 
             <form class="status-form" @submit.prevent="updateStatus">
                 <label class="status-label">
-                    Stato ordine
+                    {{ t('orders.order_status', 'Stato ordine') }}
                     <select v-model="statusForm.status" class="status-select">
                         <option
                             v-for="status in orderStatuses"
@@ -84,7 +84,7 @@ function updateStatus() {
                     class="status-button"
                     :disabled="statusForm.processing"
                 >
-                    Aggiorna stato
+                    {{ t('orders.update_status', 'Aggiorna stato') }}
                 </button>
             </form>
 
@@ -94,7 +94,7 @@ function updateStatus() {
         </section>
 
         <section class="order-section">
-            <h2>Prodotti</h2>
+            <h2>{{ t('orders.products', 'Prodotti') }}</h2>
 
             <div class="order-items">
                 <article
@@ -119,7 +119,7 @@ function updateStatus() {
         </section>
 
         <footer class="order-total">
-            <span>Totale</span>
+            <span>{{ t('cart.total', 'Totale') }}</span>
             <strong>{{ order.total_amount }} €</strong>
         </footer>
     </PageContainer>

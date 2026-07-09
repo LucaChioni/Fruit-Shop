@@ -56,7 +56,7 @@ function validatePickupDate() {
 
     if (closedPickupDates.has(form.pickup_date)) {
         form.pickup_date = '';
-        pickupDateError.value = 'Il ritiro non è disponibile la domenica o nei giorni festivi.';
+        pickupDateError.value = t('checkout.closed_date_error', 'Il ritiro non è disponibile la domenica o nei giorni festivi.');
     }
 }
 

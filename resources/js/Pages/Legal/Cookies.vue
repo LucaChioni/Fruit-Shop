@@ -1,6 +1,9 @@
 <script setup>
 import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
+import { useTranslations } from '@/i18n';
+
+const t = useTranslations();
 </script>
 
 <template>
@@ -11,16 +14,16 @@ import PageNav from '@/Components/PageNav.vue';
         </header>
 
         <section class="legal-card">
-            <p>Il sito usa cookie tecnici necessari per login, sessione, sicurezza e carrello. Non sono configurati cookie pubblicitari o di profilazione.</p>
+            <p>{{ t('legal.cookies.intro', 'Il sito usa cookie tecnici necessari per login, sessione, sicurezza e carrello. Non sono configurati cookie pubblicitari o di profilazione.') }}</p>
 
-            <h2>Cookie tecnici</h2>
-            <p>Servono a mantenere la sessione utente, ricordare il carrello ospite e proteggere le richieste tramite token CSRF.</p>
+            <h2>{{ t('legal.cookies.technical_title', 'Cookie tecnici') }}</h2>
+            <p>{{ t('legal.cookies.technical_text', 'Servono a mantenere la sessione utente, ricordare il carrello ospite e proteggere le richieste tramite token CSRF.') }}</p>
 
-            <h2>Consenso</h2>
-            <p>Per i soli cookie tecnici non è richiesto consenso preventivo. Se in futuro saranno aggiunti analytics o marketing, sarà necessario un banner di consenso dedicato.</p>
+            <h2>{{ t('legal.cookies.consent_title', 'Consenso') }}</h2>
+            <p>{{ t('legal.cookies.consent_text', 'Per i soli cookie tecnici non è richiesto consenso preventivo. Se in futuro saranno aggiunti analytics o marketing, sarà necessario un banner di consenso dedicato.') }}</p>
 
-            <h2>Gestione</h2>
-            <p>Puoi eliminare i cookie dal browser. Disabilitarli può impedire login, carrello e checkout.</p>
+            <h2>{{ t('legal.cookies.management_title', 'Gestione') }}</h2>
+            <p>{{ t('legal.cookies.management_text', 'Puoi eliminare i cookie dal browser. Disabilitarli può impedire login, carrello e checkout.') }}</p>
         </section>
     </PageContainer>
 </template>

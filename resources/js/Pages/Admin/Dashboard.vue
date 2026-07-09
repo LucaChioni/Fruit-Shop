@@ -1,11 +1,14 @@
 <script setup>
 import PageNav from '@/Components/PageNav.vue';
 import PageContainer from '@/Components/PageContainer.vue';
+import { useTranslations } from '@/i18n';
 
 defineProps({
     stats: Object,
     latestOrders: Array,
 });
+
+const t = useTranslations();
 </script>
 
 <template>
@@ -18,40 +21,40 @@ defineProps({
 
         <section class="stats-grid">
             <article class="admin-card">
-                <span class="stat-label">Ordini in attesa</span>
+                <span class="stat-label">{{ t('admin.pending_orders', 'Ordini in attesa') }}</span>
                 <strong class="stat-value">{{ stats.pending_orders }}</strong>
             </article>
 
             <article class="admin-card">
-                <span class="stat-label">Ordini di oggi</span>
+                <span class="stat-label">{{ t('admin.today_orders', 'Ordini di oggi') }}</span>
                 <strong class="stat-value">{{ stats.today_orders }}</strong>
             </article>
 
             <article class="admin-card">
-                <span class="stat-label">Ordini totali</span>
+                <span class="stat-label">{{ t('admin.total_orders', 'Ordini totali') }}</span>
                 <strong class="stat-value">{{ stats.total_orders }}</strong>
             </article>
         </section>
 
         <section class="quick-links">
             <a :href="route('admin.orders.index')" class="quick-link">
-                Gestisci ordini
+                {{ t('admin.manage_orders', 'Gestisci ordini') }}
             </a>
 
             <a :href="route('admin.products.index')" class="quick-link">
-                Gestisci prodotti
+                {{ t('admin.manage_products', 'Gestisci prodotti') }}
             </a>
 
             <a :href="route('admin.products.create')" class="quick-link quick-link--primary">
-                Nuovo prodotto
+                {{ t('admin.new_product', 'Nuovo prodotto') }}
             </a>
         </section>
 
         <section class="admin-card latest-card">
-            <h2>Ultimi ordini</h2>
+            <h2>{{ t('admin.latest_orders', 'Ultimi ordini') }}</h2>
 
             <p v-if="latestOrders.length === 0" class="empty-message">
-                Non ci sono ancora ordini.
+                {{ t('orders.empty', 'Non ci sono ancora ordini.') }}
             </p>
 
             <div v-else class="latest-orders">
@@ -62,11 +65,11 @@ defineProps({
                 >
                     <div>
                         <strong>{{ order.order_number }}</strong>
-                        <p>{{ order.customer_name }} · {{ order.status }}</p>
+                        <p>{{ order.customer_name }} · {{ t(`orders.${order.status}`, order.status) }}</p>
                     </div>
 
                     <a :href="route('admin.orders.show', order.id)" class="order-link">
-                        Dettaglio
+                        {{ t('orders.detail', 'Dettaglio') }}
                     </a>
                 </article>
             </div>

@@ -1,6 +1,9 @@
 <script setup>
 import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
+import { useTranslations } from '@/i18n';
+
+const t = useTranslations();
 </script>
 
 <template>
@@ -11,19 +14,19 @@ import PageNav from '@/Components/PageNav.vue';
         </header>
 
         <section class="legal-card">
-            <p>Gli ordini effettuati sul sito sono richieste di acquisto con ritiro presso il negozio.</p>
+            <p>{{ t('legal.terms.intro', 'Gli ordini effettuati sul sito sono richieste di acquisto con ritiro presso il negozio.') }}</p>
 
-            <h2>Disponibilità prodotti</h2>
-            <p>I prodotti freschi possono variare in base a disponibilità e stagionalità. Il negozio può contattarti per eventuali sostituzioni.</p>
+            <h2>{{ t('legal.terms.availability_title', 'Disponibilità prodotti') }}</h2>
+            <p>{{ t('legal.terms.availability_text', 'I prodotti freschi possono variare in base a disponibilità e stagionalità. Il negozio può contattarti per eventuali sostituzioni.') }}</p>
 
-            <h2>Ritiro</h2>
-            <p>Il ritiro deve essere scelto negli orari disponibili indicati nel checkout. Gli ordini possono essere ritirati al massimo entro il giorno successivo.</p>
+            <h2>{{ t('legal.terms.pickup_title', 'Ritiro') }}</h2>
+            <p>{{ t('legal.terms.pickup_text', 'Il ritiro deve essere scelto negli orari disponibili indicati nel checkout. Gli ordini possono essere ritirati al massimo entro il giorno successivo.') }}</p>
 
-            <h2>Prezzi e pagamenti</h2>
-            <p>I prezzi sono indicati per unità di misura. Eventuali arrotondamenti o variazioni di peso saranno comunicati al ritiro.</p>
+            <h2>{{ t('legal.terms.prices_title', 'Prezzi e pagamenti') }}</h2>
+            <p>{{ t('legal.terms.prices_text', 'I prezzi sono indicati per unità di misura. Eventuali arrotondamenti o variazioni di peso saranno comunicati al ritiro.') }}</p>
 
-            <h2>Contatti</h2>
-            <p>Per modifiche o cancellazioni contatta il negozio prima dell'orario di ritiro.</p>
+            <h2>{{ t('legal.terms.contacts_title', 'Contatti') }}</h2>
+            <p>{{ t('legal.terms.contacts_text', "Per modifiche o cancellazioni contatta il negozio prima dell'orario di ritiro.") }}</p>
         </section>
     </PageContainer>
 </template>

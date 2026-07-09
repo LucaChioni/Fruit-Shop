@@ -3,15 +3,18 @@ import { useForm } from '@inertiajs/vue3';
 import { onBeforeUnmount, ref } from 'vue';
 import PageNav from '@/Components/PageNav.vue';
 import PageContainer from '@/Components/PageContainer.vue';
+import { useTranslations } from '@/i18n';
 
 const props = defineProps({
     product: Object,
     unitTypes: Array,
 });
 
+const t = useTranslations();
+
 const form = useForm({
-    name: props.product.name,
-    description: props.product.description ?? '',
+    name: props.product.source_name ?? props.product.name,
+    description: props.product.source_description ?? props.product.description ?? '',
     image: null,
     remove_image: false,
     price: props.product.price,
@@ -77,19 +80,19 @@ function submit() {
 
         <form class="product-form" enctype="multipart/form-data" @submit.prevent="submit">
             <label class="field">
-                Nome
+                {{ t('admin.form.name', 'Nome') }}
                 <input v-model="form.name" type="text" class="input" />
                 <span v-if="form.errors.name" class="error">{{ form.errors.name }}</span>
             </label>
 
             <label class="field">
-                Descrizione
+                {{ t('admin.form.description', 'Descrizione') }}
                 <textarea v-model="form.description" class="input textarea"></textarea>
                 <span v-if="form.errors.description" class="error">{{ form.errors.description }}</span>
             </label>
 
             <label class="field">
-                Immagine
+                {{ t('admin.form.image', 'Immagine') }}
                 <img
                     v-if="imagePreviewUrl"
                     :src="imagePreviewUrl"
@@ -103,21 +106,21 @@ function submit() {
                     class="remove-image-button"
                     @click="removeImage"
                 >
-                    Rimuovi immagine
+                    {{ t('admin.form.remove_image', 'Rimuovi immagine') }}
                 </button>
-                <span v-if="form.remove_image" class="help-text">L'immagine attuale sarà rimossa al salvataggio.</span>
-                <span v-else class="help-text">Lascia vuoto per mantenere l'immagine attuale.</span>
+                <span v-if="form.remove_image" class="help-text">{{ t('admin.form.image_removed_help', "L'immagine attuale sarà rimossa al salvataggio.") }}</span>
+                <span v-else class="help-text">{{ t('admin.form.keep_image_help', "Lascia vuoto per mantenere l'immagine attuale.") }}</span>
                 <span v-if="form.errors.image" class="error">{{ form.errors.image }}</span>
             </label>
 
             <label class="field">
-                Prezzo
+                {{ t('admin.form.price', 'Prezzo') }}
                 <input v-model="form.price" type="number" min="0" step="0.01" class="input" />
                 <span v-if="form.errors.price" class="error">{{ form.errors.price }}</span>
             </label>
 
             <label class="field">
-                Unità di misura
+                {{ t('admin.form.unit_type', 'Unità di misura') }}
                 <select v-model="form.unit_type" class="input">
                     <option
                         v-for="unitType in unitTypes"
@@ -132,11 +135,11 @@ function submit() {
 
             <label class="checkbox-field">
                 <input v-model="form.is_active" type="checkbox" />
-                Prodotto attivo
+                {{ t('admin.form.active_product', 'Prodotto attivo') }}
             </label>
 
             <button type="submit" class="submit-button" :disabled="form.processing">
-                Salva prodotto
+                {{ t('admin.form.save_product', 'Salva prodotto') }}
             </button>
         </form>
     </PageContainer>

@@ -3,14 +3,17 @@ import { router } from '@inertiajs/vue3';
 import FlashMessage from '@/Components/FlashMessage.vue';
 import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
+import { useTranslations } from '@/i18n';
 
 defineProps({
     products: Array,
     filters: Object,
 });
 
+const t = useTranslations();
+
 function deleteProduct(product) {
-    if (!confirm(`Eliminare ${product.name}?`)) {
+    if (!confirm(t('admin.delete_product_confirm', 'Eliminare :name?').replace(':name', product.name))) {
         return;
     }
 
@@ -30,7 +33,7 @@ function deleteProduct(product) {
             <FlashMessage />
 
             <a :href="route('admin.products.create')" class="create-link">
-                Nuovo prodotto
+                {{ t('admin.new_product', 'Nuovo prodotto') }}
             </a>
         </header>
 
@@ -41,38 +44,38 @@ function deleteProduct(product) {
             @change="$event.currentTarget.submit()"
         >
             <label class="filter-field">
-                Cerca
+                {{ t('products.search', 'Cerca') }}
                 <input
                     type="search"
                     name="search"
                     :value="filters.search"
                     class="filter-input"
-                    placeholder="Nome prodotto"
+                    :placeholder="t('products.search_placeholder', 'Nome prodotto')"
                 />
             </label>
 
             <label class="filter-field">
-                Stato
+                {{ t('admin.product_status', 'Stato') }}
                 <select name="status" class="filter-input">
-                    <option value="all" :selected="filters.status === 'all'">Tutti</option>
-                    <option value="active" :selected="filters.status === 'active'">Attivi</option>
-                    <option value="inactive" :selected="filters.status === 'inactive'">Disattivati</option>
+                    <option value="all" :selected="filters.status === 'all'">{{ t('orders.all', 'Tutti') }}</option>
+                    <option value="active" :selected="filters.status === 'active'">{{ t('admin.active_plural', 'Attivi') }}</option>
+                    <option value="inactive" :selected="filters.status === 'inactive'">{{ t('admin.inactive_plural', 'Disattivati') }}</option>
                 </select>
             </label>
 
             <label class="filter-field">
-                Ordina
+                {{ t('products.sort', 'Ordina') }}
                 <select name="sort" class="filter-input">
-                    <option value="name" :selected="filters.sort === 'name'">Nome</option>
-                    <option value="newest" :selected="filters.sort === 'newest'">Più recenti</option>
-                    <option value="price_asc" :selected="filters.sort === 'price_asc'">Prezzo crescente</option>
-                    <option value="price_desc" :selected="filters.sort === 'price_desc'">Prezzo decrescente</option>
+                    <option value="name" :selected="filters.sort === 'name'">{{ t('products.sort_name', 'Nome') }}</option>
+                    <option value="newest" :selected="filters.sort === 'newest'">{{ t('orders.newest', 'Più recenti') }}</option>
+                    <option value="price_asc" :selected="filters.sort === 'price_asc'">{{ t('products.sort_price_asc', 'Prezzo crescente') }}</option>
+                    <option value="price_desc" :selected="filters.sort === 'price_desc'">{{ t('products.sort_price_desc', 'Prezzo decrescente') }}</option>
                 </select>
             </label>
         </form>
 
         <section v-if="products.length === 0" class="empty-products">
-            <p>Non ci sono prodotti.</p>
+            <p>{{ t('admin.no_products', 'Non ci sono prodotti.') }}</p>
         </section>
 
         <section v-else class="products-list">
@@ -97,7 +100,7 @@ function deleteProduct(product) {
                     <p class="product-meta">
                         {{ product.price }} € / {{ product.unit_type }} ·
                         <span :class="product.is_active ? 'active' : 'inactive'">
-                            {{ product.is_active ? 'Attivo' : 'Disattivato' }}
+                            {{ product.is_active ? t('admin.active', 'Attivo') : t('admin.inactive', 'Disattivato') }}
                         </span>
                     </p>
                     <p v-if="product.description" class="product-description">
@@ -107,7 +110,7 @@ function deleteProduct(product) {
 
                 <div class="product-actions">
                     <a :href="route('admin.products.edit', product.id)" class="edit-link">
-                        Modifica
+                        {{ t('admin.edit', 'Modifica') }}
                     </a>
 
                     <button
@@ -115,7 +118,7 @@ function deleteProduct(product) {
                         class="delete-button"
                         @click="deleteProduct(product)"
                     >
-                        Elimina
+                        {{ t('admin.delete', 'Elimina') }}
                     </button>
                 </div>
             </article>

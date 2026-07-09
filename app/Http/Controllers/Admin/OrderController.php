@@ -54,8 +54,8 @@ class OrderController extends Controller
         $validated = $request->validate([
             'status' => ['required', Rule::in(OrderData::STATUSES)],
         ], [
-            'status.required' => 'Scegli lo stato dell\'ordine.',
-            'status.in' => 'Lo stato selezionato non è valido.',
+            'status.required' => __('ui.validation.status_required'),
+            'status.in' => __('ui.validation.status_in'),
         ]);
 
         $order->update([
@@ -64,6 +64,6 @@ class OrderController extends Controller
 
         return redirect()
             ->route('admin.orders.show', $order)
-            ->with('success', 'Stato ordine aggiornato.');
+            ->with('success', __('ui.flash.order_status_updated'));
     }
 }

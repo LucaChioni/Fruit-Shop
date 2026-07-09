@@ -5,10 +5,13 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
+import { useTranslations } from '@/i18n';
 
 const form = useForm({
     password: '',
 });
+
+const t = useTranslations();
 
 const submit = () => {
     form.post(route('password.confirm'), {
@@ -22,13 +25,12 @@ const submit = () => {
         <Head title="Il Giardino della Frutta" />
 
         <div class="mb-4 text-sm text-gray-600">
-            This is a secure area of the application. Please confirm your
-            password before continuing.
+            {{ t('auth.confirm_password_text', "Questa è un'area protetta. Conferma la password prima di continuare.") }}
         </div>
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" :value="t('auth.password', 'Password')" />
                 <TextInput
                     id="password"
                     type="password"
@@ -47,7 +49,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Confirm
+                    {{ t('auth.confirm', 'Conferma') }}
                 </PrimaryButton>
             </div>
         </form>

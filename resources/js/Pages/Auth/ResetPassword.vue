@@ -5,6 +5,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
+import { useTranslations } from '@/i18n';
 
 const props = defineProps({
     email: {
@@ -24,6 +25,8 @@ const form = useForm({
     password_confirmation: '',
 });
 
+const t = useTranslations();
+
 const submit = () => {
     form.post(route('password.store'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
@@ -37,7 +40,7 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" :value="t('legal.email', 'Email')" />
 
                 <TextInput
                     id="email"
@@ -53,7 +56,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" :value="t('auth.password', 'Password')" />
 
                 <TextInput
                     id="password"
@@ -70,7 +73,7 @@ const submit = () => {
             <div class="mt-4">
                 <InputLabel
                     for="password_confirmation"
-                    value="Confirm Password"
+                    :value="t('auth.confirm_password', 'Conferma password')"
                 />
 
                 <TextInput
@@ -93,7 +96,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Reset Password
+                    {{ t('auth.reset_password', 'Reimposta password') }}
                 </PrimaryButton>
             </div>
         </form>

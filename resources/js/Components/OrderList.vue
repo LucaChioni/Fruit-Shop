@@ -33,11 +33,11 @@ const t = useTranslations();
         >
             <div>
                 <h2 class="order-card-title">
-                    Ordine {{ order.order_number ?? '#' + order.id }}
+                    {{ t('orders.order', 'Ordine') }} {{ order.order_number ?? '#' + order.id }}
                 </h2>
 
                 <p class="order-card-meta">
-                    {{ order.created_at }} · Stato: {{ order.status }}
+                    {{ order.created_at }} · {{ t('orders.status', 'Stato') }}: {{ t(`orders.${order.status}`, order.status) }}
                 </p>
 
                 <p v-if="order.pickup_at" class="order-card-meta">

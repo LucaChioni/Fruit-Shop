@@ -167,14 +167,14 @@ function logout() {
 
     <Modal :show="showLogoutConfirmation" max-width="md" @close="closeLogoutConfirmation">
         <div class="logout-modal">
-            <h2 class="logout-modal-title">Confermi il logout?</h2>
+            <h2 class="logout-modal-title">{{ t('logout.confirm_title', 'Confermi il logout?') }}</h2>
             <p class="logout-modal-text">
-                Uscirai dal tuo account e potrai continuare a navigare come ospite.
+                {{ t('logout.confirm_text', 'Uscirai dal tuo account e potrai continuare a navigare come ospite.') }}
             </p>
 
             <div class="logout-modal-actions">
                 <SecondaryButton :disabled="logoutProcessing" @click="closeLogoutConfirmation">
-                    Annulla
+                    {{ t('logout.cancel', 'Annulla') }}
                 </SecondaryButton>
 
                 <DangerButton
@@ -183,7 +183,7 @@ function logout() {
                     :class="{ 'opacity-25': logoutProcessing }"
                     @click="logout"
                 >
-                    Logout
+                    {{ t('nav.logout', 'Logout') }}
                 </DangerButton>
             </div>
         </div>
