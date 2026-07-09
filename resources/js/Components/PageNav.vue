@@ -1,9 +1,38 @@
 <script setup>
-import { Link, usePage } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import { Link, router, usePage } from '@inertiajs/vue3';
+import DangerButton from '@/Components/DangerButton.vue';
+import Modal from '@/Components/Modal.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { useTranslations } from '@/i18n';
 
 const page = usePage();
 const t = useTranslations();
+
+const showLogoutConfirmation = ref(false);
+const logoutProcessing = ref(false);
+
+function confirmLogout() {
+    showLogoutConfirmation.value = true;
+}
+
+function closeLogoutConfirmation() {
+    if (!logoutProcessing.value) {
+        showLogoutConfirmation.value = false;
+    }
+}
+
+function logout() {
+    router.post(route('logout'), {}, {
+        onStart: () => {
+            logoutProcessing.value = true;
+        },
+        onFinish: () => {
+            logoutProcessing.value = false;
+            showLogoutConfirmation.value = false;
+        },
+    });
+}
 </script>
 <template>
     <nav class="page-nav">
@@ -103,17 +132,15 @@ const t = useTranslations();
                 {{ t('nav.register', 'Registrati') }}
             </Link>
 
-            <Link
+            <button
                 v-if="page.props.auth.user"
-                :href="route('logout')"
-                method="post"
-                as="button"
                 type="button"
                 class="page-nav-button page-nav-button--logout"
+                @click="confirmLogout"
             >
                 <span class="nav-icon nav-icon--logout" aria-hidden="true"></span>
                 {{ t('nav.logout', 'Logout') }}
-            </Link>
+            </button>
 
             <span class="language-switcher" :aria-label="t('nav.language', 'Lingua')">
                 <Link
@@ -137,6 +164,30 @@ const t = useTranslations();
             </span>
         </div>
     </nav>
+
+    <Modal :show="showLogoutConfirmation" max-width="md" @close="closeLogoutConfirmation">
+        <div class="logout-modal">
+            <h2 class="logout-modal-title">Confermi il logout?</h2>
+            <p class="logout-modal-text">
+                Uscirai dal tuo account e potrai continuare a navigare come ospite.
+            </p>
+
+            <div class="logout-modal-actions">
+                <SecondaryButton :disabled="logoutProcessing" @click="closeLogoutConfirmation">
+                    Annulla
+                </SecondaryButton>
+
+                <DangerButton
+                    type="button"
+                    :disabled="logoutProcessing"
+                    :class="{ 'opacity-25': logoutProcessing }"
+                    @click="logout"
+                >
+                    Logout
+                </DangerButton>
+            </div>
+        </div>
+    </Modal>
 </template>
 
 <style scoped>
@@ -306,6 +357,31 @@ const t = useTranslations();
 .language-button--active {
     background: #166534;
     color: #fff;
+}
+
+.logout-modal {
+    padding: 24px;
+}
+
+.logout-modal-title {
+    margin: 0;
+    color: #111827;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.logout-modal-text {
+    margin: 12px 0 0;
+    color: #4b5563;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.logout-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
 }
 
 @media (max-width: 640px) {
