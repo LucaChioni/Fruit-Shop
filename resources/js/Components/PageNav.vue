@@ -35,9 +35,7 @@ const t = useTranslations();
                 <span class="nav-icon nav-icon--cart" aria-hidden="true"></span>
                 {{ t('nav.cart', 'Carrello') }}
             </Link>
-        </div>
 
-        <div class="page-nav-group page-nav-group--account">
             <Link
                 v-if="page.props.auth.user"
                 :href="route('orders.index')"
@@ -50,7 +48,9 @@ const t = useTranslations();
                 <span class="nav-icon nav-icon--orders" aria-hidden="true"></span>
                 {{ t('nav.orders', 'I miei ordini') }}
             </Link>
+        </div>
 
+        <div class="page-nav-group page-nav-group--account">
             <Link
                 v-if="page.props.auth.user?.is_admin"
                 :href="route('admin.dashboard')"
