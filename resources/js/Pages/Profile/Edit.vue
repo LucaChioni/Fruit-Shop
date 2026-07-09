@@ -74,7 +74,6 @@ const t = useTranslations();
 .settings-grid {
     display: grid;
     gap: 16px;
-    margin-bottom: 40px;
 }
 
 .settings-card {

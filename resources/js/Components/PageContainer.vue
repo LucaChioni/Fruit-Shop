@@ -30,6 +30,10 @@ defineProps({
     margin-top: auto;
 }
 
+.page-container > :not(.legal-footer):last-of-type {
+    margin-bottom: 40px;
+}
+
 .page-container--narrow {
     width: min(1120px, calc(100% - 32px));
     margin: 0 auto;
