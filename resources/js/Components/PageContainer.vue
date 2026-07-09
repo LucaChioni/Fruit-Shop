@@ -36,7 +36,8 @@ defineProps({
     padding: 40px 0;
 }
 
-.page-container--narrow :deep(.legal-header) {
+.page-container--narrow :deep(.legal-header),
+.page-container--narrow :deep(.page-header) {
     box-sizing: border-box;
     width: 100vw;
     margin-right: calc(50% - 50vw);
@@ -49,7 +50,8 @@ defineProps({
         padding: 32px 16px;
     }
 
-    .page-container--narrow :deep(.legal-header) {
+    .page-container--narrow :deep(.legal-header),
+    .page-container--narrow :deep(.page-header) {
         padding: 0 16px;
     }
 }

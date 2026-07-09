@@ -1,5 +1,6 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import PageContainer from '@/Components/PageContainer.vue';
+import PageNav from '@/Components/PageNav.vue';
 import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
@@ -19,50 +20,63 @@ defineProps({
 </script>
 
 <template>
-    <Head title="Il Giardino della Frutta" />
+    <Head title="Il giardino della frutta" />
 
-    <AuthenticatedLayout>
-        <template #header>
-            <h2
-                class="text-xl font-semibold leading-tight text-gray-800"
-            >
-                Il Giardino della Frutta
-            </h2>
-        </template>
+    <PageContainer>
+        <header class="settings-header">
+            <h1 class="settings-title">Il Giardino della Frutta</h1>
+            <PageNav />
+        </header>
 
-        <div class="py-12">
-            <div class="w-full space-y-6 px-4 sm:px-6 lg:px-8">
-                <div
-                    class="bg-white p-4 shadow sm:rounded-lg sm:p-8"
-                >
-                    <UpdateProfileInformationForm
-                        :must-verify-email="mustVerifyEmail"
-                        :status="status"
-                    />
+        <div class="settings-grid">
+            <section class="settings-card">
+                <UpdateProfileInformationForm
+                    :must-verify-email="mustVerifyEmail"
+                    :status="status"
+                />
+            </section>
+
+            <section class="settings-card">
+                <UpdatePasswordForm />
+            </section>
+
+            <section class="settings-card">
+                <DeleteUserForm v-if="canDeleteAccount" />
+
+                <div v-else class="space-y-2">
+                    <h2 class="text-lg font-medium text-gray-900">
+                        Elimina account
+                    </h2>
+
+                    <p class="text-sm text-gray-600">
+                        Gli account amministratore non possono essere eliminati.
+                    </p>
                 </div>
-
-                <div
-                    class="bg-white p-4 shadow sm:rounded-lg sm:p-8"
-                >
-                    <UpdatePasswordForm />
-                </div>
-
-                <div
-                    class="bg-white p-4 shadow sm:rounded-lg sm:p-8"
-                >
-                    <DeleteUserForm v-if="canDeleteAccount" />
-
-                    <section v-else class="space-y-2">
-                        <h2 class="text-lg font-medium text-gray-900">
-                            Elimina account
-                        </h2>
-
-                        <p class="text-sm text-gray-600">
-                            Gli account amministratore non possono essere eliminati.
-                        </p>
-                    </section>
-                </div>
-            </div>
+            </section>
         </div>
-    </AuthenticatedLayout>
+    </PageContainer>
 </template>
+
+<style scoped>
+.settings-header {
+    margin-bottom: 24px;
+}
+
+.settings-title {
+    margin: 0 0 8px;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.settings-grid {
+    display: grid;
+    gap: 16px;
+}
+
+.settings-card {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: #fff;
+}
+</style>
