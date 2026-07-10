@@ -47,7 +47,12 @@ function logout() {
                 }"
                 :aria-current="(route().current('dashboard') || route().current('products.index')) ? 'page' : undefined"
             >
-                <span class="nav-icon nav-icon--products" aria-hidden="true"></span>
+                <svg class="nav-svg-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <rect x="4" y="4" width="6" height="6" rx="1.4" />
+                    <rect x="14" y="4" width="6" height="6" rx="1.4" />
+                    <rect x="4" y="14" width="6" height="6" rx="1.4" />
+                    <rect x="14" y="14" width="6" height="6" rx="1.4" />
+                </svg>
                 {{ t('nav.products', 'Prodotti') }}
             </Link>
 
@@ -61,7 +66,11 @@ function logout() {
                 }"
                 :aria-current="(route().current('cart.*') || route().current('checkout.*')) ? 'page' : undefined"
             >
-                <span class="nav-icon nav-icon--cart" aria-hidden="true"></span>
+                <svg class="nav-svg-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <circle cx="9" cy="20" r="1.7" />
+                    <circle cx="18" cy="20" r="1.7" />
+                    <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6" />
+                </svg>
                 {{ t('nav.cart', 'Carrello') }}
             </Link>
 
@@ -102,7 +111,10 @@ function logout() {
                 :class="{ 'page-nav-button--active': route().current('profile.*') }"
                 :aria-current="route().current('profile.*') ? 'page' : undefined"
             >
-                <span class="nav-icon nav-icon--settings" aria-hidden="true"></span>
+                <svg class="nav-svg-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
+                    <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.88.34l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.88l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.88-.34l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 0 1 0 4h-.09A1.7 1.7 0 0 0 19.4 15Z" />
+                </svg>
                 {{ t('nav.settings', 'Impostazioni') }}
             </Link>
 
@@ -138,7 +150,11 @@ function logout() {
                 class="page-nav-button page-nav-button--logout"
                 @click="confirmLogout"
             >
-                <span class="nav-icon nav-icon--logout" aria-hidden="true"></span>
+                <svg class="nav-svg-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <path d="M16 17l5-5-5-5" />
+                    <path d="M21 12H9" />
+                </svg>
                 {{ t('nav.logout', 'Logout') }}
             </button>
 
@@ -249,7 +265,16 @@ function logout() {
     border-radius: 4px;
 }
 
-.nav-icon--products::after,
+.nav-svg-icon {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+}
+
 .nav-icon--orders::after,
 .nav-icon--register::after {
     position: absolute;
@@ -259,33 +284,13 @@ function logout() {
     content: '';
 }
 
-.nav-icon--cart {
-    border-radius: 3px 3px 6px 6px;
-}
-
-.nav-icon--cart::before {
-    position: absolute;
-    top: -6px;
-    left: 3px;
-    width: 8px;
-    height: 6px;
-    border: 2px solid currentColor;
-    border-bottom: 0;
-    border-radius: 8px 8px 0 0;
-    content: '';
-}
-
 .nav-icon--admin,
-.nav-icon--login,
-.nav-icon--logout,
-.nav-icon--settings {
+.nav-icon--login {
     border-radius: 50%;
 }
 
 .nav-icon--admin::after,
-.nav-icon--login::after,
-.nav-icon--logout::after,
-.nav-icon--settings::after {
+.nav-icon--login::after {
     position: absolute;
     inset: 4px;
     border-radius: 50%;
