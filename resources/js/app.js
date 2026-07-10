@@ -3,8 +3,9 @@ import './bootstrap';
 
 import { createInertiaApp, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import { createApp, h } from 'vue';
+import { createApp, Fragment, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
+import CookieBanner from './Components/CookieBanner.vue';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Il Giardino della Frutta';
 
@@ -26,7 +27,7 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         setDocumentLocale(props.initialPage.props.locale);
 
-        return createApp({ render: () => h(App, props) })
+        return createApp({ render: () => h(Fragment, [h(App, props), h(CookieBanner)]) })
             .use(plugin)
             .use(ZiggyVue)
             .mount(el);
