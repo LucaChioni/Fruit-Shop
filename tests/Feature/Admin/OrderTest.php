@@ -40,6 +40,7 @@ class OrderTest extends TestCase
                 ->where('orders.1.customer_name', 'Primo Cliente')
                 ->where('orders.1.customer_email', 'cliente@example.com')
                 ->where('orders.1.customer_type', 'registered')
+                ->where('filters.search', '')
                 ->where('filters.status', 'all')
                 ->where('filters.customer_type', 'all')
                 ->where('filters.sort', 'newest'));
@@ -66,9 +67,45 @@ class OrderTest extends TestCase
                 ->has('orders', 2)
                 ->where('orders.0.id', $higherTotal->id)
                 ->where('orders.1.id', $lowerTotal->id)
+                ->where('filters.search', '')
                 ->where('filters.status', 'completed')
                 ->where('filters.customer_type', 'registered')
                 ->where('filters.sort', 'total_desc'));
+    }
+
+    public function test_admin_orders_index_can_be_searched_by_customer_name_or_order_number(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $nameMatch = $this->createOrder(null, [
+            'order_number' => 'FS-NAME-001',
+            'customer_name' => 'Cliente Ricercato',
+        ]);
+        $codeMatch = $this->createOrder(null, [
+            'order_number' => 'FS-CODE-123',
+            'customer_name' => 'Cliente Codice',
+        ]);
+        $this->createOrder(null, [
+            'order_number' => 'FS-OTHER-001',
+            'customer_name' => 'Cliente Escluso',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.orders.index', ['search' => 'Ricercato']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Admin/Orders/Index')
+                ->has('orders', 1)
+                ->where('orders.0.id', $nameMatch->id)
+                ->where('filters.search', 'Ricercato'));
+
+        $this->actingAs($admin)
+            ->get(route('admin.orders.index', ['search' => 'CODE-123']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Admin/Orders/Index')
+                ->has('orders', 1)
+                ->where('orders.0.id', $codeMatch->id)
+                ->where('filters.search', 'CODE-123'));
     }
 
     public function test_non_admin_cannot_access_admin_orders_index(): void

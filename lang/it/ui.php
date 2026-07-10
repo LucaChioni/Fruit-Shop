@@ -80,6 +80,8 @@ return [
     'orders.title' => 'I miei ordini',
     'orders.admin_title' => 'Ordini ricevuti',
     'orders.empty' => 'Non ci sono ancora ordini.',
+    'orders.search' => 'Cerca',
+    'orders.search_placeholder' => 'Nome o codice ordine',
     'orders.status' => 'Stato',
     'orders.all' => 'Tutti',
     'orders.sort' => 'Ordina',

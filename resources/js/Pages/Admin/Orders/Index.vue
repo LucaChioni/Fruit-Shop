@@ -28,6 +28,17 @@ const t = useTranslations();
             @change="$event.currentTarget.submit()"
         >
             <label class="filter-field">
+                {{ t('orders.search', 'Cerca') }}
+                <input
+                    type="search"
+                    name="search"
+                    :value="filters.search"
+                    class="filter-input"
+                    :placeholder="t('orders.search_placeholder', 'Nome o codice ordine')"
+                />
+            </label>
+
+            <label class="filter-field">
                 {{ t('orders.status', 'Stato') }}
                 <select name="status" class="filter-input">
                     <option value="all" :selected="filters.status === 'all'">{{ t('orders.all', 'Tutti') }}</option>

@@ -12,12 +12,17 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $filters = [
+            'search' => $request->string('search')->toString(),
             'status' => $request->string('status', 'all')->toString(),
             'sort' => $request->string('sort', 'newest')->toString(),
         ];
 
         $orders = $request->user()
             ->orders()
+            ->when($filters['search'], fn ($query, $search) => $query->where(function ($query) use ($search) {
+                $query->where('customer_name', 'like', "%{$search}%")
+                    ->orWhere('order_number', 'like', "%{$search}%");
+            }))
             ->when($filters['status'] !== 'all', fn ($query) => $query->where('status', $filters['status']))
             ->when($filters['sort'] === 'oldest', fn ($query) => $query->oldest())
             ->when($filters['sort'] === 'total_desc', fn ($query) => $query->orderByDesc('total_amount'))

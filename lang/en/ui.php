@@ -80,6 +80,8 @@ return [
     'orders.title' => 'My orders',
     'orders.admin_title' => 'Received orders',
     'orders.empty' => 'There are no orders yet.',
+    'orders.search' => 'Search',
+    'orders.search_placeholder' => 'Name or order code',
     'orders.status' => 'Status',
     'orders.all' => 'All',
     'orders.sort' => 'Sort',

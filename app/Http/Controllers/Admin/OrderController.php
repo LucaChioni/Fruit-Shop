@@ -15,6 +15,7 @@ class OrderController extends Controller
     public function index()
     {
         $filters = [
+            'search' => request()->string('search')->toString(),
             'status' => request()->string('status', 'all')->toString(),
             'customer_type' => request()->string('customer_type', 'all')->toString(),
             'sort' => request()->string('sort', 'newest')->toString(),
@@ -22,6 +23,10 @@ class OrderController extends Controller
 
         $orders = Order::query()
             ->with('user')
+            ->when($filters['search'], fn ($query, $search) => $query->where(function ($query) use ($search) {
+                $query->where('customer_name', 'like', "%{$search}%")
+                    ->orWhere('order_number', 'like', "%{$search}%");
+            }))
             ->when($filters['status'] !== 'all', fn ($query) => $query->where('status', $filters['status']))
             ->when($filters['customer_type'] === 'registered', fn ($query) => $query->whereNotNull('user_id'))
             ->when($filters['customer_type'] === 'guest', fn ($query) => $query->whereNull('user_id'))

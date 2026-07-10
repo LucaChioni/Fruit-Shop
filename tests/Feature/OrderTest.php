@@ -35,6 +35,7 @@ class OrderTest extends TestCase
                 ->where('orders.0.id', $order->id)
                 ->where('orders.0.order_number', $order->order_number)
                 ->where('orders.0.customer_name', 'Cliente Utente')
+                ->where('filters.search', '')
                 ->where('filters.status', 'all')
                 ->where('filters.sort', 'newest'));
     }
@@ -58,8 +59,49 @@ class OrderTest extends TestCase
                 ->has('orders', 2)
                 ->where('orders.0.id', $higherTotal->id)
                 ->where('orders.1.id', $lowerTotal->id)
+                ->where('filters.search', '')
                 ->where('filters.status', 'completed')
                 ->where('filters.sort', 'total_desc'));
+    }
+
+    public function test_orders_index_can_be_searched_by_customer_name_or_order_number(): void
+    {
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $nameMatch = $this->createOrder($user, [
+            'order_number' => 'FS-NAME-001',
+            'customer_name' => 'Cliente Ricercato',
+        ]);
+        $codeMatch = $this->createOrder($user, [
+            'order_number' => 'FS-CODE-123',
+            'customer_name' => 'Cliente Codice',
+        ]);
+        $this->createOrder($user, [
+            'order_number' => 'FS-OTHER-001',
+            'customer_name' => 'Cliente Escluso',
+        ]);
+        $this->createOrder($otherUser, [
+            'order_number' => 'FS-CODE-999',
+            'customer_name' => 'Cliente Altro',
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('orders.index', ['search' => 'Ricercato']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Orders/Index')
+                ->has('orders', 1)
+                ->where('orders.0.id', $nameMatch->id)
+                ->where('filters.search', 'Ricercato'));
+
+        $this->actingAs($user)
+            ->get(route('orders.index', ['search' => 'CODE-123']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Orders/Index')
+                ->has('orders', 1)
+                ->where('orders.0.id', $codeMatch->id)
+                ->where('filters.search', 'CODE-123'));
     }
 
     public function test_order_show_allows_owner(): void
