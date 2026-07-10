@@ -8,10 +8,32 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import CookieBanner from './Components/CookieBanner.vue';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Il Giardino della Frutta';
+const themeStorageKey = 'fruit_shop_theme';
+
+function getPreferredTheme() {
+    try {
+        const storedTheme = window.localStorage.getItem(themeStorageKey);
+
+        if (storedTheme === 'dark' || storedTheme === 'light') {
+            return storedTheme;
+        }
+    } catch {
+        // Fall back to the system preference when localStorage is unavailable.
+    }
+
+    return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function applyTheme(theme) {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    document.documentElement.style.colorScheme = theme;
+}
 
 function setDocumentLocale(locale) {
     document.documentElement.lang = locale === 'it' ? 'it-IT' : 'en-US';
 }
+
+applyTheme(getPreferredTheme());
 
 router.on('navigate', (event) => {
     setDocumentLocale(event.detail.page.props.locale);

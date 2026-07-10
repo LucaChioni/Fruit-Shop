@@ -1,3 +1,320 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    html.dark,
+    html.dark body {
+        background: #0f172a;
+        color: #e5e7eb;
+    }
+
+    html.dark input,
+    html.dark select,
+    html.dark textarea {
+        border-color: #334155;
+        background-color: #111827;
+        color: #e5e7eb;
+    }
+
+    html.dark input:focus,
+    html.dark select:focus,
+    html.dark textarea:focus {
+        border-color: #22c55e;
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+        outline: none;
+    }
+
+    html.dark input::placeholder,
+    html.dark textarea::placeholder {
+        color: #94a3b8;
+    }
+}
+
+@layer utilities {
+    html.dark .bg-white,
+    html.dark .bg-gray-50,
+    html.dark .bg-gray-100,
+    html.dark .bg-orange-50 {
+        background-color: #111827 !important;
+    }
+
+    html.dark .text-gray-500,
+    html.dark .text-gray-600,
+    html.dark .text-gray-700,
+    html.dark .text-gray-800,
+    html.dark .text-gray-900,
+    html.dark .text-orange-900 {
+        color: #d1d5db !important;
+    }
+
+    html.dark .border-gray-100,
+    html.dark .border-gray-200,
+    html.dark .border-gray-300 {
+        border-color: #334155 !important;
+    }
+
+    html.dark .bg-gray-500 {
+        background-color: #020617 !important;
+    }
+
+    html.dark .focus\:ring-offset-2:focus {
+        --tw-ring-offset-color: #0f172a !important;
+    }
+
+    html.dark .shadow,
+    html.dark .shadow-md,
+    html.dark .shadow-sm,
+    html.dark .shadow-xl {
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.32) !important;
+    }
+}
+
+html.dark .page-container {
+    background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+    color: #e5e7eb;
+}
+
+html.dark .page-nav-button,
+html.dark .admin-nav-link,
+html.dark .theme-button,
+html.dark .language-button {
+    border-color: #334155;
+    background: #111827;
+    color: #d1fae5;
+}
+
+html.dark .page-nav-button:hover,
+html.dark .page-nav-button:focus-visible {
+    border-color: #22c55e;
+    background: #052e16;
+}
+
+html.dark .page-nav-button--admin,
+html.dark .admin-nav-link {
+    color: #fed7aa;
+}
+
+html.dark .page-nav-button--settings,
+html.dark .page-nav-button--logout {
+    color: #e5e7eb;
+}
+
+html.dark .page-nav-button--active,
+html.dark .page-nav-button--active.page-nav-button--admin,
+html.dark .page-nav-button--active.page-nav-button--auth,
+html.dark .page-nav-button--active.page-nav-button--settings,
+html.dark .admin-nav-link--active,
+html.dark .theme-button--active,
+html.dark .language-button--active {
+    border-color: #22c55e;
+    background: #166534;
+    color: #fff;
+}
+
+html.dark .admin-nav-link:hover,
+html.dark .admin-nav-link:focus-visible {
+    border-color: #fb923c;
+    background: #431407;
+}
+
+html.dark .admin-nav-link--active:hover,
+html.dark .admin-nav-link--active:focus-visible {
+    border-color: #fb923c;
+    background: #7c2d12;
+}
+
+html.dark .theme-switcher,
+html.dark .language-switcher {
+    border-color: #334155;
+}
+
+html.dark .filters-form,
+html.dark .empty-message,
+html.dark .empty-cart,
+html.dark .empty-orders,
+html.dark .product-card,
+html.dark .cart-item,
+html.dark .order-card,
+html.dark .order-section,
+html.dark .auth-card,
+html.dark .legal-card,
+html.dark .settings-card,
+html.dark .admin-card,
+html.dark .product-form,
+html.dark .cookie-banner {
+    border-color: #334155;
+    background: #111827;
+    color: #e5e7eb;
+}
+
+html.dark .cart-summary,
+html.dark .order-total {
+    background: #1f2937;
+    color: #f9fafb;
+}
+
+html.dark .product-image,
+html.dark .cart-item-image,
+html.dark .current-image,
+html.dark .product-image--placeholder,
+html.dark .cart-item-image--placeholder {
+    background: #052e16;
+}
+
+html.dark .product-name,
+html.dark .product-title,
+html.dark .cart-title,
+html.dark .cart-item-name,
+html.dark .orders-title,
+html.dark .admin-orders-title,
+html.dark .products-title,
+html.dark .product-form-title,
+html.dark .order-title,
+html.dark .auth-header h1,
+html.dark .legal-title,
+html.dark .legal-card h2,
+html.dark .empty-cart h2,
+html.dark .logout-modal-title,
+html.dark .cookie-banner-title {
+    color: #f9fafb;
+}
+
+html.dark .product-description,
+html.dark .product-meta,
+html.dark .cart-item-details,
+html.dark .order-card-meta,
+html.dark .order-card-customer,
+html.dark .order-item-details,
+html.dark .order-meta,
+html.dark .empty-message,
+html.dark .empty-cart,
+html.dark .empty-orders,
+html.dark .legal-card p,
+html.dark .logout-modal-text,
+html.dark .cookie-banner-text,
+html.dark .help-text,
+html.dark .form-help {
+    color: #cbd5e1;
+}
+
+html.dark .filter-input,
+html.dark .quantity-input,
+html.dark .status-select,
+html.dark .input,
+html.dark .form-input,
+html.dark .form-textarea,
+html.dark .textarea {
+    border-color: #334155;
+    background: #0f172a;
+    color: #e5e7eb;
+}
+
+html.dark .add-to-cart-button,
+html.dark .update-cart-button,
+html.dark .checkout-link,
+html.dark .submit-button,
+html.dark .status-button,
+html.dark .cookie-banner-button {
+    background: #15803d;
+    color: #fff;
+}
+
+html.dark .add-to-cart-button:hover,
+html.dark .update-cart-button:hover,
+html.dark .checkout-link:hover,
+html.dark .submit-button:hover,
+html.dark .status-button:hover,
+html.dark .cookie-banner-button:hover,
+html.dark .cookie-banner-button:focus-visible {
+    background: #166534;
+}
+
+html.dark .remove-item-button,
+html.dark .remove-image-button {
+    border-color: #fca5a5;
+    background: #111827;
+    color: #fca5a5;
+}
+
+html.dark .remove-item-button:hover,
+html.dark .remove-image-button:hover {
+    background: #450a0a;
+}
+
+html.dark .edit-link,
+html.dark .create-link,
+html.dark .products-link,
+html.dark .order-link,
+html.dark .legal-footer-link,
+html.dark .cookie-banner-link {
+    color: #86efac;
+}
+
+html.dark .delete-button,
+html.dark .error,
+html.dark .form-error,
+html.dark .status-error {
+    color: #fca5a5;
+}
+
+html.dark .active {
+    color: #86efac;
+}
+
+html.dark .inactive {
+    color: #fca5a5;
+}
+
+html.dark .customer-type-registered {
+    background: #052e16;
+    color: #86efac;
+}
+
+html.dark .customer-type-guest {
+    background: #431407;
+    color: #fdba74;
+}
+
+html.dark .latest-order,
+html.dark .order-item {
+    border-color: #334155;
+}
+
+html.dark .flash-message--success {
+    color: #86efac;
+}
+
+html.dark .legal-footer {
+    color: #94a3b8;
+}
+
+html.dark .legal-footer::before {
+    border-color: #334155;
+}
+
+html.dark .legal-footer-brand,
+html.dark .legal-company-item dt {
+    color: #e5e7eb;
+}
+
+html.dark .cookie-banner-close {
+    color: #cbd5e1;
+}
+
+html.dark .cookie-banner-close:hover,
+html.dark .cookie-banner-close:focus-visible {
+    background: #1f2937;
+    color: #fff;
+}
+
+html.dark .logout-modal {
+    background: #111827;
+    color: #e5e7eb;
+}
+
+html.dark dialog > div,
+html.dark .rounded-lg.bg-white {
+    background-color: #111827 !important;
+    color: #e5e7eb;
+}

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import DangerButton from '@/Components/DangerButton.vue';
 import Modal from '@/Components/Modal.vue';
@@ -11,6 +11,52 @@ const t = useTranslations();
 
 const showLogoutConfirmation = ref(false);
 const logoutProcessing = ref(false);
+const isDarkMode = ref(false);
+const themeStorageKey = 'fruit_shop_theme';
+
+function applyTheme(theme) {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    document.documentElement.style.colorScheme = theme;
+    isDarkMode.value = theme === 'dark';
+}
+
+function getPreferredTheme() {
+    try {
+        const storedTheme = window.localStorage.getItem(themeStorageKey);
+
+        if (storedTheme === 'dark' || storedTheme === 'light') {
+            return storedTheme;
+        }
+    } catch {
+        // Fall back to the system preference when localStorage is unavailable.
+    }
+
+    return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+onMounted(() => {
+    applyTheme(getPreferredTheme());
+});
+
+function toggleTheme() {
+    const nextTheme = isDarkMode.value ? 'light' : 'dark';
+
+    setTheme(nextTheme);
+}
+
+function setTheme(theme) {
+    if ((theme === 'dark') === isDarkMode.value) {
+        return;
+    }
+
+    try {
+        window.localStorage.setItem(themeStorageKey, theme);
+    } catch {
+        // The visual change still applies for the current page view.
+    }
+
+    applyTheme(theme);
+}
 
 function confirmLogout() {
     showLogoutConfirmation.value = true;
@@ -157,6 +203,41 @@ function logout() {
                 </svg>
                 {{ t('nav.logout', 'Logout') }}
             </button>
+
+            <span class="theme-switcher" :aria-label="t('nav.theme', 'Tema')">
+                <button
+                    type="button"
+                    class="theme-button"
+                    :class="{ 'theme-button--active': !isDarkMode }"
+                    :aria-label="t('nav.light_mode', 'Chiaro')"
+                    :aria-pressed="!isDarkMode"
+                    @click="setTheme('light')"
+                >
+                    <svg class="theme-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </button>
+                <button
+                    type="button"
+                    class="theme-button"
+                    :class="{ 'theme-button--active': isDarkMode }"
+                    :aria-label="t('nav.dark_mode', 'Scuro')"
+                    :aria-pressed="isDarkMode"
+                    @click="setTheme('dark')"
+                >
+                    <svg class="theme-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8Z" />
+                    </svg>
+                </button>
+            </span>
 
             <span class="language-switcher" :aria-label="t('nav.language', 'Lingua')">
                 <Link
@@ -341,6 +422,7 @@ function logout() {
     color: #fff;
 }
 
+.theme-switcher,
 .language-switcher {
     display: inline-flex;
     overflow: hidden;
@@ -348,7 +430,13 @@ function logout() {
     border-radius: 999px;
 }
 
+.theme-button,
 .language-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    min-height: 28px;
     padding: 4px 8px;
     border: 0;
     background: #fff;
@@ -359,6 +447,17 @@ function logout() {
     font-weight: 800;
 }
 
+.theme-icon {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+}
+
+.theme-button--active,
 .language-button--active {
     background: #166534;
     color: #fff;
@@ -418,6 +517,7 @@ function logout() {
         font-size: 14px;
     }
 
+    .theme-switcher,
     .language-switcher {
         flex: 0 0 auto;
     }
