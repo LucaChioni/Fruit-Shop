@@ -391,7 +391,35 @@ function logout() {
 
 @media (max-width: 640px) {
     .page-nav {
-        padding: 0 16px;
+        gap: 10px;
+        width: 100%;
+        margin-right: 0;
+        margin-left: 0;
+        padding: 0;
+    }
+
+    .page-nav-group {
+        width: 100%;
+        gap: 8px;
+    }
+
+    .page-nav-group--main,
+    .page-nav-group--account {
+        flex: 1 1 100%;
+        justify-content: flex-start;
+        margin-left: 0;
+    }
+
+    .page-nav-button {
+        flex: 1 1 calc(50% - 8px);
+        width: auto;
+        min-width: 0;
+        padding: 0 10px;
+        font-size: 14px;
+    }
+
+    .language-switcher {
+        flex: 0 0 auto;
     }
 }
 </style>

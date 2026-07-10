@@ -179,12 +179,15 @@ function deleteProduct(product) {
 
 .filter-field {
     display: grid;
+    flex: 1 1 180px;
     gap: 6px;
     font-weight: 600;
 }
 
 .filter-input {
-    min-width: 180px;
+    box-sizing: border-box;
+    min-width: min(180px, 100%);
+    width: 100%;
     padding: 8px 10px;
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -193,7 +196,7 @@ function deleteProduct(product) {
 
 .products-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
     gap: 14px;
 }
 

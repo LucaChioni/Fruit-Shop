@@ -49,7 +49,7 @@ const t = useTranslations();
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 160px;
+    min-width: min(160px, 100%);
     min-height: 42px;
     padding: 0 16px;
     border: 1px solid #7c2d12;

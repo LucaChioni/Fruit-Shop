@@ -232,7 +232,8 @@ function updateStatus() {
 }
 
 .status-select {
-    min-width: 180px;
+    box-sizing: border-box;
+    min-width: min(180px, 100%);
     padding: 8px 10px;
     border: 1px solid #ccc;
     border-radius: 8px;
