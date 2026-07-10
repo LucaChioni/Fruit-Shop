@@ -1,4 +1,5 @@
 <script setup>
+import AdminNav from '@/Components/AdminNav.vue';
 import PageNav from '@/Components/PageNav.vue';
 import PageContainer from '@/Components/PageContainer.vue';
 import OrderList from '@/Components/OrderList.vue';
@@ -19,6 +20,8 @@ const t = useTranslations();
             <h1 class="admin-orders-title">Il Giardino della Frutta</h1>
 
             <PageNav />
+
+            <AdminNav />
         </header>
 
         <form

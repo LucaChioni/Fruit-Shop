@@ -1,5 +1,6 @@
 <script setup>
 import { useForm, usePage } from '@inertiajs/vue3';
+import AdminNav from '@/Components/AdminNav.vue';
 import PageNav from '@/Components/PageNav.vue';
 import PageContainer from '@/Components/PageContainer.vue';
 import { useTranslations } from '@/i18n';
@@ -37,6 +38,8 @@ function updateStatus() {
             <h1 class="order-title">Il Giardino della Frutta</h1>
 
             <PageNav />
+
+            <AdminNav v-if="isAdminView" />
 
             <p class="order-meta">
                 {{ t('orders.reference', 'Riferimento') }} {{ order.order_number ?? '#' + order.id }} ·

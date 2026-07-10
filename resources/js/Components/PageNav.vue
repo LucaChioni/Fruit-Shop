@@ -82,7 +82,7 @@ function logout() {
         <div class="page-nav-group page-nav-group--account">
             <Link
                 v-if="page.props.auth.user?.is_admin"
-                :href="route('admin.dashboard')"
+                :href="route('admin.orders.index')"
                 as="button"
                 type="button"
                 class="page-nav-button page-nav-button--admin"

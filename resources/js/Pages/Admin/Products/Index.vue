@@ -1,5 +1,6 @@
 <script setup>
 import { router } from '@inertiajs/vue3';
+import AdminNav from '@/Components/AdminNav.vue';
 import FlashMessage from '@/Components/FlashMessage.vue';
 import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
@@ -30,11 +31,9 @@ function deleteProduct(product) {
 
             <PageNav />
 
-            <FlashMessage />
+            <AdminNav />
 
-            <a :href="route('admin.products.create')" class="create-link">
-                {{ t('admin.new_product', 'Nuovo prodotto') }}
-            </a>
+            <FlashMessage />
         </header>
 
         <form
@@ -137,7 +136,6 @@ function deleteProduct(product) {
     font-weight: 700;
 }
 
-.create-link,
 .edit-link {
     color: #7c2d12;
     font-weight: 600;
@@ -154,7 +152,6 @@ function deleteProduct(product) {
     font-weight: 600;
 }
 
-.create-link:hover,
 .edit-link:hover,
 .delete-button:hover {
     text-decoration: underline;
