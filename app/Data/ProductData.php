@@ -45,6 +45,17 @@ class ProductData
         return Lang::has($key) ? trans($key) : $name;
     }
 
+    public static function matchesTranslatedName(Product $product, string $search): bool
+    {
+        $search = Str::lower(Str::squish($search));
+
+        if ($search === '') {
+            return true;
+        }
+
+        return Str::contains(Str::lower(self::translatedName($product)), $search);
+    }
+
     public static function translatedDescription(Product $product): ?string
     {
         if ($product->description === null) {

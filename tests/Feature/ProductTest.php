@@ -55,4 +55,28 @@ class ProductTest extends TestCase
                 ->where('filters.search', 'Arance')
                 ->where('filters.sort', 'price_desc'));
     }
+
+    public function test_products_index_filters_by_translated_name_for_current_locale(): void
+    {
+        $this->createProduct(['name' => 'Mele Golden']);
+        $this->createProduct(['name' => 'Lattuga']);
+
+        $this->withSession(['locale' => 'en'])
+            ->get(route('products.index', ['search' => 'Golden']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Products/Index')
+                ->has('products', 1)
+                ->where('products.0.name', 'Golden apples')
+                ->where('filters.search', 'Golden'));
+
+        $this->withSession(['locale' => 'it'])
+            ->get(route('products.index', ['search' => 'Mele']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Products/Index')
+                ->has('products', 1)
+                ->where('products.0.name', 'Mele Golden')
+                ->where('filters.search', 'Mele'));
+    }
 }

@@ -164,13 +164,13 @@ function removeItem(item) {
 
 .cart-items {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
 }
 
 .cart-item {
     display: grid;
-    gap: 12px;
+    gap: 14px;
     padding: 16px;
     border: 1px solid #ddd;
     border-radius: 12px;
@@ -179,7 +179,7 @@ function removeItem(item) {
 
 .cart-item-image {
     width: 100%;
-    height: 110px;
+    height: 130px;
     border-radius: 10px;
     object-fit: cover;
     background: #ecfdf5;

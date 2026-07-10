@@ -64,6 +64,33 @@ class ProductTest extends TestCase
                 ->where('filters.sort', 'price_asc'));
     }
 
+    public function test_admin_products_index_filters_by_translated_name_for_current_locale(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $this->createProduct(['name' => 'Mele Golden']);
+        $this->createProduct(['name' => 'Lattuga']);
+
+        $this->actingAs($admin)
+            ->withSession(['locale' => 'en'])
+            ->get(route('admin.products.index', ['search' => 'Lettuce']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Admin/Products/Index')
+                ->has('products', 1)
+                ->where('products.0.name', 'Lettuce')
+                ->where('filters.search', 'Lettuce'));
+
+        $this->actingAs($admin)
+            ->withSession(['locale' => 'it'])
+            ->get(route('admin.products.index', ['search' => 'Lattuga']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Admin/Products/Index')
+                ->has('products', 1)
+                ->where('products.0.name', 'Lattuga')
+                ->where('filters.search', 'Lattuga'));
+    }
+
     public function test_non_admin_cannot_access_admin_products_index(): void
     {
         $user = User::factory()->create();
