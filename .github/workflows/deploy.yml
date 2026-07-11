@@ -38,3 +38,4 @@ jobs:
             docker compose -f compose.production.yaml exec app php artisan migrate --force
             docker compose -f compose.production.yaml exec app php artisan optimize:clear
             docker compose -f compose.production.yaml exec app php artisan optimize
+            docker compose -f compose.production.yaml exec app php artisan db:seed --force
