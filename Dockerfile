@@ -60,7 +60,6 @@ RUN apk add --no-cache \
     && docker-php-ext-install \
         bcmath \
         intl \
-        opcache \
         pcntl \
         pdo_mysql \
         zip \
