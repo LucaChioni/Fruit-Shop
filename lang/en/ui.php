@@ -92,7 +92,6 @@ return [
     'cart.title' => 'Cart',
     'cart.empty_title' => 'Your cart is empty',
     'cart.empty_text' => 'Add fresh fruit and vegetables before checkout.',
-    'cart.go_products' => 'Browse products',
     'cart.quantity' => 'Quantity',
     'cart.remove' => 'Remove',
     'cart.total' => 'Total',

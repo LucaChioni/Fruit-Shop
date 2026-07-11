@@ -46,9 +46,6 @@ function removeItem(item) {
         <section v-if="items.length === 0" class="empty-cart">
             <h2>{{ t('cart.empty_title', 'Il carrello è vuoto') }}</h2>
             <p>{{ t('cart.empty_text', 'Aggiungi frutta e verdura fresca prima di procedere al checkout.') }}</p>
-            <a :href="route('products.index')" class="products-link">
-                {{ t('cart.go_products', 'Vai ai prodotti') }}
-            </a>
         </section>
 
         <form v-else class="cart-content" @submit.prevent="updateCart">
