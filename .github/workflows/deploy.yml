@@ -36,4 +36,5 @@ jobs:
             docker system prune -f
 
             docker compose -f compose.production.yaml exec app php artisan migrate --force
+            docker compose -f compose.production.yaml exec app php artisan optimize:clear
             docker compose -f compose.production.yaml exec app php artisan optimize
