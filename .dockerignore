@@ -1,0 +1,12 @@
+.git
+.github
+.idea
+.vscode
+.env
+node_modules
+vendor
+public/build
+storage/logs/*
+docker-compose*
+compose.yaml
+compose.override.yaml
