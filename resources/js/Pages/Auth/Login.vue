@@ -44,7 +44,7 @@ const submit = () => {
 
         <section class="auth-card">
             <div class="mb-6 rounded-lg bg-orange-50 p-4 text-sm text-orange-900">
-                {{ t('auth.login_help', "Il checkout ospite resta disponibile. L'accesso serve per ritrovare gli ordini cliente o per entrare nell'area admin.") }}
+                {{ t('auth.login_help', "Il checkout ospite resta disponibile. L'accesso serve per ritrovare gli ordini effettuati.") }}
             </div>
 
             <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
