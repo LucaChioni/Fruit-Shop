@@ -1,0 +1,40 @@
+services:
+    laravel.test:
+        ports: !reset []
+
+        depends_on: !override
+            mysql:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+
+        environment:
+            XDEBUG_MODE: 'off'
+
+        volumes: !override
+            - '.:/var/www/html'
+
+        networks:
+            sail:
+            reverse-proxy:
+                aliases:
+                    - fruit-shop
+
+        restart: unless-stopped
+
+    mysql:
+        ports: !reset []
+        restart: unless-stopped
+
+    redis:
+        ports: !reset []
+        restart: unless-stopped
+
+    mailpit:
+        profiles:
+            - development
+
+networks:
+    reverse-proxy:
+        external: true
+        name: reverse-proxy
