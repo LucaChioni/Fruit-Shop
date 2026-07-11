@@ -84,6 +84,8 @@ USER www-data
 
 EXPOSE 9000
 
+CMD ["php-fpm"]
+
 # =========================
 # Container Nginx interno
 # =========================
@@ -97,4 +99,4 @@ RUN ln -sfn /var/www/html/storage/app/public /var/www/html/public/storage
 
 EXPOSE 80
 
-CMD ["php-fpm"]
+CMD ["nginx", "-g", "daemon off;"]
