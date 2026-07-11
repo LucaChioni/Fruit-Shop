@@ -35,6 +35,9 @@ RUN npm ci
 
 COPY . .
 
+# Ziggy viene importato dal vendor PHP durante il build Vite
+COPY --from=composer /app/vendor /app/vendor
+
 RUN npm run build
 
 
