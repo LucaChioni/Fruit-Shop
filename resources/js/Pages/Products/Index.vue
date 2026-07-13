@@ -34,8 +34,6 @@ function addToCart(product) {
 <template>
     <PageContainer>
         <header class="products-header">
-            <h1 class="products-title">Il Giardino della Frutta</h1>
-
             <PageNav />
 
             <FlashMessage />
@@ -130,13 +128,11 @@ function addToCart(product) {
 
 <style scoped>
 .products-header {
-    margin-bottom: 24px;
-}
-
-.products-title {
-    margin-bottom: 8px;
-    font-size: 28px;
-    font-weight: 700;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 20px;
+    margin-bottom: 16px;
 }
 
 .empty-message {
@@ -147,9 +143,9 @@ function addToCart(product) {
     display: flex;
     flex-wrap: wrap;
     align-items: end;
-    gap: 12px;
-    margin-bottom: 24px;
-    padding: 16px;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding: 10px 12px;
     border: 1px solid #ddd;
     border-radius: 12px;
     background: #fff;
@@ -158,7 +154,8 @@ function addToCart(product) {
 .filter-field {
     display: grid;
     flex: 1 1 180px;
-    gap: 6px;
+    gap: 4px;
+    font-size: 14px;
     font-weight: 600;
 }
 
@@ -166,7 +163,7 @@ function addToCart(product) {
     box-sizing: border-box;
     min-width: min(180px, 100%);
     width: 100%;
-    padding: 8px 10px;
+    padding: 7px 9px;
     border: 1px solid #ccc;
     border-radius: 8px;
     font: inherit;
@@ -175,13 +172,13 @@ function addToCart(product) {
 .products-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
-    gap: 16px;
+    gap: 12px;
 }
 
 .product-card {
     display: grid;
-    gap: 14px;
-    padding: 16px;
+    gap: 10px;
+    padding: 12px;
     border: 1px solid #ddd;
     border-radius: 12px;
     background: #fff;
@@ -189,7 +186,7 @@ function addToCart(product) {
 
 .product-image {
     width: 100%;
-    height: 130px;
+    height: 108px;
     border-radius: 10px;
     object-fit: cover;
     background: #ecfdf5;
@@ -204,13 +201,14 @@ function addToCart(product) {
 }
 
 .product-name {
-    margin: 0 0 8px;
-    font-size: 20px;
+    margin: 0 0 5px;
+    font-size: 18px;
     font-weight: 700;
 }
 
 .product-description {
-    margin: 0 0 8px;
+    margin: 0 0 6px;
+    font-size: 14px;
     color: #444;
 }
 
@@ -219,7 +217,7 @@ function addToCart(product) {
 }
 
 .add-to-cart-button {
-    padding: 10px 16px;
+    padding: 8px 12px;
     border: 0;
     border-radius: 8px;
     background: #166534;
@@ -230,20 +228,21 @@ function addToCart(product) {
 
 .product-actions {
     display: grid;
-    gap: 10px;
+    gap: 8px;
     justify-items: start;
 }
 
 .quantity-label {
     display: grid;
-    gap: 6px;
+    gap: 4px;
+    font-size: 14px;
     color: #444;
     font-weight: 600;
 }
 
 .quantity-input {
     width: 110px;
-    padding: 8px;
+    padding: 7px 8px;
     border: 1px solid #ccc;
     border-radius: 8px;
 }
@@ -255,5 +254,39 @@ function addToCart(product) {
 .add-to-cart-button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+    .products-header {
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .filters-form {
+        gap: 8px;
+        margin-bottom: 12px;
+        padding: 8px;
+    }
+
+    .filter-field {
+        flex-basis: 140px;
+    }
+
+    .products-list {
+        gap: 10px;
+    }
+
+    .product-card {
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .product-image {
+        height: 88px;
+    }
+
+    .product-name {
+        font-size: 17px;
+    }
 }
 </style>

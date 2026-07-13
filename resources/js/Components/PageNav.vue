@@ -9,6 +9,13 @@ import { useTranslations } from '@/i18n';
 const page = usePage();
 const t = useTranslations();
 
+defineProps({
+    title: {
+        type: String,
+        default: 'Il Giardino della Frutta',
+    },
+});
+
 const showLogoutConfirmation = ref(false);
 const logoutProcessing = ref(false);
 const isDarkMode = ref(false);
@@ -81,8 +88,11 @@ function logout() {
 }
 </script>
 <template>
-    <nav class="page-nav">
-        <div class="page-nav-group page-nav-group--main">
+    <div class="page-nav-shell">
+        <h1 class="page-nav-title">{{ title }}</h1>
+
+        <nav class="page-nav">
+            <div class="page-nav-group page-nav-group--main">
             <Link
                 :href="route('products.index')"
                 as="button"
@@ -132,9 +142,9 @@ function logout() {
                 <span class="nav-icon nav-icon--orders" aria-hidden="true"></span>
                 {{ t('nav.orders', 'I miei ordini') }}
             </Link>
-        </div>
+            </div>
 
-        <div class="page-nav-group page-nav-group--account">
+            <div class="page-nav-group page-nav-group--account">
             <Link
                 v-if="page.props.auth.user?.is_admin"
                 :href="route('admin.orders.index')"
@@ -259,8 +269,9 @@ function logout() {
                     EN
                 </Link>
             </span>
-        </div>
-    </nav>
+            </div>
+        </nav>
+    </div>
 
     <Modal :show="showLogoutConfirmation" max-width="md" @close="closeLogoutConfirmation">
         <div class="logout-modal">
@@ -288,24 +299,37 @@ function logout() {
 </template>
 
 <style scoped>
+.page-nav-shell {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 20px;
+    width: 100%;
+}
+
+.page-nav-title {
+    flex: 0 0 auto;
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+}
+
 .page-nav {
     box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
-    gap: 16px 32px;
-    width: 100vw;
-    margin-right: calc(50% - 50vw);
-    margin-bottom: 12px;
-    margin-left: calc(50% - 50vw);
-    padding: 0 24px;
+    gap: 10px 18px;
+    width: 100%;
+    flex: 1 1 560px;
+    margin-bottom: 0;
 }
 
 .page-nav-group {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 16px;
+    gap: 8px;
 }
 
 .page-nav-group--main {
@@ -322,16 +346,17 @@ function logout() {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 148px;
-    height: 42px;
-    gap: 8px;
-    padding: 0 14px;
+    width: 132px;
+    height: 36px;
+    gap: 7px;
+    padding: 0 12px;
     border: 1px solid #bbf7d0;
     border-radius: 999px;
     background: #fff;
     color: #166534;
     cursor: pointer;
     font: inherit;
+    font-size: 14px;
     font-weight: 600;
     text-decoration: none;
     transition: background 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
@@ -340,15 +365,15 @@ function logout() {
 .nav-icon {
     position: relative;
     display: inline-block;
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     border: 2px solid currentColor;
     border-radius: 4px;
 }
 
 .nav-svg-icon {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     fill: none;
     stroke: currentColor;
     stroke-linecap: round;
@@ -363,6 +388,15 @@ function logout() {
     border-top: 2px solid currentColor;
     border-bottom: 2px solid currentColor;
     content: '';
+}
+
+.nav-icon--orders {
+    width: 16px;
+    height: 16px;
+}
+
+.nav-icon--orders::after {
+    inset: 3px;
 }
 
 .nav-icon--admin,
@@ -436,8 +470,8 @@ function logout() {
     align-items: center;
     justify-content: center;
     min-width: 34px;
-    min-height: 28px;
-    padding: 4px 8px;
+    min-height: 26px;
+    padding: 3px 8px;
     border: 0;
     background: #fff;
     color: #4b5563;
@@ -489,32 +523,48 @@ function logout() {
 }
 
 @media (max-width: 640px) {
+    .page-nav-shell {
+        gap: 8px;
+    }
+
+    .page-nav-title {
+        font-size: 22px;
+    }
+
     .page-nav {
-        gap: 10px;
-        width: 100%;
-        margin-right: 0;
-        margin-left: 0;
-        padding: 0;
+        flex: 1 1 100%;
+        flex-wrap: nowrap;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+    }
+
+    .page-nav::-webkit-scrollbar {
+        display: none;
     }
 
     .page-nav-group {
-        width: 100%;
-        gap: 8px;
+        flex: 0 0 auto;
+        flex-wrap: nowrap;
+        width: auto;
+        gap: 6px;
     }
 
     .page-nav-group--main,
     .page-nav-group--account {
-        flex: 1 1 100%;
+        flex: 0 0 auto;
         justify-content: flex-start;
         margin-left: 0;
     }
 
     .page-nav-button {
-        flex: 1 1 calc(50% - 8px);
+        flex: 0 0 auto;
         width: auto;
         min-width: 0;
-        padding: 0 10px;
-        font-size: 14px;
+        height: 34px;
+        padding: 0 9px;
+        font-size: 13px;
     }
 
     .theme-switcher,

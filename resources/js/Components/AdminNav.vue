@@ -40,23 +40,24 @@ const t = useTranslations();
 .admin-nav {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 12px;
-    margin-bottom: 20px;
+    gap: 8px;
+    margin-top: 8px;
+    margin-bottom: 12px;
 }
 
 .admin-nav-link {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: min(160px, 100%);
-    min-height: 42px;
-    padding: 0 16px;
+    min-width: min(144px, 100%);
+    min-height: 36px;
+    padding: 0 12px;
     border: 1px solid #7c2d12;
     border-radius: 999px;
     background: #fff;
     color: #7c2d12;
     font-weight: 700;
+    font-size: 14px;
     text-align: center;
     text-decoration: none;
     transition: background 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
@@ -81,5 +82,27 @@ const t = useTranslations();
 .admin-nav-link--active:focus-visible {
     border-color: #5f220d;
     background: #5f220d;
+}
+
+@media (max-width: 640px) {
+    .admin-nav {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        margin-top: 6px;
+        margin-bottom: 10px;
+        scrollbar-width: none;
+    }
+
+    .admin-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .admin-nav-link {
+        flex: 0 0 auto;
+        min-width: auto;
+        min-height: 34px;
+        padding: 0 10px;
+        font-size: 13px;
+    }
 }
 </style>

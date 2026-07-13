@@ -29,12 +29,11 @@ const submit = () => {
         <Head title="Il Giardino della Frutta" />
 
         <header class="page-header auth-header">
-            <h1>Il Giardino della Frutta</h1>
             <PageNav />
         </header>
 
         <section class="auth-card">
-            <div class="mb-6 rounded-lg bg-green-50 p-4 text-sm text-green-900">
+            <div class="auth-help mb-4 rounded-lg bg-green-50 text-sm text-green-900">
                 {{ t('auth.register_help', 'La registrazione è facoltativa: puoi ordinare anche come ospite. Gli account creati da qui sono account cliente, non admin.') }}
             </div>
 
@@ -129,21 +128,33 @@ const submit = () => {
 
 <style scoped>
 .auth-header {
-    margin-bottom: 24px;
-}
-
-.auth-header h1 {
-    margin: 0 0 8px;
-    font-size: 28px;
-    font-weight: 700;
+    margin-bottom: 16px;
 }
 
 .auth-card {
     width: min(480px, 100%);
     margin: 0 auto;
-    padding: 20px;
+    padding: 14px;
     border: 1px solid #ddd;
     border-radius: 12px;
     background: #fff;
+}
+
+.auth-help {
+    padding: 10px 12px;
+}
+
+@media (max-width: 640px) {
+    .auth-header {
+        margin-bottom: 12px;
+    }
+
+    .auth-card {
+        padding: 10px;
+    }
+
+    .auth-help {
+        padding: 8px;
+    }
 }
 </style>

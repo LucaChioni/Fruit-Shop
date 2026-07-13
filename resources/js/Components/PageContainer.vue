@@ -23,7 +23,7 @@ defineProps({
     min-height: 100vh;
     flex-direction: column;
     width: 100%;
-    padding: 40px 24px;
+    padding: 28px 24px;
 }
 
 .page-container :deep(.legal-footer) {
@@ -37,10 +37,11 @@ defineProps({
 .page-container--narrow {
     width: min(1120px, calc(100% - 32px));
     margin: 0 auto;
-    padding: 40px 0;
+    padding: 28px 0;
 }
 
 .page-container--narrow :deep(.legal-header),
+.page-container--narrow :deep(.settings-header),
 .page-container--narrow :deep(.page-header) {
     box-sizing: border-box;
     width: 100vw;
@@ -51,10 +52,11 @@ defineProps({
 
 @media (max-width: 640px) {
     .page-container:not(.page-container--narrow) {
-        padding: 32px 16px;
+        padding: 20px 14px;
     }
 
     .page-container--narrow :deep(.legal-header),
+    .page-container--narrow :deep(.settings-header),
     .page-container--narrow :deep(.page-header) {
         padding: 0 16px;
     }

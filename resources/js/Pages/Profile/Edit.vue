@@ -25,9 +25,8 @@ const t = useTranslations();
 <template>
     <Head title="Il giardino della frutta" />
 
-    <PageContainer>
+    <PageContainer narrow>
         <header class="settings-header">
-            <h1 class="settings-title">Il Giardino della Frutta</h1>
             <PageNav />
         </header>
 
@@ -62,24 +61,57 @@ const t = useTranslations();
 
 <style scoped>
 .settings-header {
-    margin-bottom: 24px;
-}
-
-.settings-title {
-    margin: 0 0 8px;
-    font-size: 28px;
-    font-weight: 700;
+    margin-bottom: 16px;
 }
 
 .settings-grid {
     display: grid;
-    gap: 16px;
+    gap: 12px;
 }
 
 .settings-card {
-    padding: 20px;
+    padding: 14px;
     border: 1px solid #ddd;
     border-radius: 12px;
     background: #fff;
+}
+
+.settings-card :deep(h2) {
+    margin-bottom: 0;
+    font-size: 18px;
+}
+
+.settings-card :deep(form) {
+    margin-top: 16px;
+}
+
+.settings-card :deep(.space-y-6 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(16px * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(16px * var(--tw-space-y-reverse));
+}
+
+@media (max-width: 640px) {
+    .settings-header {
+        margin-bottom: 12px;
+    }
+
+    .settings-grid {
+        gap: 10px;
+    }
+
+    .settings-card {
+        padding: 10px;
+    }
+
+    .settings-card :deep(form) {
+        margin-top: 12px;
+    }
+
+    .settings-card :deep(.space-y-6 > :not([hidden]) ~ :not([hidden])) {
+        --tw-space-y-reverse: 0;
+        margin-top: calc(12px * calc(1 - var(--tw-space-y-reverse)));
+        margin-bottom: calc(12px * var(--tw-space-y-reverse));
+    }
 }
 </style>

@@ -97,9 +97,9 @@ watch(dateInputLocale, async () => {
 
 <template>
     <PageContainer>
-        <h1 class="checkout-title">Il Giardino della Frutta</h1>
-
-        <PageNav />
+        <header class="checkout-header">
+            <PageNav />
+        </header>
 
         <form class="checkout-form" @submit.prevent="submitOrder">
             <label class="form-field">
@@ -165,10 +165,8 @@ watch(dateInputLocale, async () => {
 </template>
 
 <style scoped>
-.checkout-title {
-    margin: 0 0 24px;
-    font-size: 28px;
-    font-weight: 700;
+.checkout-header {
+    margin-bottom: 16px;
 }
 
 .checkout-form {

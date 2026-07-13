@@ -69,7 +69,7 @@ const t = useTranslations();
 
 <style scoped>
 .empty-orders {
-    padding: 24px;
+    padding: 14px;
     border: 1px solid #ddd;
     border-radius: 12px;
     background: #fff;
@@ -79,33 +79,34 @@ const t = useTranslations();
 .orders-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
-    gap: 14px;
+    gap: 12px;
 }
 
 .order-card {
     display: grid;
-    gap: 14px;
-    padding: 16px;
+    gap: 10px;
+    padding: 12px;
     border: 1px solid #ddd;
     border-radius: 12px;
     background: #fff;
 }
 
 .order-card-title {
-    margin: 0 0 8px;
-    font-size: 20px;
+    margin: 0 0 5px;
+    font-size: 18px;
     font-weight: 700;
 }
 
 .order-card-meta,
 .order-card-customer {
-    margin: 0 0 4px;
+    margin: 0 0 3px;
     color: #555;
+    font-size: 14px;
 }
 
 .customer-type {
     display: inline-flex;
-    margin-left: 8px;
+    margin-left: 6px;
     padding: 2px 8px;
     border-radius: 999px;
     font-size: 12px;
@@ -137,5 +138,24 @@ const t = useTranslations();
 
 .order-link:hover {
     text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+    .empty-orders,
+    .order-card {
+        padding: 10px;
+    }
+
+    .orders-list {
+        gap: 10px;
+    }
+
+    .order-card {
+        gap: 8px;
+    }
+
+    .order-card-title {
+        font-size: 17px;
+    }
 }
 </style>

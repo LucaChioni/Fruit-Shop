@@ -9,7 +9,6 @@ const t = useTranslations();
 <template>
     <PageContainer narrow>
         <header class="legal-header">
-            <h1>Il Giardino della Frutta</h1>
             <PageNav />
         </header>
 
@@ -30,19 +29,13 @@ const t = useTranslations();
 
 <style scoped>
 .legal-header {
-    margin-bottom: 24px;
-}
-
-.legal-header h1 {
-    margin: 0 0 8px;
-    font-size: 28px;
-    font-weight: 700;
+    margin-bottom: 16px;
 }
 
 .legal-card {
     display: grid;
-    gap: 12px;
-    padding: 20px;
+    gap: 10px;
+    padding: 14px;
     border: 1px solid #ddd;
     border-radius: 12px;
     background: #fff;
@@ -54,7 +47,18 @@ const t = useTranslations();
 }
 
 .legal-card h2 {
-    margin-top: 8px;
-    font-size: 20px;
+    margin-top: 6px;
+    font-size: 18px;
+}
+
+@media (max-width: 640px) {
+    .legal-header {
+        margin-bottom: 12px;
+    }
+
+    .legal-card {
+        gap: 8px;
+        padding: 10px;
+    }
 }
 </style>

@@ -17,8 +17,6 @@ const t = useTranslations();
 <template>
     <PageContainer>
         <header class="admin-orders-header">
-            <h1 class="admin-orders-title">Il Giardino della Frutta</h1>
-
             <PageNav />
 
             <AdminNav />
@@ -91,22 +89,24 @@ const t = useTranslations();
 
 <style scoped>
 .admin-orders-header {
-    margin-bottom: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 20px;
+    margin-bottom: 16px;
 }
 
-.admin-orders-title {
-    margin: 0 0 8px;
-    font-size: 28px;
-    font-weight: 700;
+.admin-orders-header :deep(.admin-nav) {
+    flex: 1 1 100%;
 }
 
 .filters-form {
     display: flex;
     flex-wrap: wrap;
     align-items: end;
-    gap: 12px;
-    margin-bottom: 24px;
-    padding: 16px;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding: 10px 12px;
     border: 1px solid #ddd;
     border-radius: 12px;
     background: #fff;
@@ -115,7 +115,8 @@ const t = useTranslations();
 .filter-field {
     display: grid;
     flex: 1 1 180px;
-    gap: 6px;
+    gap: 4px;
+    font-size: 14px;
     font-weight: 600;
 }
 
@@ -123,10 +124,26 @@ const t = useTranslations();
     box-sizing: border-box;
     min-width: min(180px, 100%);
     width: 100%;
-    padding: 8px 10px;
+    padding: 7px 9px;
     border: 1px solid #ccc;
     border-radius: 8px;
     font: inherit;
 }
 
+@media (max-width: 640px) {
+    .admin-orders-header {
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .filters-form {
+        gap: 8px;
+        margin-bottom: 12px;
+        padding: 8px;
+    }
+
+    .filter-field {
+        flex-basis: 140px;
+    }
+}
 </style>

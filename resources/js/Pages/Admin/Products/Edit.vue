@@ -74,8 +74,6 @@ function submit() {
 <template>
     <PageContainer>
         <header class="product-form-header">
-            <h1 class="product-form-title">Il Giardino della Frutta</h1>
-
             <PageNav />
 
             <AdminNav />
@@ -151,12 +149,6 @@ function submit() {
 <style scoped>
 .product-form-header {
     margin-bottom: 24px;
-}
-
-.product-form-title {
-    margin: 0 0 8px;
-    font-size: 28px;
-    font-weight: 700;
 }
 
 .product-form {

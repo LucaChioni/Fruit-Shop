@@ -36,8 +36,6 @@ function removeItem(item) {
 <template>
     <PageContainer>
         <header class="cart-header">
-            <h1 class="cart-title">Il Giardino della Frutta</h1>
-
             <PageNav />
 
             <FlashMessage />
@@ -127,13 +125,15 @@ function removeItem(item) {
 
 <style scoped>
 .cart-header {
-    margin-bottom: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 20px;
+    margin-bottom: 16px;
 }
 
-.cart-title {
-    margin: 0 0 8px;
-    font-size: 28px;
-    font-weight: 700;
+.cart-header :deep(.flash-message) {
+    flex: 1 1 100%;
 }
 
 .empty-cart {
@@ -156,19 +156,19 @@ function removeItem(item) {
 
 .cart-content {
     display: grid;
-    gap: 24px;
+    gap: 16px;
 }
 
 .cart-items {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
-    gap: 16px;
+    gap: 12px;
 }
 
 .cart-item {
     display: grid;
-    gap: 14px;
-    padding: 16px;
+    gap: 10px;
+    padding: 12px;
     border: 1px solid #ddd;
     border-radius: 12px;
     background: #fff;
@@ -176,7 +176,7 @@ function removeItem(item) {
 
 .cart-item-image {
     width: 100%;
-    height: 130px;
+    height: 108px;
     border-radius: 10px;
     object-fit: cover;
     background: #ecfdf5;
@@ -305,5 +305,25 @@ function removeItem(item) {
 
 .products-link:hover {
     text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+    .cart-header {
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .cart-items {
+        gap: 10px;
+    }
+
+    .cart-item {
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .cart-item-image {
+        height: 88px;
+    }
 }
 </style>

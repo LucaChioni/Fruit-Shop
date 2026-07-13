@@ -35,8 +35,6 @@ function updateStatus() {
 <template>
     <PageContainer>
         <header class="order-header">
-            <h1 class="order-title">Il Giardino della Frutta</h1>
-
             <PageNav />
 
             <AdminNav v-if="isAdminView" />
@@ -130,13 +128,17 @@ function updateStatus() {
 
 <style scoped>
 .order-header {
-    margin-bottom: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 20px;
+    margin-bottom: 16px;
 }
 
-.order-title {
-    margin: 0 0 8px;
-    font-size: 28px;
-    font-weight: 700;
+.order-header :deep(.admin-nav),
+.order-meta,
+.flash-message {
+    flex: 1 1 100%;
 }
 
 .order-meta {
@@ -150,28 +152,28 @@ function updateStatus() {
 }
 
 .order-section {
-    margin-bottom: 24px;
-    padding: 20px;
+    margin-bottom: 16px;
+    padding: 14px;
     border: 1px solid #ddd;
     border-radius: 12px;
     background: #fff;
 }
 
 .order-section h2 {
-    margin: 0 0 12px;
-    font-size: 20px;
+    margin: 0 0 8px;
+    font-size: 18px;
 }
 
 .order-items {
     display: grid;
-    gap: 12px;
+    gap: 8px;
 }
 
 .order-item {
     display: flex;
     justify-content: space-between;
-    gap: 24px;
-    padding: 12px 0;
+    gap: 16px;
+    padding: 8px 0;
     border-bottom: 1px solid #eee;
 }
 
@@ -180,8 +182,8 @@ function updateStatus() {
 }
 
 .order-item-name {
-    margin: 0 0 4px;
-    font-size: 18px;
+    margin: 0 0 3px;
+    font-size: 17px;
 }
 
 .order-item-details {
@@ -192,11 +194,11 @@ function updateStatus() {
 .order-total {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 24px;
-    padding: 20px;
+    margin-bottom: 16px;
+    padding: 14px;
     border-radius: 12px;
     background: #f3f4f6;
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .products-link {
@@ -210,11 +212,24 @@ function updateStatus() {
 }
 
 .flash-message {
-    margin-top: 12px;
+    margin-top: 0;
     padding: 10px 12px;
     border: 1px solid transparent;
     border-radius: 10px;
     font-weight: 600;
+}
+
+@media (max-width: 640px) {
+    .order-header {
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .order-section,
+    .order-total {
+        margin-bottom: 12px;
+        padding: 10px;
+    }
 }
 
 .flash-message--success {

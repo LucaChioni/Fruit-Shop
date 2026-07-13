@@ -27,8 +27,6 @@ function deleteProduct(product) {
 <template>
     <PageContainer>
         <header class="admin-products-header">
-            <h1 class="admin-products-title">Il Giardino della Frutta</h1>
-
             <PageNav />
 
             <AdminNav />
@@ -127,13 +125,15 @@ function deleteProduct(product) {
 
 <style scoped>
 .admin-products-header {
-    margin-bottom: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 20px;
+    margin-bottom: 16px;
 }
 
-.admin-products-title {
-    margin: 0 0 8px;
-    font-size: 28px;
-    font-weight: 700;
+.admin-products-header :deep(.admin-nav) {
+    flex: 1 1 100%;
 }
 
 .edit-link {
@@ -159,7 +159,7 @@ function deleteProduct(product) {
 
 .empty-products,
 .product-card {
-    padding: 20px;
+    padding: 12px;
     border: 1px solid #ddd;
     border-radius: 12px;
     background: #fff;
@@ -169,9 +169,9 @@ function deleteProduct(product) {
     display: flex;
     flex-wrap: wrap;
     align-items: end;
-    gap: 12px;
-    margin-bottom: 24px;
-    padding: 16px;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding: 10px 12px;
     border: 1px solid #ddd;
     border-radius: 12px;
     background: #fff;
@@ -180,7 +180,8 @@ function deleteProduct(product) {
 .filter-field {
     display: grid;
     flex: 1 1 180px;
-    gap: 6px;
+    gap: 4px;
+    font-size: 14px;
     font-weight: 600;
 }
 
@@ -188,7 +189,7 @@ function deleteProduct(product) {
     box-sizing: border-box;
     min-width: min(180px, 100%);
     width: 100%;
-    padding: 8px 10px;
+    padding: 7px 9px;
     border: 1px solid #ccc;
     border-radius: 8px;
     font: inherit;
@@ -197,17 +198,17 @@ function deleteProduct(product) {
 .products-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
-    gap: 14px;
+    gap: 12px;
 }
 
 .product-card {
     display: grid;
-    gap: 12px;
+    gap: 10px;
 }
 
 .product-image {
     width: 100%;
-    height: 120px;
+    height: 104px;
     border-radius: 10px;
     object-fit: cover;
     background: #fff7ed;
@@ -226,19 +227,20 @@ function deleteProduct(product) {
     flex-wrap: wrap;
     align-content: flex-start;
     justify-content: flex-start;
-    gap: 12px;
+    gap: 10px;
 }
 
 .product-title {
-    margin: 0 0 8px;
-    font-size: 20px;
+    margin: 0 0 5px;
+    font-size: 18px;
     font-weight: 700;
 }
 
 .product-meta,
 .product-description {
-    margin: 0 0 6px;
+    margin: 0 0 5px;
     color: #555;
+    font-size: 14px;
 }
 
 .active {
@@ -249,5 +251,43 @@ function deleteProduct(product) {
 .inactive {
     color: #b91c1c;
     font-weight: 600;
+}
+
+@media (max-width: 640px) {
+    .admin-products-header {
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .filters-form {
+        gap: 8px;
+        margin-bottom: 12px;
+        padding: 8px;
+    }
+
+    .filter-field {
+        flex-basis: 140px;
+    }
+
+    .products-list {
+        gap: 10px;
+    }
+
+    .empty-products,
+    .product-card {
+        padding: 10px;
+    }
+
+    .product-card {
+        gap: 8px;
+    }
+
+    .product-image {
+        height: 86px;
+    }
+
+    .product-title {
+        font-size: 17px;
+    }
 }
 </style>
