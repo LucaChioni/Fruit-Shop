@@ -14,11 +14,15 @@ class OrderController extends Controller
 {
     public function index()
     {
+        $sort = request()->string('sort', 'created_at')->toString();
+        $sortDirection = request()->string('sort_direction', 'desc')->toString();
+
         $filters = [
             'search' => request()->string('search')->toString(),
             'status' => request()->string('status', 'all')->toString(),
             'customer_type' => request()->string('customer_type', 'all')->toString(),
-            'sort' => request()->string('sort', 'newest')->toString(),
+            'sort' => in_array($sort, ['created_at', 'total_amount'], true) ? $sort : 'created_at',
+            'sort_direction' => in_array($sortDirection, ['asc', 'desc'], true) ? $sortDirection : 'desc',
         ];
 
         $orders = Order::query()
@@ -30,10 +34,7 @@ class OrderController extends Controller
             ->when($filters['status'] !== 'all', fn ($query) => $query->where('status', $filters['status']))
             ->when($filters['customer_type'] === 'registered', fn ($query) => $query->whereNotNull('user_id'))
             ->when($filters['customer_type'] === 'guest', fn ($query) => $query->whereNull('user_id'))
-            ->when($filters['sort'] === 'oldest', fn ($query) => $query->oldest())
-            ->when($filters['sort'] === 'total_desc', fn ($query) => $query->orderByDesc('total_amount'))
-            ->when($filters['sort'] === 'total_asc', fn ($query) => $query->orderBy('total_amount'))
-            ->when(! in_array($filters['sort'], ['oldest', 'total_desc', 'total_asc'], true), fn ($query) => $query->latest())
+            ->orderBy($filters['sort'], $filters['sort_direction'])
             ->get();
 
         return Inertia::render('Admin/Orders/Index', [

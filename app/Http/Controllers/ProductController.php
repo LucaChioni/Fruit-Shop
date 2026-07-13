@@ -12,16 +12,18 @@ class ProductController extends Controller
 {
     public function index(Request $request): Response
     {
+        $sort = $request->string('sort', 'name')->toString();
+        $sortDirection = $request->string('sort_direction', 'asc')->toString();
+
         $filters = [
             'search' => $request->string('search')->toString(),
-            'sort' => $request->string('sort', 'name')->toString(),
+            'sort' => in_array($sort, ['name', 'price'], true) ? $sort : 'name',
+            'sort_direction' => in_array($sortDirection, ['asc', 'desc'], true) ? $sortDirection : 'asc',
         ];
 
         $products = Product::query()
             ->where('is_active', true)
-            ->when($filters['sort'] === 'price_asc', fn ($query) => $query->orderBy('price'))
-            ->when($filters['sort'] === 'price_desc', fn ($query) => $query->orderByDesc('price'))
-            ->when(! in_array($filters['sort'], ['price_asc', 'price_desc'], true), fn ($query) => $query->orderBy('name'))
+            ->orderBy($filters['sort'], $filters['sort_direction'])
             ->get()
             ->filter(fn (Product $product) => ProductData::matchesTranslatedName($product, $filters['search']))
             ->values();

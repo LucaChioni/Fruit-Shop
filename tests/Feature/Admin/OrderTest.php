@@ -43,7 +43,8 @@ class OrderTest extends TestCase
                 ->where('filters.search', '')
                 ->where('filters.status', 'all')
                 ->where('filters.customer_type', 'all')
-                ->where('filters.sort', 'newest'));
+                ->where('filters.sort', 'created_at')
+                ->where('filters.sort_direction', 'desc'));
     }
 
     public function test_admin_orders_index_can_be_filtered_and_sorted(): void
@@ -57,7 +58,8 @@ class OrderTest extends TestCase
         $response = $this->actingAs($admin)->get(route('admin.orders.index', [
             'status' => 'completed',
             'customer_type' => 'registered',
-            'sort' => 'total_desc',
+            'sort' => 'total_amount',
+            'sort_direction' => 'desc',
         ]));
 
         $response
@@ -70,7 +72,8 @@ class OrderTest extends TestCase
                 ->where('filters.search', '')
                 ->where('filters.status', 'completed')
                 ->where('filters.customer_type', 'registered')
-                ->where('filters.sort', 'total_desc'));
+                ->where('filters.sort', 'total_amount')
+                ->where('filters.sort_direction', 'desc'));
     }
 
     public function test_admin_orders_index_can_be_searched_by_customer_name_or_order_number(): void

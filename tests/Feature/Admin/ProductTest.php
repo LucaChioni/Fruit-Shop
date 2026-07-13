@@ -36,7 +36,8 @@ class ProductTest extends TestCase
                 ->where('products.1.is_active', true)
                 ->where('filters.search', '')
                 ->where('filters.status', 'all')
-                ->where('filters.sort', 'name'));
+                ->where('filters.sort', 'name')
+                ->where('filters.sort_direction', 'asc'));
     }
 
     public function test_admin_products_index_can_be_filtered_and_sorted(): void
@@ -49,7 +50,8 @@ class ProductTest extends TestCase
         $response = $this->actingAs($admin)->get(route('admin.products.index', [
             'search' => 'Arance',
             'status' => 'inactive',
-            'sort' => 'price_asc',
+            'sort' => 'price',
+            'sort_direction' => 'asc',
         ]));
 
         $response
@@ -61,7 +63,8 @@ class ProductTest extends TestCase
                 ->where('products.1.name', 'Arance Navel')
                 ->where('filters.search', 'Arance')
                 ->where('filters.status', 'inactive')
-                ->where('filters.sort', 'price_asc'));
+                ->where('filters.sort', 'price')
+                ->where('filters.sort_direction', 'asc'));
     }
 
     public function test_admin_products_index_filters_by_translated_name_for_current_locale(): void

@@ -16,19 +16,20 @@ class ProductController extends Controller
 {
     public function index(): Response
     {
+        $sort = request()->string('sort', 'name')->toString();
+        $sortDirection = request()->string('sort_direction', 'asc')->toString();
+
         $filters = [
             'search' => request()->string('search')->toString(),
             'status' => request()->string('status', 'all')->toString(),
-            'sort' => request()->string('sort', 'name')->toString(),
+            'sort' => in_array($sort, ['name', 'price', 'created_at'], true) ? $sort : 'name',
+            'sort_direction' => in_array($sortDirection, ['asc', 'desc'], true) ? $sortDirection : 'asc',
         ];
 
         $products = Product::query()
             ->when($filters['status'] === 'active', fn ($query) => $query->where('is_active', true))
             ->when($filters['status'] === 'inactive', fn ($query) => $query->where('is_active', false))
-            ->when($filters['sort'] === 'price_asc', fn ($query) => $query->orderBy('price'))
-            ->when($filters['sort'] === 'price_desc', fn ($query) => $query->orderByDesc('price'))
-            ->when($filters['sort'] === 'newest', fn ($query) => $query->latest())
-            ->when(! in_array($filters['sort'], ['price_asc', 'price_desc', 'newest'], true), fn ($query) => $query->orderBy('name'))
+            ->orderBy($filters['sort'], $filters['sort_direction'])
             ->get()
             ->filter(fn (Product $product) => ProductData::matchesTranslatedName($product, $filters['search']))
             ->values();

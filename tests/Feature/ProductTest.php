@@ -31,7 +31,8 @@ class ProductTest extends TestCase
                 ->where('products.0.quantity_step', 0.1)
                 ->where('products.1.name', 'Zucchine')
                 ->where('filters.search', '')
-                ->where('filters.sort', 'name'));
+                ->where('filters.sort', 'name')
+                ->where('filters.sort_direction', 'asc'));
     }
 
     public function test_products_index_can_be_filtered_and_sorted(): void
@@ -42,7 +43,8 @@ class ProductTest extends TestCase
 
         $response = $this->get(route('products.index', [
             'search' => 'Arance',
-            'sort' => 'price_desc',
+            'sort' => 'price',
+            'sort_direction' => 'desc',
         ]));
 
         $response
@@ -53,7 +55,8 @@ class ProductTest extends TestCase
                 ->where('products.0.name', 'Arance Navel')
                 ->where('products.1.name', 'Arance Tarocco')
                 ->where('filters.search', 'Arance')
-                ->where('filters.sort', 'price_desc'));
+                ->where('filters.sort', 'price')
+                ->where('filters.sort_direction', 'desc'));
     }
 
     public function test_products_index_filters_by_translated_name_for_current_locale(): void

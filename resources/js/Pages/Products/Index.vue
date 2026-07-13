@@ -29,6 +29,18 @@ function addToCart(product) {
         preserveScroll: true,
     });
 }
+
+function toggleSortDirection(event) {
+    const formElement = event.currentTarget.form;
+    const directionInput = formElement?.querySelector('input[name="sort_direction"]');
+
+    if (! formElement || ! directionInput) {
+        return;
+    }
+
+    directionInput.value = directionInput.value === 'asc' ? 'desc' : 'asc';
+    formElement.requestSubmit();
+}
 </script>
 
 <template>
@@ -60,10 +72,30 @@ function addToCart(product) {
                 {{ t('products.sort', 'Ordina') }}
                 <select name="sort" class="filter-input">
                     <option value="name" :selected="filters.sort === 'name'">{{ t('products.sort_name', 'Nome') }}</option>
-                    <option value="price_asc" :selected="filters.sort === 'price_asc'">{{ t('products.sort_price_asc', 'Prezzo crescente') }}</option>
-                    <option value="price_desc" :selected="filters.sort === 'price_desc'">{{ t('products.sort_price_desc', 'Prezzo decrescente') }}</option>
+                    <option value="price" :selected="filters.sort === 'price'">{{ t('products.sort_price', 'Prezzo') }}</option>
                 </select>
             </label>
+
+            <input type="hidden" name="sort_direction" :value="filters.sort_direction" />
+
+            <button
+                type="button"
+                class="sort-direction-button"
+                :aria-label="filters.sort_direction === 'asc' ? t('products.sort_asc', 'Ascendente') : t('products.sort_desc', 'Discendente')"
+                :title="filters.sort_direction === 'asc' ? t('products.sort_asc', 'Ascendente') : t('products.sort_desc', 'Discendente')"
+                @click="toggleSortDirection"
+            >
+                <svg class="sort-direction-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <template v-if="filters.sort_direction === 'asc'">
+                        <path d="M12 19V5" />
+                        <path d="m6 11 6-6 6 6" />
+                    </template>
+                    <template v-else>
+                        <path d="M12 5v14" />
+                        <path d="m6 13 6 6 6-6" />
+                    </template>
+                </svg>
+            </button>
         </form>
 
         <p v-if="products.length === 0" class="empty-message">
@@ -167,6 +199,36 @@ function addToCart(product) {
     border: 1px solid #ccc;
     border-radius: 8px;
     font: inherit;
+}
+
+.sort-direction-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 34px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+    color: #166534;
+    cursor: pointer;
+}
+
+.sort-direction-button:hover,
+.sort-direction-button:focus-visible {
+    border-color: #22c55e;
+    background: #f0fdf4;
+    outline: none;
+}
+
+.sort-direction-icon {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
 }
 
 .products-list {

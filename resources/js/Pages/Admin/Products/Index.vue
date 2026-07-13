@@ -1,6 +1,5 @@
 <script setup>
 import { router } from '@inertiajs/vue3';
-import AdminNav from '@/Components/AdminNav.vue';
 import FlashMessage from '@/Components/FlashMessage.vue';
 import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
@@ -22,6 +21,18 @@ function deleteProduct(product) {
         preserveScroll: true,
     });
 }
+
+function toggleSortDirection(event) {
+    const formElement = event.currentTarget.form;
+    const directionInput = formElement?.querySelector('input[name="sort_direction"]');
+
+    if (! formElement || ! directionInput) {
+        return;
+    }
+
+    directionInput.value = directionInput.value === 'asc' ? 'desc' : 'asc';
+    formElement.requestSubmit();
+}
 </script>
 
 <template>
@@ -29,47 +40,71 @@ function deleteProduct(product) {
         <header class="admin-products-header">
             <PageNav />
 
-            <AdminNav />
-
             <FlashMessage />
         </header>
 
-        <form
-            :action="route('admin.products.index')"
-            method="get"
-            class="filters-form"
-            @change="$event.currentTarget.submit()"
-        >
-            <label class="filter-field">
-                {{ t('products.search', 'Cerca') }}
-                <input
-                    type="search"
-                    name="search"
-                    :value="filters.search"
-                    class="filter-input"
-                    :placeholder="t('products.search_placeholder', 'Nome prodotto')"
-                />
-            </label>
+        <div class="filters-row">
+            <a :href="route('admin.products.create')" class="create-product-link">
+                {{ t('admin.new_product', 'Nuovo prodotto') }}
+            </a>
 
-            <label class="filter-field">
-                {{ t('admin.product_status', 'Stato') }}
-                <select name="status" class="filter-input">
-                    <option value="all" :selected="filters.status === 'all'">{{ t('orders.all', 'Tutti') }}</option>
-                    <option value="active" :selected="filters.status === 'active'">{{ t('admin.active_plural', 'Attivi') }}</option>
-                    <option value="inactive" :selected="filters.status === 'inactive'">{{ t('admin.inactive_plural', 'Disattivati') }}</option>
-                </select>
-            </label>
+            <form
+                :action="route('admin.products.index')"
+                method="get"
+                class="filters-form"
+                @change="$event.currentTarget.submit()"
+            >
+                <label class="filter-field">
+                    {{ t('products.search', 'Cerca') }}
+                    <input
+                        type="search"
+                        name="search"
+                        :value="filters.search"
+                        class="filter-input"
+                        :placeholder="t('products.search_placeholder', 'Nome prodotto')"
+                    />
+                </label>
 
-            <label class="filter-field">
-                {{ t('products.sort', 'Ordina') }}
-                <select name="sort" class="filter-input">
-                    <option value="name" :selected="filters.sort === 'name'">{{ t('products.sort_name', 'Nome') }}</option>
-                    <option value="newest" :selected="filters.sort === 'newest'">{{ t('orders.newest', 'Più recenti') }}</option>
-                    <option value="price_asc" :selected="filters.sort === 'price_asc'">{{ t('products.sort_price_asc', 'Prezzo crescente') }}</option>
-                    <option value="price_desc" :selected="filters.sort === 'price_desc'">{{ t('products.sort_price_desc', 'Prezzo decrescente') }}</option>
-                </select>
-            </label>
-        </form>
+                <label class="filter-field">
+                    {{ t('admin.product_status', 'Stato') }}
+                    <select name="status" class="filter-input">
+                        <option value="all" :selected="filters.status === 'all'">{{ t('orders.all', 'Tutti') }}</option>
+                        <option value="active" :selected="filters.status === 'active'">{{ t('admin.active_plural', 'Attivi') }}</option>
+                        <option value="inactive" :selected="filters.status === 'inactive'">{{ t('admin.inactive_plural', 'Disattivati') }}</option>
+                    </select>
+                </label>
+
+                <label class="filter-field">
+                    {{ t('products.sort', 'Ordina') }}
+                    <select name="sort" class="filter-input">
+                        <option value="name" :selected="filters.sort === 'name'">{{ t('products.sort_name', 'Nome') }}</option>
+                        <option value="price" :selected="filters.sort === 'price'">{{ t('products.sort_price', 'Prezzo') }}</option>
+                        <option value="created_at" :selected="filters.sort === 'created_at'">{{ t('products.sort_created_at', 'Data inserimento') }}</option>
+                    </select>
+                </label>
+
+                <input type="hidden" name="sort_direction" :value="filters.sort_direction" />
+
+                <button
+                    type="button"
+                    class="sort-direction-button"
+                    :aria-label="filters.sort_direction === 'asc' ? t('products.sort_asc', 'Ascendente') : t('products.sort_desc', 'Discendente')"
+                    :title="filters.sort_direction === 'asc' ? t('products.sort_asc', 'Ascendente') : t('products.sort_desc', 'Discendente')"
+                    @click="toggleSortDirection"
+                >
+                    <svg class="sort-direction-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <template v-if="filters.sort_direction === 'asc'">
+                            <path d="M12 19V5" />
+                            <path d="m6 11 6-6 6 6" />
+                        </template>
+                        <template v-else>
+                            <path d="M12 5v14" />
+                            <path d="m6 13 6 6 6-6" />
+                        </template>
+                    </svg>
+                </button>
+            </form>
+        </div>
 
         <section v-if="products.length === 0" class="empty-products">
             <p>{{ t('admin.no_products', 'Non ci sono prodotti.') }}</p>
@@ -132,10 +167,6 @@ function deleteProduct(product) {
     margin-bottom: 16px;
 }
 
-.admin-products-header :deep(.admin-nav) {
-    flex: 1 1 100%;
-}
-
 .edit-link {
     color: #7c2d12;
     font-weight: 600;
@@ -165,16 +196,44 @@ function deleteProduct(product) {
     background: #fff;
 }
 
+.filters-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
 .filters-form {
     display: flex;
+    flex: 1 1 520px;
     flex-wrap: wrap;
     align-items: end;
     gap: 10px;
-    margin-bottom: 16px;
     padding: 10px 12px;
     border: 1px solid #ddd;
     border-radius: 12px;
     background: #fff;
+}
+
+.create-product-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 148px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #7c2d12;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.create-product-link:hover,
+.create-product-link:focus-visible {
+    background: #5f220d;
+    outline: none;
 }
 
 .filter-field {
@@ -193,6 +252,36 @@ function deleteProduct(product) {
     border: 1px solid #ccc;
     border-radius: 8px;
     font: inherit;
+}
+
+.sort-direction-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 34px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+    color: #7c2d12;
+    cursor: pointer;
+}
+
+.sort-direction-button:hover,
+.sort-direction-button:focus-visible {
+    border-color: #9a3412;
+    background: #fff7ed;
+    outline: none;
+}
+
+.sort-direction-icon {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
 }
 
 .products-list {
@@ -259,14 +348,23 @@ function deleteProduct(product) {
         margin-bottom: 12px;
     }
 
-    .filters-form {
+    .filters-row {
         gap: 8px;
         margin-bottom: 12px;
+    }
+
+    .filters-form {
+        gap: 8px;
         padding: 8px;
     }
 
     .filter-field {
         flex-basis: 140px;
+    }
+
+    .create-product-link {
+        width: 100%;
+        min-height: 38px;
     }
 
     .products-list {

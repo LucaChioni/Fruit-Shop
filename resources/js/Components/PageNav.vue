@@ -151,11 +151,29 @@ function logout() {
                 as="button"
                 type="button"
                 class="page-nav-button page-nav-button--admin"
-                :class="{ 'page-nav-button--active': route().current('admin.*') }"
-                :aria-current="route().current('admin.*') ? 'page' : undefined"
+                :class="{ 'page-nav-button--active': route().current('admin.orders.*') }"
+                :aria-current="route().current('admin.orders.*') ? 'page' : undefined"
             >
-                <span class="nav-icon nav-icon--admin" aria-hidden="true"></span>
-                {{ t('nav.admin', 'Admin') }}
+                <span class="nav-icon nav-icon--orders" aria-hidden="true"></span>
+                {{ t('admin.manage_orders', 'Gestisci ordini') }}
+            </Link>
+
+            <Link
+                v-if="page.props.auth.user?.is_admin"
+                :href="route('admin.products.index')"
+                as="button"
+                type="button"
+                class="page-nav-button page-nav-button--admin"
+                :class="{ 'page-nav-button--active': route().current('admin.products.*') }"
+                :aria-current="route().current('admin.products.*') ? 'page' : undefined"
+            >
+                <svg class="nav-svg-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <rect x="4" y="4" width="6" height="6" rx="1.4" />
+                    <rect x="14" y="4" width="6" height="6" rx="1.4" />
+                    <rect x="4" y="14" width="6" height="6" rx="1.4" />
+                    <rect x="14" y="14" width="6" height="6" rx="1.4" />
+                </svg>
+                {{ t('admin.manage_products', 'Gestisci prodotti') }}
             </Link>
 
             <Link
@@ -358,6 +376,7 @@ function logout() {
     font: inherit;
     font-size: 14px;
     font-weight: 600;
+    white-space: nowrap;
     text-decoration: none;
     transition: background 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
 }
@@ -435,6 +454,7 @@ function logout() {
 }
 
 .page-nav-button--admin {
+    width: 154px;
     color: #7c2d12;
 }
 

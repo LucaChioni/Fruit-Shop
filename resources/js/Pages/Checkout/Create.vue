@@ -24,7 +24,9 @@ const closedPickupDates = new Set(props.closedPickupDates ?? []);
 const pickupDateError = ref('');
 const dateInputLocale = computed(() => page.props.locale === 'it' ? 'it-IT' : 'en-US');
 const pickupDateInput = ref(null);
+const pickupTimeInput = ref(null);
 let pickupDatePicker = null;
+let pickupTimePicker = null;
 
 const form = useForm({
     customer_name: props.customerName ?? '',
@@ -83,10 +85,33 @@ function setupPickupDatePicker() {
     });
 }
 
-onMounted(setupPickupDatePicker);
+function setupPickupTimePicker() {
+    if (! pickupTimeInput.value) {
+        return;
+    }
+
+    pickupTimePicker?.destroy();
+    pickupTimePicker = flatpickr(pickupTimeInput.value, {
+        allowInput: false,
+        dateFormat: 'H:i',
+        defaultDate: form.pickup_time || null,
+        enableTime: true,
+        noCalendar: true,
+        time_24hr: true,
+        onChange: (selectedDates, timeValue) => {
+            form.pickup_time = timeValue;
+        },
+    });
+}
+
+onMounted(() => {
+    setupPickupDatePicker();
+    setupPickupTimePicker();
+});
 
 onBeforeUnmount(() => {
     pickupDatePicker?.destroy();
+    pickupTimePicker?.destroy();
 });
 
 watch(dateInputLocale, async () => {
@@ -96,7 +121,7 @@ watch(dateInputLocale, async () => {
 </script>
 
 <template>
-    <PageContainer>
+    <PageContainer narrow>
         <header class="checkout-header">
             <PageNav />
         </header>
@@ -128,9 +153,11 @@ watch(dateInputLocale, async () => {
                         required
                     />
                     <input
+                        ref="pickupTimeInput"
                         v-model="form.pickup_time"
-                        type="time"
+                        type="text"
                         class="form-input"
+                        placeholder="HH:mm"
                         required
                     />
                 </div>

@@ -1,5 +1,4 @@
 <script setup>
-import AdminNav from '@/Components/AdminNav.vue';
 import PageNav from '@/Components/PageNav.vue';
 import PageContainer from '@/Components/PageContainer.vue';
 import OrderList from '@/Components/OrderList.vue';
@@ -12,6 +11,18 @@ const props = defineProps({
 });
 
 const t = useTranslations();
+
+function toggleSortDirection(event) {
+    const formElement = event.currentTarget.form;
+    const directionInput = formElement?.querySelector('input[name="sort_direction"]');
+
+    if (! formElement || ! directionInput) {
+        return;
+    }
+
+    directionInput.value = directionInput.value === 'asc' ? 'desc' : 'asc';
+    formElement.requestSubmit();
+}
 </script>
 
 <template>
@@ -19,7 +30,6 @@ const t = useTranslations();
         <header class="admin-orders-header">
             <PageNav />
 
-            <AdminNav />
         </header>
 
         <form
@@ -66,12 +76,31 @@ const t = useTranslations();
             <label class="filter-field">
                 {{ t('orders.sort', 'Ordina') }}
                 <select name="sort" class="filter-input">
-                    <option value="newest" :selected="filters.sort === 'newest'">{{ t('orders.newest', 'Più recenti') }}</option>
-                    <option value="oldest" :selected="filters.sort === 'oldest'">{{ t('orders.oldest', 'Meno recenti') }}</option>
-                    <option value="total_desc" :selected="filters.sort === 'total_desc'">{{ t('orders.total_desc', 'Totale decrescente') }}</option>
-                    <option value="total_asc" :selected="filters.sort === 'total_asc'">{{ t('orders.total_asc', 'Totale crescente') }}</option>
+                    <option value="created_at" :selected="filters.sort === 'created_at'">{{ t('orders.sort_created_at', 'Data ordine') }}</option>
+                    <option value="total_amount" :selected="filters.sort === 'total_amount'">{{ t('orders.sort_total', 'Totale') }}</option>
                 </select>
             </label>
+
+            <input type="hidden" name="sort_direction" :value="filters.sort_direction" />
+
+            <button
+                type="button"
+                class="sort-direction-button"
+                :aria-label="filters.sort_direction === 'asc' ? t('products.sort_asc', 'Ascendente') : t('products.sort_desc', 'Discendente')"
+                :title="filters.sort_direction === 'asc' ? t('products.sort_asc', 'Ascendente') : t('products.sort_desc', 'Discendente')"
+                @click="toggleSortDirection"
+            >
+                <svg class="sort-direction-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <template v-if="filters.sort_direction === 'asc'">
+                        <path d="M12 19V5" />
+                        <path d="m6 11 6-6 6 6" />
+                    </template>
+                    <template v-else>
+                        <path d="M12 5v14" />
+                        <path d="m6 13 6 6 6-6" />
+                    </template>
+                </svg>
+            </button>
         </form>
 
         <section v-if="orders.length === 0" class="empty-orders">
@@ -94,10 +123,6 @@ const t = useTranslations();
     align-items: center;
     gap: 10px 20px;
     margin-bottom: 16px;
-}
-
-.admin-orders-header :deep(.admin-nav) {
-    flex: 1 1 100%;
 }
 
 .filters-form {
@@ -128,6 +153,36 @@ const t = useTranslations();
     border: 1px solid #ccc;
     border-radius: 8px;
     font: inherit;
+}
+
+.sort-direction-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 34px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+    color: #7c2d12;
+    cursor: pointer;
+}
+
+.sort-direction-button:hover,
+.sort-direction-button:focus-visible {
+    border-color: #9a3412;
+    background: #fff7ed;
+    outline: none;
+}
+
+.sort-direction-icon {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
 }
 
 @media (max-width: 640px) {

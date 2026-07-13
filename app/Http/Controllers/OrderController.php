@@ -11,10 +11,14 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
+        $sort = $request->string('sort', 'created_at')->toString();
+        $sortDirection = $request->string('sort_direction', 'desc')->toString();
+
         $filters = [
             'search' => $request->string('search')->toString(),
             'status' => $request->string('status', 'all')->toString(),
-            'sort' => $request->string('sort', 'newest')->toString(),
+            'sort' => in_array($sort, ['created_at', 'total_amount'], true) ? $sort : 'created_at',
+            'sort_direction' => in_array($sortDirection, ['asc', 'desc'], true) ? $sortDirection : 'desc',
         ];
 
         $orders = $request->user()
@@ -24,10 +28,7 @@ class OrderController extends Controller
                     ->orWhere('order_number', 'like', "%{$search}%");
             }))
             ->when($filters['status'] !== 'all', fn ($query) => $query->where('status', $filters['status']))
-            ->when($filters['sort'] === 'oldest', fn ($query) => $query->oldest())
-            ->when($filters['sort'] === 'total_desc', fn ($query) => $query->orderByDesc('total_amount'))
-            ->when($filters['sort'] === 'total_asc', fn ($query) => $query->orderBy('total_amount'))
-            ->when(! in_array($filters['sort'], ['oldest', 'total_desc', 'total_asc'], true), fn ($query) => $query->latest())
+            ->orderBy($filters['sort'], $filters['sort_direction'])
             ->get();
 
         return Inertia::render('Orders/Index', [

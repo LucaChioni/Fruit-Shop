@@ -199,6 +199,7 @@ html.dark .form-help {
 }
 
 html.dark .filter-input,
+html.dark .sort-direction-button,
 html.dark .quantity-input,
 html.dark .status-select,
 html.dark .input,
@@ -208,6 +209,12 @@ html.dark .textarea {
     border-color: #334155;
     background: #0f172a;
     color: #e5e7eb;
+}
+
+html.dark .sort-direction-button:hover,
+html.dark .sort-direction-button:focus-visible {
+    border-color: #22c55e;
+    background: #052e16;
 }
 
 html.dark .add-to-cart-button,

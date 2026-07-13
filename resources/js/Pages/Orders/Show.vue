@@ -1,6 +1,5 @@
 <script setup>
 import { useForm, usePage } from '@inertiajs/vue3';
-import AdminNav from '@/Components/AdminNav.vue';
 import PageNav from '@/Components/PageNav.vue';
 import PageContainer from '@/Components/PageContainer.vue';
 import { useTranslations } from '@/i18n';
@@ -33,11 +32,9 @@ function updateStatus() {
 </script>
 
 <template>
-    <PageContainer>
+    <PageContainer narrow>
         <header class="order-header">
             <PageNav />
-
-            <AdminNav v-if="isAdminView" />
 
             <p class="order-meta">
                 {{ t('orders.reference', 'Riferimento') }} {{ order.order_number ?? '#' + order.id }} ·
@@ -135,7 +132,6 @@ function updateStatus() {
     margin-bottom: 16px;
 }
 
-.order-header :deep(.admin-nav),
 .order-meta,
 .flash-message {
     flex: 1 1 100%;

@@ -1,6 +1,5 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
-import AdminNav from '@/Components/AdminNav.vue';
 import PageNav from '@/Components/PageNav.vue';
 import PageContainer from '@/Components/PageContainer.vue';
 import { useTranslations } from '@/i18n';
@@ -32,11 +31,10 @@ function submit() {
 </script>
 
 <template>
-    <PageContainer>
+    <PageContainer narrow>
         <header class="product-form-header">
             <PageNav />
 
-            <AdminNav />
         </header>
 
         <form class="product-form" enctype="multipart/form-data" @submit.prevent="submit">
