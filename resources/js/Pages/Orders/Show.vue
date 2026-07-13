@@ -211,10 +211,15 @@ function updateStatus() {
 
 .flash-message {
     margin-top: 12px;
+    padding: 10px 12px;
+    border: 1px solid transparent;
+    border-radius: 10px;
     font-weight: 600;
 }
 
 .flash-message--success {
+    background: #dcfce7;
+    border-color: #bbf7d0;
     color: #15803d;
 }
 

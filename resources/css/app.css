@@ -282,7 +282,15 @@ html.dark .order-item {
 }
 
 html.dark .flash-message--success {
+    border-color: #14532d;
+    background: #052e16;
     color: #86efac;
+}
+
+html.dark .flash-message--error {
+    border-color: #7f1d1d;
+    background: #450a0a;
+    color: #fca5a5;
 }
 
 html.dark .legal-footer {
