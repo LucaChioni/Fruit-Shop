@@ -1,10 +1,12 @@
 <script setup>
-import { Link } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
+import LegalDocument from '@/Components/LegalDocument.vue';
+import Modal from '@/Components/Modal.vue';
 import { useTranslations } from '@/i18n';
 
 const t = useTranslations();
 const isVisible = ref(false);
+const showCookiePolicy = ref(false);
 const storageKey = 'fruit_shop_cookie_notice_accepted';
 
 onMounted(() => {
@@ -48,15 +50,38 @@ function acceptCookies() {
         </div>
 
         <div class="cookie-banner-actions">
-            <Link :href="route('legal.cookies')" class="cookie-banner-link">
+            <button type="button" class="cookie-banner-link" @click="showCookiePolicy = true">
                 {{ t('cookies.learn_more', 'Leggi la policy') }}
-            </Link>
+            </button>
 
             <button type="button" class="cookie-banner-button" @click="acceptCookies">
                 {{ t('cookies.accept', 'Ho capito') }}
             </button>
         </div>
     </section>
+
+    <Modal :show="showCookiePolicy" max-width="2xl" @close="showCookiePolicy = false">
+        <section class="cookie-policy-modal">
+            <header class="cookie-policy-modal-header">
+                <h2 class="cookie-policy-modal-title">
+                    {{ t('nav.cookies', 'Cookie') }}
+                </h2>
+
+                <button
+                    type="button"
+                    class="cookie-policy-modal-close"
+                    :aria-label="t('cookies.close', 'Chiudi avviso cookie')"
+                    @click="showCookiePolicy = false"
+                >
+                    ×
+                </button>
+            </header>
+
+            <div class="cookie-policy-modal-body">
+                <LegalDocument type="cookies" />
+            </div>
+        </section>
+    </Modal>
 </template>
 
 <style scoped>
@@ -131,10 +156,66 @@ function acceptCookies() {
 }
 
 .cookie-banner-link {
+    padding: 0;
+    border: 0;
+    background: transparent;
     color: #166534;
+    cursor: pointer;
+    font: inherit;
     font-size: 14px;
     font-weight: 700;
     text-decoration: none;
+}
+
+.cookie-policy-modal {
+    max-height: min(760px, calc(100vh - 48px));
+    overflow-y: auto;
+    padding: 18px;
+}
+
+.cookie-policy-modal-header {
+    position: sticky;
+    top: -18px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin: -18px -18px 14px;
+    padding: 16px 18px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff;
+}
+
+.cookie-policy-modal-title {
+    margin: 0;
+    color: #111827;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.cookie-policy-modal-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: #4b5563;
+    cursor: pointer;
+    font: inherit;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.cookie-policy-modal-close:hover,
+.cookie-policy-modal-close:focus-visible {
+    background: #f3f4f6;
+    color: #111827;
+    outline: none;
 }
 
 .cookie-banner-link:hover,

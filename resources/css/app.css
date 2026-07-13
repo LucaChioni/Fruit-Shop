@@ -75,6 +75,14 @@ html.dark .page-container {
     color: #e5e7eb;
 }
 
+.modal-backdrop {
+    background: rgba(107, 114, 128, 0.45);
+}
+
+html.dark .modal-backdrop {
+    background: rgba(15, 23, 42, 0.45);
+}
+
 html.dark .page-nav-button,
 html.dark .admin-nav-link,
 html.dark .theme-button,
@@ -328,7 +336,30 @@ html.dark .logout-modal {
     color: #e5e7eb;
 }
 
-html.dark dialog > div,
+html.dark .legal-modal-header,
+html.dark .cookie-policy-modal-header {
+    border-color: #334155;
+    background: #111827;
+}
+
+html.dark .legal-modal-title,
+html.dark .cookie-policy-modal-title {
+    color: #f9fafb;
+}
+
+html.dark .legal-modal-close,
+html.dark .cookie-policy-modal-close {
+    color: #cbd5e1;
+}
+
+html.dark .legal-modal-close:hover,
+html.dark .legal-modal-close:focus-visible,
+html.dark .cookie-policy-modal-close:hover,
+html.dark .cookie-policy-modal-close:focus-visible {
+    background: #1f2937;
+    color: #fff;
+}
+
 html.dark .rounded-lg.bg-white {
     background-color: #111827 !important;
     color: #e5e7eb;
