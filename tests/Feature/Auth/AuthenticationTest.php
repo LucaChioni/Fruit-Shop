@@ -42,6 +42,20 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_invalid_login_message_is_translated_to_italian(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->withSession(['locale' => 'it'])->post('/login', [
+            'email' => $user->email,
+            'password' => 'wrong-password',
+        ]);
+
+        $response->assertSessionHasErrors([
+            'email' => 'Le credenziali inserite non corrispondono ai nostri dati.',
+        ]);
+    }
+
     public function test_users_can_logout(): void
     {
         $user = User::factory()->create();

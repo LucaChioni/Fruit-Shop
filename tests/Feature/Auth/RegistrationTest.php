@@ -39,7 +39,7 @@ class RegistrationTest extends TestCase
     {
         $this->seed(DatabaseSeeder::class);
 
-        $admin = User::where('email', 'test@example.com')->firstOrFail();
+        $admin = User::where('email', 'luca.chioni46@gmail.com')->firstOrFail();
 
         $this->assertTrue($admin->is_admin);
     }
