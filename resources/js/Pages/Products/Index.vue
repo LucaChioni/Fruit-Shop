@@ -30,6 +30,19 @@ function addToCart(product) {
     });
 }
 
+function formatQuantity(quantity) {
+    const value = Number(quantity);
+
+    if (Number.isNaN(value)) {
+        return quantity;
+    }
+
+    return value.toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 0,
+    });
+}
+
 function toggleSortDirection(event) {
     const formElement = event.currentTarget.form;
     const directionInput = formElement?.querySelector('input[name="sort_direction"]');
@@ -129,6 +142,12 @@ function toggleSortDirection(event) {
                     <p class="product-price">
                         <strong>{{ product.price }} €</strong>
                         <span>/ {{ product.unit_type }}</span>
+                    </p>
+
+                    <p v-if="product.cart_quantity" class="product-cart-quantity">
+                        {{ t('cart.in_cart', 'Nel carrello') }}:
+                        <strong>{{ formatQuantity(product.cart_quantity) }}</strong>
+                        {{ product.unit_type }}
                     </p>
                 </div>
 
@@ -276,6 +295,18 @@ function toggleSortDirection(event) {
 
 .product-price {
     margin: 0;
+}
+
+.product-cart-quantity {
+    display: inline-flex;
+    gap: 4px;
+    margin: 8px 0 0;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #166534;
+    font-size: 13px;
+    font-weight: 700;
 }
 
 .add-to-cart-button {

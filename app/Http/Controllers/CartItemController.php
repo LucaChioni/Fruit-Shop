@@ -44,9 +44,7 @@ class CartItemController extends Controller
             ]);
         }
 
-        return redirect()
-            ->route('products.index')
-            ->with('success', __('ui.flash.product_added'));
+        return redirect()->route('products.index');
     }
 
     public function destroy(Request $request, CartService $cartService, CartItem $cartItem): RedirectResponse

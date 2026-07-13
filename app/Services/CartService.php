@@ -11,6 +11,25 @@ class CartService
 {
     public const GUEST_CART_COOKIE = 'guest_cart_token';
 
+    public function findCurrentCart(Request $request): ?Cart
+    {
+        if ($request->user()) {
+            return Cart::query()
+                ->where('user_id', $request->user()->id)
+                ->first();
+        }
+
+        $guestToken = $request->cookie(self::GUEST_CART_COOKIE);
+
+        if (! $guestToken) {
+            return null;
+        }
+
+        return Cart::query()
+            ->where('guest_token', $guestToken)
+            ->first();
+    }
+
     public function getCurrentCart(Request $request): Cart
     {
         if ($request->user()) {

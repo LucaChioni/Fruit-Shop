@@ -286,6 +286,11 @@ html.dark .customer-type-registered {
     color: #86efac;
 }
 
+html.dark .product-cart-quantity {
+    background: #052e16;
+    color: #86efac;
+}
+
 html.dark .customer-type-guest {
     background: #431407;
     color: #fdba74;

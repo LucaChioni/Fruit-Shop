@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Data\ProductData;
 use App\Models\Product;
+use App\Services\CartService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ProductController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request, CartService $cartService): Response
     {
         $sort = $request->string('sort', 'name')->toString();
         $sortDirection = $request->string('sort_direction', 'asc')->toString();
@@ -28,8 +29,18 @@ class ProductController extends Controller
             ->filter(fn (Product $product) => ProductData::matchesTranslatedName($product, $filters['search']))
             ->values();
 
+        $cartQuantities = $cartService->findCurrentCart($request)
+            ?->items()
+            ->pluck('quantity', 'product_id')
+            ?? collect();
+
         return Inertia::render('Products/Index', [
-            'products' => $products->map(fn (Product $product) => ProductData::catalog($product)),
+            'products' => $products->map(function (Product $product) use ($cartQuantities) {
+                return [
+                    ...ProductData::catalog($product),
+                    'cart_quantity' => $cartQuantities->get($product->id),
+                ];
+            }),
             'filters' => $filters,
         ]);
     }

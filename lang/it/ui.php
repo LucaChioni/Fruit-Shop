@@ -98,6 +98,7 @@ return [
     'cart.empty_title' => 'Il carrello è vuoto',
     'cart.empty_text' => 'Aggiungi frutta e verdura fresca prima di procedere al checkout.',
     'cart.quantity' => 'Quantità',
+    'cart.in_cart' => 'Nel carrello',
     'cart.remove' => 'Rimuovi',
     'cart.total' => 'Totale',
     'cart.update' => 'Aggiorna carrello',
