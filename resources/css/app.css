@@ -287,6 +287,12 @@ html.dark .status-error {
     color: #fca5a5;
 }
 
+html.dark .quantity-error {
+    border-color: #fca5a5;
+    background: #7f1d1d;
+    color: #fff;
+}
+
 html.dark .active {
     color: #86efac;
 }
@@ -303,6 +309,18 @@ html.dark .customer-type-registered {
 html.dark .product-cart-quantity {
     background: #052e16;
     color: #86efac;
+}
+
+html.dark .description-info {
+    border-color: #22c55e;
+    background: #0f172a;
+    color: #bbf7d0;
+}
+
+html.dark .description-tooltip-content {
+    border: 1px solid #334155;
+    background: #020617;
+    color: #f8fafc;
 }
 
 html.dark .customer-type-guest {

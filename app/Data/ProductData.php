@@ -23,7 +23,7 @@ class ProductData
             'description' => self::translatedDescription($product),
             'image_url' => $product->image_url,
             'price' => number_format((float) $product->price, 2, '.', ''),
-            'unit_type' => $product->unit_type,
+            'unit_type' => self::translatedUnitType($product->unit_type),
             'is_active' => $product->is_active,
             'quantity_step' => self::quantityStep($product->unit_type),
         ];
@@ -35,6 +35,11 @@ class ProductData
             'kg' => 0.1,
             default => 1.0,
         };
+    }
+
+    public static function requiresWholeQuantity(string $unitType): bool
+    {
+        return self::quantityStep($unitType) === 1.0;
     }
 
     public static function translatedName(Product|string $product): string
@@ -65,6 +70,13 @@ class ProductData
         $key = 'ui.'.self::translationKey($product->name).'.description';
 
         return Lang::has($key) ? trans($key) : $product->description;
+    }
+
+    public static function translatedUnitType(string $unitType): string
+    {
+        $key = 'ui.units.'.$unitType;
+
+        return Lang::has($key) ? trans($key) : $unitType;
     }
 
     public static function translationKey(string $name): string

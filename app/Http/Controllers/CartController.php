@@ -20,8 +20,9 @@ class CartController extends Controller
                 'id' => $item->id,
                 'product_id' => $product->id,
                 'product_name' => ProductData::translatedName($product),
+                'product_description' => ProductData::translatedDescription($product),
                 'product_image_url' => $product->image_url,
-                'unit_type' => $product->unit_type,
+                'unit_type' => ProductData::translatedUnitType($product->unit_type),
                 'unit_price' => number_format((float) $product->price, 2, '.', ''),
                 'quantity' => $item->quantity,
                 'quantity_step' => ProductData::quantityStep($product->unit_type),
@@ -53,13 +54,24 @@ class CartController extends Controller
         ]);
 
         $cart = $cartService->getCurrentCart($request);
+        $cart->loadMissing('items.product');
 
         foreach ($validated['quantities'] as $cartItemId => $quantity) {
-            $cart->items()
-                ->where('id', $cartItemId)
-                ->update([
-                    'quantity' => $quantity,
-                ]);
+            $cartItem = $cart->items->firstWhere('id', (int) $cartItemId);
+
+            if (! $cartItem) {
+                continue;
+            }
+
+            if (ProductData::requiresWholeQuantity($cartItem->product->unit_type) && floor((float) $quantity) !== (float) $quantity) {
+                return back()->withErrors([
+                    "quantities.$cartItemId" => __('ui.validation.quantity_integer'),
+                ])->withInput();
+            }
+
+            $cartItem->update([
+                'quantity' => $quantity,
+            ]);
         }
 
         return redirect()->route('cart.index');

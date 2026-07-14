@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\ProductData;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Models\Product;
@@ -26,6 +27,12 @@ class CartItemController extends Controller
         $product = Product::query()
             ->where('is_active', true)
             ->findOrFail($validated['product_id']);
+
+        if (ProductData::requiresWholeQuantity($product->unit_type) && floor((float) $validated['quantity']) !== (float) $validated['quantity']) {
+            return back()->withErrors([
+                'quantity' => __('ui.validation.quantity_integer'),
+            ])->withInput();
+        }
 
         $cart = $cartService->getCurrentCart($request);
 

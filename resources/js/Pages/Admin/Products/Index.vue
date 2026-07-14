@@ -118,42 +118,58 @@ function toggleSortDirection(event) {
                 :key="product.id"
                 class="product-card"
             >
-                <img
-                    v-if="product.image_url"
-                    :src="product.image_url"
-                    :alt="product.name"
-                    class="product-image"
-                    loading="lazy"
-                />
-                <div v-else class="product-image product-image--placeholder">
-                    {{ product.name.charAt(0) }}
-                </div>
-
-                <div>
+                <header class="product-card-header">
                     <h2 class="product-title">{{ product.name }}</h2>
-                    <p class="product-meta">
-                        {{ product.price }} € / {{ product.unit_type }} ·
-                        <span :class="product.is_active ? 'active' : 'inactive'">
+
+                    <span
+                        v-if="product.description"
+                        class="description-tooltip"
+                        tabindex="0"
+                        :aria-label="product.description"
+                    >
+                        <span class="description-info" aria-hidden="true"></span>
+                        <span class="description-tooltip-content" role="tooltip">
+                            {{ product.description }}
+                        </span>
+                    </span>
+                </header>
+
+                <div class="product-card-body">
+                    <img
+                        v-if="product.image_url"
+                        :src="product.image_url"
+                        :alt="product.name"
+                        class="product-image"
+                        loading="lazy"
+                    />
+                    <div v-else class="product-image product-image--placeholder">
+                        {{ product.name.charAt(0) }}
+                    </div>
+
+                    <div class="product-card-info">
+                        <p class="product-meta">
+                            <strong>{{ product.price }} €</strong>
+                            <span>/ {{ product.display_unit_type }}</span>
+                        </p>
+
+                        <span class="status-pill" :class="product.is_active ? 'status-pill--active' : 'status-pill--inactive'">
                             {{ product.is_active ? t('admin.active', 'Attivo') : t('admin.inactive', 'Disattivato') }}
                         </span>
-                    </p>
-                    <p v-if="product.description" class="product-description">
-                        {{ product.description }}
-                    </p>
-                </div>
 
-                <div class="product-actions">
-                    <a :href="route('admin.products.edit', product.id)" class="edit-link">
-                        {{ t('admin.edit', 'Modifica') }}
-                    </a>
+                        <div class="product-actions">
+                            <a :href="route('admin.products.edit', product.id)" class="edit-link">
+                                {{ t('admin.edit', 'Modifica') }}
+                            </a>
 
-                    <button
-                        type="button"
-                        class="delete-button"
-                        @click="deleteProduct(product)"
-                    >
-                        {{ t('admin.delete', 'Elimina') }}
-                    </button>
+                            <button
+                                type="button"
+                                class="delete-button"
+                                @click="deleteProduct(product)"
+                            >
+                                {{ t('admin.delete', 'Elimina') }}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </article>
         </section>
@@ -170,24 +186,42 @@ function toggleSortDirection(event) {
 }
 
 .edit-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    padding: 6px 9px;
+    border: 1px solid #fed7aa;
+    border-radius: 8px;
+    background: #fff7ed;
     color: #7c2d12;
+    font-size: 13px;
     font-weight: 600;
     text-decoration: none;
 }
 
 .delete-button {
-    padding: 0;
-    border: 0;
-    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    padding: 6px 9px;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    background: #fff;
     color: #b91c1c;
     cursor: pointer;
     font: inherit;
+    font-size: 13px;
     font-weight: 600;
 }
 
-.edit-link:hover,
+.edit-link:hover {
+    background: #ffedd5;
+}
+
 .delete-button:hover {
-    text-decoration: underline;
+    background: #fee2e2;
 }
 
 .empty-products,
@@ -302,18 +336,41 @@ function toggleSortDirection(event) {
 
 .products-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(245px, 100%), 1fr));
     gap: 12px;
 }
 
 .product-card {
     display: grid;
+    gap: 8px;
+}
+
+.product-card-header {
+    position: relative;
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.product-card-body {
+    display: grid;
+    grid-template-columns: minmax(82px, 44%) minmax(0, 1fr);
     gap: 10px;
+    align-items: start;
+}
+
+.product-card-info {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    margin-top: 12px;
+    min-width: 0;
 }
 
 .product-image {
     width: 100%;
-    height: 104px;
+    aspect-ratio: 1;
     border-radius: 10px;
     object-fit: cover;
     background: #fff7ed;
@@ -332,30 +389,105 @@ function toggleSortDirection(event) {
     flex-wrap: wrap;
     align-content: flex-start;
     justify-content: flex-start;
-    gap: 10px;
+    gap: 6px;
 }
 
 .product-title {
-    margin: 0 0 5px;
-    font-size: 18px;
+    margin: 0;
+    font-size: 16px;
     font-weight: 700;
+    line-height: 1.2;
 }
 
-.product-meta,
-.product-description {
-    margin: 0 0 5px;
+.description-tooltip {
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.description-info {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    box-sizing: border-box;
+    border: 1px solid #fed7aa;
+    border-radius: 999px;
+    color: #7c2d12;
+    position: relative;
+    cursor: help;
+}
+
+.description-info::before,
+.description-info::after {
+    position: absolute;
+    left: 50%;
+    border-radius: 999px;
+    background: currentColor;
+    content: '';
+    transform: translateX(-50%);
+}
+
+.description-info::before {
+    top: 7px;
+    width: 2px;
+    height: 6px;
+}
+
+.description-info::after {
+    top: 4px;
+    width: 2px;
+    height: 2px;
+}
+
+.description-tooltip-content {
+    position: absolute;
+    z-index: 10;
+    top: 24px;
+    right: 0;
+    width: min(220px, 70vw);
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: #111827;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.35;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+    transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.description-tooltip:hover .description-tooltip-content,
+.description-tooltip:focus .description-tooltip-content,
+.description-tooltip:focus-within .description-tooltip-content {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.product-meta {
+    margin: 0;
     color: #555;
     font-size: 14px;
 }
 
-.active {
-    color: #15803d;
-    font-weight: 600;
+.status-pill {
+    justify-self: start;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
 }
 
-.inactive {
+.status-pill--active {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.status-pill--inactive {
+    background: #fee2e2;
     color: #b91c1c;
-    font-weight: 600;
 }
 
 @media (max-width: 640px) {
@@ -396,12 +528,8 @@ function toggleSortDirection(event) {
         gap: 8px;
     }
 
-    .product-image {
-        height: 86px;
-    }
-
     .product-title {
-        font-size: 17px;
+        font-size: 15px;
     }
 }
 </style>

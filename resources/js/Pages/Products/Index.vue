@@ -1,5 +1,6 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
+import { reactive } from 'vue';
 import FlashMessage from '@/Components/FlashMessage.vue';
 import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
@@ -12,9 +13,9 @@ const props = defineProps({
 
 const t = useTranslations();
 
-const quantities = Object.fromEntries(
+const quantities = reactive(Object.fromEntries(
     props.products.map((product) => [product.id, 1])
-);
+));
 
 const form = useForm({
     product_id: null,
@@ -24,6 +25,7 @@ const form = useForm({
 function addToCart(product) {
     form.product_id = product.id;
     form.quantity = quantities[product.id] || product.quantity_step;
+    form.clearErrors();
 
     form.post(route('cart.items.store'), {
         preserveScroll: true,
@@ -44,6 +46,26 @@ function formatQuantity(quantity) {
         maximumFractionDigits: 2,
         minimumFractionDigits: 0,
     });
+}
+
+function quantityError(product) {
+    const quantity = Number(quantities[product.id]);
+
+    if (product.quantity_step === 1 && ! Number.isInteger(quantity)) {
+        return t('validation.quantity_integer', 'La quantità deve essere un numero intero.');
+    }
+
+    if (form.product_id === product.id && form.errors.quantity) {
+        return form.errors.quantity;
+    }
+
+    return null;
+}
+
+function clearQuantityError(product) {
+    if (form.product_id === product.id) {
+        form.clearErrors('quantity');
+    }
 }
 
 function toggleSortDirection(event) {
@@ -126,56 +148,80 @@ function toggleSortDirection(event) {
                 :key="product.id"
                 class="product-card"
             >
-                <img
-                    v-if="product.image_url"
-                    :src="product.image_url"
-                    :alt="product.name"
-                    class="product-image"
-                    loading="lazy"
-                />
-                <div v-else class="product-image product-image--placeholder">
-                    {{ product.name.charAt(0) }}
-                </div>
-
-                <div>
+                <header class="product-card-header">
                     <h2 class="product-name">{{ product.name }}</h2>
 
-                    <p v-if="product.description" class="product-description">
-                        {{ product.description }}
-                    </p>
-
-                    <p class="product-price">
-                        <strong>{{ product.price }} €</strong>
-                        <span>/ {{ product.unit_type }}</span>
-                    </p>
-
-                    <p v-if="product.cart_quantity" class="product-cart-quantity">
-                        {{ t('cart.in_cart', 'Nel carrello') }}:
-                        <strong>{{ formatQuantity(product.cart_quantity) }}</strong>
-                        {{ product.unit_type }}
-                    </p>
-                </div>
-
-                <div class="product-actions">
-                    <label class="quantity-label">
-                        {{ t('products.quantity', 'Quantità') }}
-                        <input
-                            v-model="quantities[product.id]"
-                            type="number"
-                            :min="product.quantity_step"
-                            :step="product.quantity_step"
-                            class="quantity-input"
-                        />
-                    </label>
-
-                    <button
-                        type="button"
-                        class="add-to-cart-button"
-                        @click="addToCart(product)"
-                        :disabled="form.processing"
+                    <span
+                        v-if="product.description"
+                        class="description-tooltip"
+                        tabindex="0"
+                        :aria-label="product.description"
                     >
-                        {{ t('products.add_to_cart', 'Aggiungi al carrello') }}
-                    </button>
+                        <span class="description-info" aria-hidden="true"></span>
+                        <span class="description-tooltip-content" role="tooltip">
+                            {{ product.description }}
+                        </span>
+                    </span>
+                </header>
+
+                <div class="product-card-body">
+                    <img
+                        v-if="product.image_url"
+                        :src="product.image_url"
+                        :alt="product.name"
+                        class="product-image"
+                        loading="lazy"
+                    />
+                    <div v-else class="product-image product-image--placeholder">
+                        {{ product.name.charAt(0) }}
+                    </div>
+
+                    <div class="product-card-info">
+                        <p class="product-price">
+                            <strong>{{ product.price }} €</strong>
+                            <span>/ {{ product.unit_type }}</span>
+                        </p>
+
+                        <p v-if="product.cart_quantity" class="product-cart-quantity">
+                            {{ t('cart.label', 'Carrello') }}:
+                            <strong>{{ formatQuantity(product.cart_quantity) }}</strong>
+                            {{ product.unit_type }}
+                        </p>
+
+                        <div class="product-actions">
+                            <label class="quantity-label">
+                                <input
+                                    v-model="quantities[product.id]"
+                                    type="number"
+                                    :min="product.quantity_step"
+                                    :step="product.quantity_step"
+                                    :inputmode="product.quantity_step === 1 ? 'numeric' : 'decimal'"
+                                    class="quantity-input"
+                                    :aria-label="t('products.quantity', 'Quantità')"
+                                    @input="clearQuantityError(product)"
+                                />
+                                <span v-if="quantityError(product)" class="quantity-error" role="alert">
+                                    {{ quantityError(product) }}
+                                </span>
+                            </label>
+
+                            <button
+                                type="button"
+                                class="add-to-cart-button"
+                                :aria-label="t('products.add_to_cart', 'Aggiungi al carrello')"
+                                @click="addToCart(product)"
+                                :disabled="form.processing"
+                            >
+                                <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                    <circle cx="9" cy="21" r="1.6" />
+                                    <circle cx="18" cy="21" r="1.6" />
+                                    <path d="M3 7h2l2.2 10.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 10H6" />
+                                    <path class="action-icon-plus" d="M21.5 -0.5v7" />
+                                    <path class="action-icon-plus" d="M18 3h7" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </article>
         </section>
@@ -271,22 +317,46 @@ function toggleSortDirection(event) {
 
 .products-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(245px, 100%), 1fr));
     gap: 12px;
 }
 
 .product-card {
     display: grid;
-    gap: 10px;
-    padding: 12px;
+    gap: 8px;
+    padding: 10px;
     border: 1px solid #ddd;
     border-radius: 12px;
     background: #fff;
 }
 
+.product-card-header {
+    position: relative;
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.product-card-body {
+    display: grid;
+    grid-template-columns: minmax(82px, 44%) minmax(0, 1fr);
+    gap: 10px;
+    align-items: stretch;
+}
+
+.product-card-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 12px;
+    min-width: 0;
+}
+
 .product-image {
     width: 100%;
-    height: 108px;
+    aspect-ratio: 1;
     border-radius: 10px;
     object-fit: cover;
     background: #ecfdf5;
@@ -301,35 +371,108 @@ function toggleSortDirection(event) {
 }
 
 .product-name {
-    margin: 0 0 5px;
-    font-size: 18px;
+    margin: 0;
+    font-size: 16px;
     font-weight: 700;
+    line-height: 1.2;
 }
 
-.product-description {
-    margin: 0 0 6px;
-    font-size: 14px;
-    color: #444;
+.description-tooltip {
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.description-info {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    box-sizing: border-box;
+    border: 1px solid #bbf7d0;
+    border-radius: 999px;
+    color: #166534;
+    position: relative;
+    cursor: help;
+}
+
+.description-info::before,
+.description-info::after {
+    position: absolute;
+    left: 50%;
+    border-radius: 999px;
+    background: currentColor;
+    content: '';
+    transform: translateX(-50%);
+}
+
+.description-info::before {
+    top: 7px;
+    width: 2px;
+    height: 6px;
+}
+
+.description-info::after {
+    top: 4px;
+    width: 2px;
+    height: 2px;
+}
+
+.description-tooltip-content {
+    position: absolute;
+    z-index: 10;
+    top: 24px;
+    right: 0;
+    width: min(220px, 70vw);
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid #fecaca;
+    background: #b91c1c;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.35;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+    transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.description-tooltip:hover .description-tooltip-content,
+.description-tooltip:focus .description-tooltip-content,
+.description-tooltip:focus-within .description-tooltip-content {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .product-price {
     margin: 0;
+    font-size: 14px;
+    line-height: 1.2;
 }
 
 .product-cart-quantity {
     display: inline-flex;
+    flex-wrap: wrap;
     gap: 4px;
-    margin: 8px 0 0;
-    padding: 4px 8px;
+    max-width: 100%;
+    margin: 0;
+    padding: 3px 6px;
     border-radius: 999px;
     background: #dcfce7;
     color: #166534;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
+    line-height: 1.2;
 }
 
 .add-to-cart-button {
-    padding: 8px 12px;
+    display: inline-flex;
+    flex: 0 0 32px;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 30px;
     border: 0;
     border-radius: 8px;
     background: #166534;
@@ -339,24 +482,70 @@ function toggleSortDirection(event) {
 }
 
 .product-actions {
-    display: grid;
-    gap: 8px;
-    justify-items: start;
+    display: flex;
+    align-items: end;
+    gap: 6px;
 }
 
 .quantity-label {
-    display: grid;
-    gap: 4px;
-    font-size: 14px;
-    color: #444;
-    font-weight: 600;
+    display: block;
+    flex: 0 1 86px;
+    min-width: 0;
+    position: relative;
 }
 
 .quantity-input {
-    width: 110px;
-    padding: 7px 8px;
+    width: 100%;
+    height: 30px;
+    box-sizing: border-box;
+    padding: 6px;
     border: 1px solid #ccc;
     border-radius: 8px;
+}
+
+.quantity-error {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 6px);
+    left: 0;
+    display: block;
+    width: max-content;
+    max-width: 170px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: #111827;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.2;
+    box-shadow: 0 8px 18px rgb(185 28 28 / 0.24);
+}
+
+.quantity-error::before {
+    position: absolute;
+    top: -4px;
+    left: 14px;
+    width: 8px;
+    height: 8px;
+    background: inherit;
+    content: '';
+    transform: rotate(45deg);
+}
+
+.action-icon {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    overflow: visible;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+    transform: translate(-1px, 1px);
+}
+
+.action-icon-plus {
+    stroke-width: 2.4;
 }
 
 .add-to-cart-button:hover {
@@ -389,16 +578,11 @@ function toggleSortDirection(event) {
     }
 
     .product-card {
-        gap: 8px;
         padding: 10px;
     }
 
-    .product-image {
-        height: 88px;
-    }
-
     .product-name {
-        font-size: 17px;
+        font-size: 15px;
     }
 }
 </style>

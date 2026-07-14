@@ -70,7 +70,7 @@ function submit() {
                         :key="unitType"
                         :value="unitType"
                     >
-                        {{ unitType }}
+                        {{ t(`units.${unitType}`, unitType) }}
                     </option>
                 </select>
                 <span v-if="form.errors.unit_type" class="error">{{ form.errors.unit_type }}</span>

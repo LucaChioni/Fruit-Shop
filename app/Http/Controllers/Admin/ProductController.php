@@ -146,6 +146,7 @@ class ProductController extends Controller
             'image_url' => $product->image_url,
             'price' => $product->price,
             'unit_type' => $product->unit_type,
+            'display_unit_type' => ProductData::translatedUnitType($product->unit_type),
             'is_active' => $product->is_active,
         ];
     }

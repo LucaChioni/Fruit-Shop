@@ -40,7 +40,7 @@ class OrderData
             'items' => $order->items->map(fn ($item) => [
                 'id' => $item->id,
                 'product_name' => ProductData::translatedName($item->product_name),
-                'unit_type' => $item->unit_type,
+                'unit_type' => ProductData::translatedUnitType($item->unit_type),
                 'unit_price' => $item->unit_price,
                 'quantity' => $item->quantity,
                 'line_total' => $item->line_total,

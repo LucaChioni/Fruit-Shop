@@ -141,6 +141,44 @@ class CartTest extends TestCase
         $this->assertSame(1, $cart->items()->count());
     }
 
+    public function test_cart_item_store_rejects_decimal_quantity_for_piece_products(): void
+    {
+        $product = $this->createProduct(['unit_type' => 'pz']);
+
+        $response = $this
+            ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
+            ->post(route('cart.items.store'), [
+                'product_id' => $product->id,
+                'quantity' => 1.5,
+            ]);
+
+        $response->assertSessionHasErrors([
+            'quantity' => 'La quantità deve essere un numero intero.',
+        ]);
+    }
+
+    public function test_cart_update_rejects_decimal_quantity_for_tray_products(): void
+    {
+        $user = User::factory()->create();
+        $cart = $this->createCart(['user_id' => $user->id]);
+        $product = $this->createProduct(['unit_type' => 'vaschetta']);
+        $cartItem = $this->createCartItem($cart, $product, 1);
+
+        $response = $this
+            ->actingAs($user)
+            ->patch(route('cart.update'), [
+                'quantities' => [
+                    $cartItem->id => 2.5,
+                ],
+            ]);
+
+        $response->assertSessionHasErrors([
+            "quantities.$cartItem->id" => 'La quantità deve essere un numero intero.',
+        ]);
+
+        $this->assertSame('1.00', $cartItem->refresh()->quantity);
+    }
+
     public function test_cart_item_destroy_deletes_only_items_from_current_cart(): void
     {
         $user = User::factory()->create();
