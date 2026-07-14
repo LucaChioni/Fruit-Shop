@@ -17,8 +17,9 @@ class OrderTest extends TestCase
     {
         $admin = User::factory()->create(['is_admin' => true]);
         $customer = User::factory()->create(['email' => 'cliente@example.com']);
+        $secondCustomer = User::factory()->create(['email' => 'secondo@example.com']);
         $firstOrder = $this->createOrder($customer, ['customer_name' => 'Primo Cliente']);
-        $secondOrder = $this->createOrder(null, ['customer_name' => 'Secondo Cliente']);
+        $secondOrder = $this->createOrder($secondCustomer, ['customer_name' => 'Secondo Cliente']);
 
         $firstOrder->forceFill(['created_at' => now()->subMinute()])->save();
         $secondOrder->forceFill(['created_at' => now()])->save();
@@ -33,16 +34,13 @@ class OrderTest extends TestCase
                 ->where('orders.0.id', $secondOrder->id)
                 ->where('orders.0.order_number', $secondOrder->order_number)
                 ->where('orders.0.customer_name', 'Secondo Cliente')
-                ->where('orders.0.customer_email', null)
-                ->where('orders.0.customer_type', 'guest')
+                ->where('orders.0.customer_email', 'secondo@example.com')
                 ->where('orders.1.id', $firstOrder->id)
                 ->where('orders.1.order_number', $firstOrder->order_number)
                 ->where('orders.1.customer_name', 'Primo Cliente')
                 ->where('orders.1.customer_email', 'cliente@example.com')
-                ->where('orders.1.customer_type', 'registered')
                 ->where('filters.search', '')
                 ->where('filters.status', 'all')
-                ->where('filters.customer_type', 'all')
                 ->where('filters.sort', 'created_at')
                 ->where('filters.sort_direction', 'desc'));
     }
@@ -51,13 +49,11 @@ class OrderTest extends TestCase
     {
         $admin = User::factory()->create(['is_admin' => true]);
         $customer = User::factory()->create();
-        $this->createOrder(null, ['customer_name' => 'Ospite', 'status' => 'completed', 'total_amount' => 99]);
         $lowerTotal = $this->createOrder($customer, ['customer_name' => 'Registrato Low', 'status' => 'completed', 'total_amount' => 10]);
         $higherTotal = $this->createOrder($customer, ['customer_name' => 'Registrato High', 'status' => 'completed', 'total_amount' => 30]);
 
         $response = $this->actingAs($admin)->get(route('admin.orders.index', [
             'status' => 'completed',
-            'customer_type' => 'registered',
             'sort' => 'total_amount',
             'sort_direction' => 'desc',
         ]));
@@ -71,7 +67,6 @@ class OrderTest extends TestCase
                 ->where('orders.1.id', $lowerTotal->id)
                 ->where('filters.search', '')
                 ->where('filters.status', 'completed')
-                ->where('filters.customer_type', 'registered')
                 ->where('filters.sort', 'total_amount')
                 ->where('filters.sort_direction', 'desc'));
     }

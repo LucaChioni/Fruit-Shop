@@ -160,6 +160,7 @@ html.dark .cart-item,
 html.dark .order-card,
 html.dark .order-section,
 html.dark .auth-card,
+html.dark .auth-help,
 html.dark .legal-card,
 html.dark .settings-card,
 html.dark .admin-card,
@@ -370,14 +371,20 @@ html.dark .order-status--cancelled {
     color: #fca5a5;
 }
 
-html.dark .customer-type-registered {
+html.dark .product-cart-quantity,
+html.dark .login-required-link {
     background: #052e16;
     color: #86efac;
 }
 
-html.dark .product-cart-quantity {
-    background: #052e16;
-    color: #86efac;
+html.dark .login-required-link {
+    border-color: #14532d;
+}
+
+html.dark .login-required-link:hover,
+html.dark .login-required-link:focus-visible {
+    border-color: #22c55e;
+    background: #14532d;
 }
 
 html.dark .description-info {

@@ -64,15 +64,6 @@ function toggleSortDirection(event) {
                 </select>
             </label>
 
-            <label class="filter-field">
-                {{ t('orders.customer', 'Cliente') }}
-                <select name="customer_type" class="filter-input">
-                    <option value="all" :selected="filters.customer_type === 'all'">{{ t('orders.all', 'Tutti') }}</option>
-                    <option value="registered" :selected="filters.customer_type === 'registered'">{{ t('orders.registered', 'Registrati') }}</option>
-                    <option value="guest" :selected="filters.customer_type === 'guest'">{{ t('orders.guests', 'Ospiti') }}</option>
-                </select>
-            </label>
-
             <div class="sort-controls">
                 <label class="filter-field filter-field--sort">
                     {{ t('orders.sort', 'Ordina') }}

@@ -25,6 +25,8 @@ trait CreatesShopModels
 
     protected function createCart(array $attributes = []): Cart
     {
+        $attributes['user_id'] ??= User::factory()->create()->id;
+
         return Cart::create($attributes);
     }
 
@@ -39,8 +41,10 @@ trait CreatesShopModels
 
     protected function createOrder(?User $user = null, array $attributes = []): Order
     {
+        $user ??= User::factory()->create();
+
         return Order::create(array_merge([
-            'user_id' => $user?->id,
+            'user_id' => $user->id,
             'customer_name' => 'Cliente Test',
             'status' => 'pending',
             'total_amount' => 10.00,

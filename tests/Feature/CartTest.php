@@ -2,9 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Cart;
 use App\Models\User;
-use App\Services\CartService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\Feature\Concerns\CreatesShopModels;
@@ -15,15 +13,19 @@ class CartTest extends TestCase
     use CreatesShopModels;
     use RefreshDatabase;
 
-    public function test_guest_cart_index_shows_items_and_total(): void
+    public function test_cart_index_requires_authentication(): void
     {
-        $cart = $this->createCart(['guest_token' => 'guest-token']);
+        $this->get(route('cart.index'))->assertRedirect(route('login'));
+    }
+
+    public function test_authenticated_cart_index_uses_user_cart(): void
+    {
+        $user = User::factory()->create();
+        $cart = $this->createCart(['user_id' => $user->id]);
         $product = $this->createProduct(['name' => 'Mele', 'price' => 2.50, 'unit_type' => 'kg']);
         $cartItem = $this->createCartItem($cart, $product, 2);
 
-        $response = $this
-            ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
-            ->get(route('cart.index'));
+        $response = $this->actingAs($user)->get(route('cart.index'));
 
         $response
             ->assertOk()
@@ -41,13 +43,12 @@ class CartTest extends TestCase
 
     public function test_piece_products_use_integer_quantity_step_in_cart(): void
     {
-        $cart = $this->createCart(['guest_token' => 'guest-token']);
+        $user = User::factory()->create();
+        $cart = $this->createCart(['user_id' => $user->id]);
         $product = $this->createProduct(['name' => 'Lattuga', 'unit_type' => 'pz']);
         $this->createCartItem($cart, $product, 1);
 
-        $response = $this
-            ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
-            ->get(route('cart.index'));
+        $response = $this->actingAs($user)->get(route('cart.index'));
 
         $response
             ->assertOk()
@@ -56,27 +57,11 @@ class CartTest extends TestCase
                 ->where('items.0.quantity_step', 1));
     }
 
-    public function test_authenticated_cart_index_uses_user_cart(): void
-    {
-        $user = User::factory()->create();
-        $cart = $this->createCart(['user_id' => $user->id]);
-
-        $response = $this->actingAs($user)->get(route('cart.index'));
-
-        $response
-            ->assertOk()
-            ->assertInertia(fn (Assert $page) => $page
-                ->component('Cart/Index')
-                ->where('cartId', $cart->id)
-                ->has('items', 0)
-                ->where('total', '0.00'));
-    }
-
     public function test_cart_update_changes_only_items_in_current_cart(): void
     {
         $user = User::factory()->create();
         $cart = $this->createCart(['user_id' => $user->id]);
-        $otherCart = $this->createCart(['guest_token' => 'other-token']);
+        $otherCart = $this->createCart();
         $product = $this->createProduct();
         $cartItem = $this->createCartItem($cart, $product, 1);
         $otherCartItem = $this->createCartItem($otherCart, $product, 4);
@@ -98,25 +83,14 @@ class CartTest extends TestCase
         $this->assertSame('4.00', $otherCartItem->refresh()->quantity);
     }
 
-    public function test_cart_item_store_creates_guest_cart_item(): void
+    public function test_cart_item_store_requires_authentication(): void
     {
         $product = $this->createProduct();
 
-        $response = $this
-            ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
-            ->post(route('cart.items.store'), [
-                'product_id' => $product->id,
-                'quantity' => 1.5,
-            ]);
-
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect(route('products.index'));
-
-        $cart = Cart::where('guest_token', 'guest-token')->firstOrFail();
-        $cartItem = $cart->items()->where('product_id', $product->id)->firstOrFail();
-
-        $this->assertSame('1.50', $cartItem->quantity);
+        $this->post(route('cart.items.store'), [
+            'product_id' => $product->id,
+            'quantity' => 1.5,
+        ])->assertRedirect(route('login'));
     }
 
     public function test_cart_item_store_increments_existing_item(): void
@@ -143,10 +117,11 @@ class CartTest extends TestCase
 
     public function test_cart_item_store_rejects_decimal_quantity_for_piece_products(): void
     {
+        $user = User::factory()->create();
         $product = $this->createProduct(['unit_type' => 'pz']);
 
         $response = $this
-            ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
+            ->actingAs($user)
             ->post(route('cart.items.store'), [
                 'product_id' => $product->id,
                 'quantity' => 1.5,
@@ -183,7 +158,7 @@ class CartTest extends TestCase
     {
         $user = User::factory()->create();
         $cart = $this->createCart(['user_id' => $user->id]);
-        $otherCart = $this->createCart(['guest_token' => 'other-token']);
+        $otherCart = $this->createCart();
         $product = $this->createProduct();
         $cartItem = $this->createCartItem($cart, $product, 1);
         $otherCartItem = $this->createCartItem($otherCart, $product, 1);
@@ -208,10 +183,11 @@ class CartTest extends TestCase
 
     public function test_cart_item_quantity_validation_uses_italian_message(): void
     {
+        $user = User::factory()->create();
         $product = $this->createProduct();
 
         $response = $this
-            ->withCookie(CartService::GUEST_CART_COOKIE, 'guest-token')
+            ->actingAs($user)
             ->post(route('cart.items.store'), [
                 'product_id' => $product->id,
                 'quantity' => 0,

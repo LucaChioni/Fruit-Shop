@@ -1,5 +1,5 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3';
+import { Link, useForm, usePage } from '@inertiajs/vue3';
 import { reactive } from 'vue';
 import FlashMessage from '@/Components/FlashMessage.vue';
 import PageContainer from '@/Components/PageContainer.vue';
@@ -12,6 +12,7 @@ const props = defineProps({
 });
 
 const t = useTranslations();
+const page = usePage();
 
 const quantities = reactive(Object.fromEntries(
     props.products.map((product) => [product.id, 1])
@@ -198,13 +199,13 @@ function toggleSortDirection(event) {
                             <span>/ {{ product.unit_type }}</span>
                         </p>
 
-                        <p v-if="product.cart_quantity" class="product-cart-quantity">
+                        <p v-if="page.props.auth.user && product.cart_quantity" class="product-cart-quantity">
                             {{ t('cart.label', 'Carrello') }}:
                             <strong>{{ formatQuantity(product.cart_quantity) }}</strong>
                             {{ cartQuantityUnit(product) }}
                         </p>
 
-                        <div class="product-actions">
+                        <div v-if="page.props.auth.user" class="product-actions">
                             <label class="quantity-label">
                                 <input
                                     v-model="quantities[product.id]"
@@ -237,6 +238,10 @@ function toggleSortDirection(event) {
                                 </svg>
                             </button>
                         </div>
+
+                        <Link v-else :href="route('login')" class="login-required-link">
+                            {{ t('products.login_required', 'Accedi per ordinare') }}
+                        </Link>
                     </div>
                 </div>
             </article>
@@ -501,6 +506,28 @@ function toggleSortDirection(event) {
     display: flex;
     align-items: end;
     gap: 6px;
+}
+
+.login-required-link {
+    display: inline-flex;
+    justify-content: center;
+    padding: 6px 8px;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    background: #f0fdf4;
+    color: #166534;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+}
+
+.login-required-link:hover,
+.login-required-link:focus-visible {
+    border-color: #22c55e;
+    background: #dcfce7;
+    outline: none;
 }
 
 .quantity-label {

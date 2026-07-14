@@ -54,9 +54,6 @@ const t = useTranslations();
                 <p v-if="showCustomer && order.customer_email" class="order-card-customer">
                     {{ t('orders.email', 'Email') }}: {{ order.customer_email }}
                 </p>
-                <p v-else class="customer-type" :class="`customer-type-guest`">
-                    {{ t('orders.guest', 'Ospite') }}
-                </p>
             </div>
 
             <div class="order-card-side">
@@ -141,25 +138,6 @@ const t = useTranslations();
     border-color: #fecaca;
     background: #fee2e2;
     color: #991b1b;
-}
-
-.customer-type {
-    display: inline-flex;
-    margin-left: 6px;
-    padding: 2px 8px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.customer-type-registered {
-    background: #dcfce7;
-    color: #166534;
-}
-
-.customer-type-guest {
-    background: #ffedd5;
-    color: #9a3412;
 }
 
 .order-card-side {

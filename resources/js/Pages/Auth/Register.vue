@@ -33,8 +33,8 @@ const submit = () => {
         </header>
 
         <section class="auth-card">
-            <div class="auth-help mb-4 rounded-lg bg-green-50 text-sm text-green-900">
-                {{ t('auth.register_help', 'La registrazione è facoltativa: puoi ordinare anche come ospite. Gli account creati da qui sono account cliente, non admin.') }}
+            <div class="auth-help mb-4 rounded-lg text-sm">
+                {{ t('auth.register_help', 'Crea un account per aggiungere prodotti al carrello e completare gli ordini.') }}
             </div>
 
             <form @submit.prevent="submit">
@@ -142,6 +142,15 @@ const submit = () => {
 
 .auth-help {
     padding: 10px 12px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    color: #374151;
+}
+
+:global(html.dark) .auth-help {
+    border-color: #334155;
+    background: #111827;
+    color: #cbd5e1;
 }
 
 @media (max-width: 640px) {

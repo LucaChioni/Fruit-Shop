@@ -133,6 +133,7 @@ function logout() {
             </Link>
 
             <Link
+                v-if="page.props.auth.user"
                 :href="route('cart.index')"
                 as="button"
                 type="button"
@@ -315,7 +316,7 @@ function logout() {
         <div class="logout-modal">
             <h2 class="logout-modal-title">{{ t('logout.confirm_title', 'Confermi il logout?') }}</h2>
             <p class="logout-modal-text">
-                {{ t('logout.confirm_text', 'Uscirai dal tuo account e potrai continuare a navigare come ospite.') }}
+                {{ t('logout.confirm_text', 'Uscirai dal tuo account. Per ordinare dovrai accedere di nuovo.') }}
             </p>
 
             <div class="logout-modal-actions">

@@ -62,8 +62,8 @@ function clearLoginValidationMessage(event) {
         </header>
 
         <section class="auth-card">
-            <div class="auth-help mb-4 rounded-lg bg-orange-50 text-sm text-orange-900">
-                {{ t('auth.login_help', "Il checkout ospite resta disponibile. L'accesso serve per ritrovare gli ordini effettuati.") }}
+            <div class="auth-help mb-4 rounded-lg text-sm">
+                {{ t('auth.login_help', 'Accedi per aggiungere prodotti al carrello e completare gli ordini.') }}
             </div>
 
             <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
@@ -153,6 +153,15 @@ function clearLoginValidationMessage(event) {
 
 .auth-help {
     padding: 10px 12px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    color: #374151;
+}
+
+:global(html.dark) .auth-help {
+    border-color: #334155;
+    background: #111827;
+    color: #cbd5e1;
 }
 
 @media (max-width: 640px) {

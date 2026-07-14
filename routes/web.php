@@ -41,16 +41,18 @@ Route::get('/cookie-policy', fn () => Inertia::render('Legal/Cookies'))->name('l
 Route::get('/condizioni', fn () => Inertia::render('Legal/Terms'))->name('legal.terms');
 Route::post('/language/{locale}', LanguageController::class)->name('language.update');
 
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::patch('/cart', [CartController::class, 'update'])->name('cart.update');
-Route::post('/cart/items', [CartItemController::class, 'store'])->name('cart.items.store');
-Route::delete('/cart/items/{cartItem}', [CartItemController::class, 'destroy'])->name('cart.items.destroy');
+Route::middleware('auth')->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::patch('/cart', [CartController::class, 'update'])->name('cart.update');
+    Route::post('/cart/items', [CartItemController::class, 'store'])->name('cart.items.store');
+    Route::delete('/cart/items/{cartItem}', [CartItemController::class, 'destroy'])->name('cart.items.destroy');
 
-Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
-Route::get('/orders', [OrderController::class, 'index'])->middleware('auth')->name('orders.index');
-Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+});
 
 Route::middleware(['auth', 'admin'])
     ->prefix('admin')

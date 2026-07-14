@@ -136,21 +136,10 @@ class OrderTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_guest_order_show_requires_matching_last_order_session(): void
+    public function test_order_show_requires_authentication(): void
     {
         $order = $this->createOrder();
-        $otherOrder = $this->createOrder();
 
-        $this->get(route('orders.show', $order))->assertForbidden();
-
-        $this
-            ->withSession(['last_order_id' => $otherOrder->id])
-            ->get(route('orders.show', $order))
-            ->assertForbidden();
-
-        $this
-            ->withSession(['last_order_id' => $order->id])
-            ->get(route('orders.show', $order))
-            ->assertOk();
+        $this->get(route('orders.show', $order))->assertRedirect(route('login'));
     }
 }

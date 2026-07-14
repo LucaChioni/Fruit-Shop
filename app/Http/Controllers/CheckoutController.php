@@ -30,7 +30,7 @@ class CheckoutController extends Controller
         }
 
         return Inertia::render('Checkout/Create', [
-            'customerName' => $request->user()?->name ?? '',
+            'customerName' => $request->user()->name,
             'pickupAtDefault' => $this->earliestPickupAt()->format('Y-m-d\TH:i'),
             'pickupAtMin' => now()->addHours(2)->format('Y-m-d\TH:i'),
             'pickupDateMax' => now()->addDays(369)->format('Y-m-d'),
@@ -71,7 +71,7 @@ class CheckoutController extends Controller
             }
 
             $order = Order::create([
-                'user_id' => $request->user()?->id,
+                'user_id' => $request->user()->id,
                 'customer_name' => $validated['customer_name'],
                 'status' => 'pending',
                 'total_amount' => $totalAmount,
@@ -98,11 +98,9 @@ class CheckoutController extends Controller
             return $order;
         });
 
-        $request->session()->put('last_order_id', $order->id);
-
         $recipients = collect([
             config('mail.order_notifications.address'),
-            $request->user()?->email,
+            $request->user()->email,
         ])->filter()->unique();
 
         foreach ($recipients as $recipient) {

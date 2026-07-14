@@ -43,14 +43,8 @@ class OrderController extends Controller
         $order->load('items');
         $user = $request->user();
 
-        if ($order->user_id !== null) {
-            if (! $user || $order->user_id !== $user->id) {
-                abort(403);
-            }
-        } else {
-            if ($request->session()->get('last_order_id') !== $order->id) {
-                abort(403);
-            }
+        if ($order->user_id !== $user->id) {
+            abort(403);
         }
 
         return Inertia::render('Orders/Show', [

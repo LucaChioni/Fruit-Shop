@@ -47,7 +47,7 @@ const t = useTranslations();
             <p>{{ t('legal.cookies.intro', 'Il sito usa cookie tecnici necessari per login, sessione, sicurezza e carrello. Non sono configurati cookie pubblicitari o di profilazione.') }}</p>
 
             <h2>{{ t('legal.cookies.technical_title', 'Cookie tecnici') }}</h2>
-            <p>{{ t('legal.cookies.technical_text', 'Servono a mantenere la sessione utente, ricordare il carrello ospite e proteggere le richieste tramite token CSRF.') }}</p>
+            <p>{{ t('legal.cookies.technical_text', 'Servono a mantenere la sessione utente, ricordare il carrello degli utenti registrati e proteggere le richieste tramite token CSRF.') }}</p>
 
             <h2>{{ t('legal.cookies.consent_title', 'Consenso') }}</h2>
             <p>{{ t('legal.cookies.consent_text', 'Per i soli cookie tecnici non è richiesto consenso preventivo. Se in futuro saranno aggiunti analytics o marketing, sarà necessario un banner di consenso dedicato.') }}</p>

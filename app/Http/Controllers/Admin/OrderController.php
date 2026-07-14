@@ -20,7 +20,6 @@ class OrderController extends Controller
         $filters = [
             'search' => request()->string('search')->toString(),
             'status' => request()->string('status', 'all')->toString(),
-            'customer_type' => request()->string('customer_type', 'all')->toString(),
             'sort' => in_array($sort, ['created_at', 'total_amount'], true) ? $sort : 'created_at',
             'sort_direction' => in_array($sortDirection, ['asc', 'desc'], true) ? $sortDirection : 'desc',
         ];
@@ -32,8 +31,6 @@ class OrderController extends Controller
                     ->orWhere('order_number', 'like', "%{$search}%");
             }))
             ->when($filters['status'] !== 'all', fn ($query) => $query->where('status', $filters['status']))
-            ->when($filters['customer_type'] === 'registered', fn ($query) => $query->whereNotNull('user_id'))
-            ->when($filters['customer_type'] === 'guest', fn ($query) => $query->whereNull('user_id'))
             ->orderBy($filters['sort'], $filters['sort_direction'])
             ->get();
 

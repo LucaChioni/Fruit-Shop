@@ -26,7 +26,6 @@ class OrderData
             'order_number' => $order->order_number,
             'customer_name' => $order->customer_name,
             'customer_email' => $order->user?->email,
-            'customer_type' => $order->user_id ? 'registered' : 'guest',
             'status' => $order->status,
             'total_amount' => $order->total_amount,
             'pickup_at' => $order->pickup_at?->format('d/m/Y H:i'),
