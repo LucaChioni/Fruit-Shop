@@ -90,27 +90,36 @@ function submit() {
                 <span v-if="form.errors.description" class="error">{{ form.errors.description }}</span>
             </label>
 
-            <label class="field">
-                {{ t('admin.form.image', 'Immagine') }}
-                <img
-                    v-if="imagePreviewUrl"
-                    :src="imagePreviewUrl"
-                    :alt="product.name"
-                    class="current-image"
-                />
-                <input ref="imageInput" name="image" type="file" accept="image/*" class="input" @change="setImage" />
-                <button
-                    v-if="imagePreviewUrl"
-                    type="button"
-                    class="remove-image-button"
-                    @click="removeImage"
-                >
-                    {{ t('admin.form.remove_image', 'Rimuovi immagine') }}
-                </button>
+            <div class="field">
+                <span>{{ t('admin.form.image', 'Immagine') }}</span>
+                <div class="image-field-body">
+                    <div class="image-actions">
+                        <button type="button" class="file-button" @click="imageInput?.click()">
+                            {{ t('admin.form.choose_image', 'Scegli immagine') }}
+                        </button>
+                        <button
+                            v-if="imagePreviewUrl"
+                            type="button"
+                            class="remove-image-button"
+                            @click="removeImage"
+                        >
+                            {{ t('admin.form.remove_image', 'Rimuovi immagine') }}
+                        </button>
+                    </div>
+                    <img
+                        v-if="imagePreviewUrl"
+                        :src="imagePreviewUrl"
+                        :alt="product.name"
+                        class="current-image"
+                    />
+                    <div v-else class="image-placeholder">
+                        {{ t('admin.form.no_image_selected', 'Nessun file selezionato') }}
+                    </div>
+                </div>
+                <input ref="imageInput" name="image" type="file" accept="image/*" class="file-input" tabindex="-1" @change="setImage" />
                 <span v-if="form.remove_image" class="help-text">{{ t('admin.form.image_removed_help', "L'immagine attuale sarà rimossa al salvataggio.") }}</span>
-                <span v-else class="help-text">{{ t('admin.form.keep_image_help', "Lascia vuoto per mantenere l'immagine attuale.") }}</span>
                 <span v-if="form.errors.image" class="error">{{ form.errors.image }}</span>
-            </label>
+            </div>
 
             <label class="field">
                 {{ t('admin.form.price', 'Prezzo') }}
@@ -183,10 +192,69 @@ function submit() {
 
 .current-image {
     width: 160px;
-    height: 100px;
+    height: 160px;
     border-radius: 8px;
     object-fit: cover;
     background: #fff7ed;
+}
+
+.image-placeholder {
+    display: grid;
+    place-items: center;
+    width: 160px;
+    height: 160px;
+    box-sizing: border-box;
+    padding: 10px;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+    background: #fff7ed;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.image-field-body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: start;
+    gap: 12px;
+}
+
+.image-actions {
+    display: grid;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    height: 160px;
+    justify-items: start;
+}
+
+.file-button,
+.remove-image-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 160px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font: inherit;
+}
+
+.file-button {
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #111827;
+}
+
+.file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .help-text {
@@ -197,13 +265,9 @@ function submit() {
 
 .remove-image-button {
     justify-self: start;
-    padding: 8px 12px;
     border: 1px solid #b91c1c;
-    border-radius: 8px;
     background: #fff;
     color: #b91c1c;
-    font-weight: 600;
-    cursor: pointer;
 }
 
 .submit-button {

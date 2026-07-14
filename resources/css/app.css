@@ -179,9 +179,14 @@ html.dark .order-total {
 html.dark .product-image,
 html.dark .cart-item-image,
 html.dark .current-image,
+html.dark .image-placeholder,
 html.dark .product-image--placeholder,
 html.dark .cart-item-image--placeholder {
     background: #052e16;
+}
+
+html.dark .image-placeholder {
+    border-color: #334155;
 }
 
 html.dark .product-name,
@@ -204,6 +209,7 @@ html.dark .cookie-banner-title {
 
 html.dark .product-description,
 html.dark .product-meta,
+html.dark .image-placeholder,
 html.dark .cart-item-details,
 html.dark .order-card-meta,
 html.dark .order-card-customer,
@@ -224,6 +230,7 @@ html.dark .filter-input,
 html.dark .sort-direction-button,
 html.dark .quantity-input,
 html.dark .status-select,
+html.dark .file-button,
 html.dark .input,
 html.dark .form-input,
 html.dark .form-textarea,
@@ -231,6 +238,13 @@ html.dark .textarea {
     border-color: #334155;
     background: #0f172a;
     color: #e5e7eb;
+}
+
+html.dark .file-button:hover,
+html.dark .file-button:focus-visible {
+    border-color: #22c55e;
+    background: #052e16;
+    outline: none;
 }
 
 html.dark .sort-direction-button:hover,
@@ -271,13 +285,44 @@ html.dark .remove-image-button:hover {
     background: #450a0a;
 }
 
-html.dark .edit-link,
 html.dark .create-link,
 html.dark .products-link,
 html.dark .order-link,
 html.dark .legal-footer-link,
 html.dark .cookie-banner-link {
     color: #86efac;
+}
+
+html.dark .edit-link,
+html.dark .status-pill--active {
+    border-color: #14532d;
+    background: #052e16;
+    color: #86efac;
+}
+
+html.dark .edit-link:hover,
+html.dark .edit-link:focus-visible {
+    border-color: #22c55e;
+    background: #14532d;
+}
+
+html.dark .delete-button,
+html.dark .status-pill--inactive {
+    border-color: #7f1d1d;
+    background: #450a0a;
+    color: #fca5a5;
+}
+
+html.dark .delete-button:hover,
+html.dark .delete-button:focus-visible {
+    border-color: #f87171;
+    background: #7f1d1d;
+}
+
+html.dark .delete-button:focus-visible,
+html.dark .edit-link:focus-visible {
+    outline: 2px solid #f97316;
+    outline-offset: 2px;
 }
 
 html.dark .delete-button,

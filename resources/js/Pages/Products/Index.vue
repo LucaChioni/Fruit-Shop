@@ -426,8 +426,8 @@ function toggleSortDirection(event) {
     width: min(220px, 70vw);
     padding: 8px 10px;
     border-radius: 10px;
-    border: 1px solid #fecaca;
-    background: #b91c1c;
+    border: 1px solid #111827;
+    background: #111827;
     color: #fff;
     font-size: 13px;
     font-weight: 500;
@@ -513,7 +513,8 @@ function toggleSortDirection(event) {
     max-width: 170px;
     padding: 6px 8px;
     border-radius: 8px;
-    background: #111827;
+    border: 1px solid #fecaca;
+    background: #b91c1c;
     color: #fff;
     font-size: 11px;
     font-weight: 700;

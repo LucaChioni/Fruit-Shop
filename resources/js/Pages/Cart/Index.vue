@@ -14,7 +14,7 @@ const t = useTranslations();
 
 const form = useForm({
     quantities: Object.fromEntries(
-        props.items.map((item) => [item.id, item.quantity])
+        props.items.map((item) => [item.id, formatDisplayNumber(item.quantity)])
     ),
 });
 
@@ -38,6 +38,10 @@ function quantityError(item) {
 
 function clearQuantityError(item) {
     form.clearErrors(`quantities.${item.id}`);
+}
+
+function formatDisplayNumber(value) {
+    return String(value).replace(/([,.])0+$/, '');
 }
 
 function removeItem(item) {
@@ -99,11 +103,11 @@ function removeItem(item) {
 
                         <div class="cart-item-info">
                             <p class="cart-item-details">
-                                {{ item.unit_price }} € / {{ item.unit_type }}
+                                {{ formatDisplayNumber(item.unit_price) }} € / {{ item.unit_type }}
                             </p>
 
                             <div class="cart-item-total">
-                                {{ item.line_total }} €
+                                {{ formatDisplayNumber(item.line_total) }} €
                             </div>
 
                             <div class="cart-item-actions">
@@ -306,8 +310,8 @@ function removeItem(item) {
     width: min(220px, 70vw);
     padding: 8px 10px;
     border-radius: 10px;
-    border: 1px solid #fecaca;
-    background: #b91c1c;
+    border: 1px solid #111827;
+    background: #111827;
     color: #fff;
     font-size: 13px;
     font-weight: 500;
@@ -354,11 +358,15 @@ function removeItem(item) {
 
 .quantity-label {
     display: block;
+    flex: 1 1 auto;
+    min-width: 0;
     position: relative;
 }
 
 .quantity-input {
-    width: 58px;
+    width: 100%;
+    height: 30px;
+    box-sizing: border-box;
     padding: 6px;
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -374,7 +382,8 @@ function removeItem(item) {
     max-width: 170px;
     padding: 6px 8px;
     border-radius: 8px;
-    background: #111827;
+    border: 1px solid #fecaca;
+    background: #b91c1c;
     color: #fff;
     font-size: 11px;
     font-weight: 700;
@@ -397,14 +406,16 @@ function removeItem(item) {
     display: flex;
     align-items: end;
     gap: 6px;
+    width: 100%;
 }
 
 .remove-item-button {
     display: inline-flex;
+    flex: 0 0 32px;
     align-items: center;
     justify-content: center;
     width: 32px;
-    height: 32px;
+    height: 30px;
     border: 1px solid #b91c1c;
     border-radius: 8px;
     background: white;

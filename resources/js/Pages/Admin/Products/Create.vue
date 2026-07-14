@@ -1,5 +1,6 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
+import { onBeforeUnmount, ref } from 'vue';
 import PageNav from '@/Components/PageNav.vue';
 import PageContainer from '@/Components/PageContainer.vue';
 import { useTranslations } from '@/i18n';
@@ -9,6 +10,16 @@ defineProps({
 });
 
 const t = useTranslations();
+const imageInput = ref(null);
+const imagePreviewUrl = ref(null);
+let temporaryImagePreviewUrl = null;
+
+function revokeTemporaryImagePreview() {
+    if (temporaryImagePreviewUrl) {
+        URL.revokeObjectURL(temporaryImagePreviewUrl);
+        temporaryImagePreviewUrl = null;
+    }
+}
 
 const form = useForm({
     name: '',
@@ -20,8 +31,19 @@ const form = useForm({
 });
 
 function setImage(event) {
+    revokeTemporaryImagePreview();
+
     form.image = event.target.files[0] ?? null;
+
+    if (form.image) {
+        temporaryImagePreviewUrl = URL.createObjectURL(form.image);
+        imagePreviewUrl.value = temporaryImagePreviewUrl;
+    } else {
+        imagePreviewUrl.value = null;
+    }
 }
+
+onBeforeUnmount(revokeTemporaryImagePreview);
 
 function submit() {
     form.post(route('admin.products.store'), {
@@ -50,11 +72,27 @@ function submit() {
                 <span v-if="form.errors.description" class="error">{{ form.errors.description }}</span>
             </label>
 
-            <label class="field">
-                {{ t('admin.form.image', 'Immagine') }}
-                <input name="image" type="file" accept="image/*" class="input" @change="setImage" />
+            <div class="field">
+                <span>{{ t('admin.form.image', 'Immagine') }}</span>
+                <div class="image-field-body">
+                    <div class="image-actions">
+                        <button type="button" class="file-button" @click="imageInput?.click()">
+                            {{ t('admin.form.choose_image', 'Scegli immagine') }}
+                        </button>
+                    </div>
+                    <img
+                        v-if="imagePreviewUrl"
+                        :src="imagePreviewUrl"
+                        :alt="form.name || t('admin.form.image', 'Immagine')"
+                        class="current-image"
+                    />
+                    <div v-else class="image-placeholder">
+                        {{ t('admin.form.no_image_selected', 'Nessun file selezionato') }}
+                    </div>
+                </div>
+                <input ref="imageInput" name="image" type="file" accept="image/*" class="file-input" tabindex="-1" @change="setImage" />
                 <span v-if="form.errors.image" class="error">{{ form.errors.image }}</span>
-            </label>
+            </div>
 
             <label class="field">
                 {{ t('admin.form.price', 'Prezzo') }}
@@ -123,6 +161,68 @@ function submit() {
 
 .textarea {
     min-height: 100px;
+}
+
+.current-image {
+    width: 160px;
+    height: 160px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #fff7ed;
+}
+
+.image-placeholder {
+    display: grid;
+    place-items: center;
+    width: 160px;
+    height: 160px;
+    box-sizing: border-box;
+    padding: 10px;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+    background: #fff7ed;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.image-field-body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: start;
+    gap: 12px;
+}
+
+.image-actions {
+    display: grid;
+    justify-items: start;
+    gap: 8px;
+}
+
+.file-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 160px;
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+    color: #111827;
+    font-weight: 600;
+    cursor: pointer;
+    font: inherit;
+}
+
+.file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .submit-button {

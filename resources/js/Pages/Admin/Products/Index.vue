@@ -45,7 +45,7 @@ function toggleSortDirection(event) {
 
         <div class="filters-row">
             <a :href="route('admin.products.create')" class="create-product-link">
-                {{ t('admin.new_product', 'Nuovo prodotto') }}
+                {{ t('admin.new_product', 'Aggiungi prodotto') }}
             </a>
 
             <form
@@ -152,8 +152,14 @@ function toggleSortDirection(event) {
                             <span>/ {{ product.display_unit_type }}</span>
                         </p>
 
-                        <span class="status-pill" :class="product.is_active ? 'status-pill--active' : 'status-pill--inactive'">
-                            {{ product.is_active ? t('admin.active', 'Attivo') : t('admin.inactive', 'Disattivato') }}
+                        <span
+                            class="status-pill"
+                            :class="product.is_active ? 'status-pill--active' : 'status-pill--inactive'"
+                            :title="product.is_active ? t('admin.active', 'Attivo') : t('admin.inactive', 'Disattivato')"
+                            :aria-label="product.is_active ? t('admin.active', 'Attivo') : t('admin.inactive', 'Disattivato')"
+                        >
+                            <span class="status-dot" aria-hidden="true"></span>
+                            {{ product.is_active ? 'On' : 'Off' }}
                         </span>
 
                         <div class="product-actions">
@@ -189,31 +195,33 @@ function toggleSortDirection(event) {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 32px;
-    padding: 6px 9px;
+    min-height: 28px;
+    padding: 4px 7px;
     border: 1px solid #fed7aa;
     border-radius: 8px;
     background: #fff7ed;
     color: #7c2d12;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     text-decoration: none;
+    white-space: nowrap;
 }
 
 .delete-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 32px;
-    padding: 6px 9px;
+    min-height: 28px;
+    padding: 4px 7px;
     border: 1px solid #fecaca;
     border-radius: 8px;
     background: #fff;
     color: #b91c1c;
     cursor: pointer;
     font: inherit;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 .edit-link:hover {
@@ -355,7 +363,7 @@ function toggleSortDirection(event) {
 
 .product-card-body {
     display: grid;
-    grid-template-columns: minmax(82px, 44%) minmax(0, 1fr);
+    grid-template-columns: 82px minmax(0, 1fr);
     gap: 10px;
     align-items: start;
 }
@@ -364,7 +372,6 @@ function toggleSortDirection(event) {
     display: grid;
     align-content: start;
     gap: 8px;
-    margin-top: 12px;
     min-width: 0;
 }
 
@@ -385,10 +392,8 @@ function toggleSortDirection(event) {
 }
 
 .product-actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    justify-content: flex-start;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
 }
 
@@ -473,11 +478,24 @@ function toggleSortDirection(event) {
 }
 
 .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     justify-self: start;
-    padding: 4px 8px;
+    padding: 3px 6px;
+    border: 1px solid transparent;
     border-radius: 999px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: currentColor;
 }
 
 .status-pill--active {
