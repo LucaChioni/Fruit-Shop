@@ -19,6 +19,7 @@ defineProps({
 const showLogoutConfirmation = ref(false);
 const logoutProcessing = ref(false);
 const isDarkMode = ref(false);
+const isMobileMenuOpen = ref(false);
 const themeStorageKey = 'fruit_shop_theme';
 
 function applyTheme(theme) {
@@ -91,7 +92,26 @@ function logout() {
     <div class="page-nav-shell">
         <h1 class="page-nav-title">{{ title }}</h1>
 
-        <nav class="page-nav">
+        <button
+            type="button"
+            class="page-nav-menu-button"
+            :aria-label="t('nav.menu', 'Menu')"
+            :aria-expanded="isMobileMenuOpen"
+            aria-controls="page-nav-menu"
+            @click="isMobileMenuOpen = !isMobileMenuOpen"
+        >
+            <svg class="page-nav-menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M4 6h16" />
+                <path d="M4 12h16" />
+                <path d="M4 18h16" />
+            </svg>
+        </button>
+
+        <nav
+            id="page-nav-menu"
+            class="page-nav"
+            :class="{ 'page-nav--open': isMobileMenuOpen }"
+        >
             <div class="page-nav-group page-nav-group--main">
             <Link
                 :href="route('products.index')"
@@ -167,7 +187,7 @@ function logout() {
                 :class="{ 'page-nav-button--active': route().current('admin.products.*') }"
                 :aria-current="route().current('admin.products.*') ? 'page' : undefined"
             >
-                <svg class="nav-svg-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <svg class="nav-svg-icon nav-svg-icon--admin-products" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                     <rect x="4" y="4" width="6" height="6" rx="1.4" />
                     <rect x="14" y="4" width="6" height="6" rx="1.4" />
                     <rect x="4" y="14" width="6" height="6" rx="1.4" />
@@ -332,6 +352,36 @@ function logout() {
     font-weight: 700;
 }
 
+.page-nav-menu-button {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #166534;
+    cursor: pointer;
+}
+
+.page-nav-menu-button:hover,
+.page-nav-menu-button:focus-visible {
+    color: #14532d;
+    outline: 2px solid #22c55e;
+    outline-offset: 4px;
+}
+
+.page-nav-menu-icon {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+}
+
 .page-nav {
     box-sizing: border-box;
     display: flex;
@@ -398,6 +448,11 @@ function logout() {
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-width: 2;
+}
+
+.nav-svg-icon--admin-products {
+    width: 18px;
+    height: 18px;
 }
 
 .nav-icon--orders::after,
@@ -544,31 +599,41 @@ function logout() {
 
 @media (max-width: 640px) {
     .page-nav-shell {
-        gap: 8px;
+        gap: 8px 12px;
     }
 
     .page-nav-title {
+        flex: 1 1 0;
+        min-width: 0;
         font-size: 22px;
     }
 
-    .page-nav {
-        flex: 1 1 100%;
-        flex-wrap: nowrap;
-        gap: 8px;
-        overflow-x: auto;
-        padding-bottom: 2px;
-        scrollbar-width: none;
+    .page-nav-menu-button {
+        display: inline-flex;
+        flex: 0 0 auto;
     }
 
-    .page-nav::-webkit-scrollbar {
+    .page-nav {
         display: none;
+        flex: 1 1 100%;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px;
+        border: 1px solid #d1fae5;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: 0 12px 28px rgba(22, 101, 52, 0.12);
+    }
+
+    .page-nav--open {
+        display: flex;
     }
 
     .page-nav-group {
-        flex: 0 0 auto;
-        flex-wrap: nowrap;
-        width: auto;
-        gap: 6px;
+        flex: 1 1 100%;
+        flex-wrap: wrap;
+        width: 100%;
+        gap: 8px;
     }
 
     .page-nav-group--main,
@@ -579,12 +644,17 @@ function logout() {
     }
 
     .page-nav-button {
-        flex: 0 0 auto;
-        width: auto;
+        flex: 1 1 100%;
+        width: 100%;
         min-width: 0;
-        height: 34px;
-        padding: 0 9px;
+        height: 38px;
+        padding: 0 12px;
         font-size: 13px;
+    }
+
+    .nav-svg-icon--admin-products {
+        width: 16px;
+        height: 16px;
     }
 
     .theme-switcher,

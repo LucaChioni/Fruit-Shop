@@ -63,34 +63,36 @@ function toggleSortDirection(event) {
                 </select>
             </label>
 
-            <label class="filter-field">
-                {{ t('orders.sort', 'Ordina') }}
-                <select name="sort" class="filter-input">
-                    <option value="created_at" :selected="filters.sort === 'created_at'">{{ t('orders.sort_created_at', 'Data ordine') }}</option>
-                    <option value="total_amount" :selected="filters.sort === 'total_amount'">{{ t('orders.sort_total', 'Totale') }}</option>
-                </select>
-            </label>
+            <div class="sort-controls">
+                <label class="filter-field filter-field--sort">
+                    {{ t('orders.sort', 'Ordina') }}
+                    <select name="sort" class="filter-input">
+                        <option value="created_at" :selected="filters.sort === 'created_at'">{{ t('orders.sort_created_at', 'Data ordine') }}</option>
+                        <option value="total_amount" :selected="filters.sort === 'total_amount'">{{ t('orders.sort_total', 'Totale') }}</option>
+                    </select>
+                </label>
 
-            <input type="hidden" name="sort_direction" :value="filters.sort_direction" />
+                <input type="hidden" name="sort_direction" :value="filters.sort_direction" />
 
-            <button
-                type="button"
-                class="sort-direction-button"
-                :aria-label="filters.sort_direction === 'asc' ? t('products.sort_asc', 'Ascendente') : t('products.sort_desc', 'Discendente')"
-                :title="filters.sort_direction === 'asc' ? t('products.sort_asc', 'Ascendente') : t('products.sort_desc', 'Discendente')"
-                @click="toggleSortDirection"
-            >
-                <svg class="sort-direction-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                    <template v-if="filters.sort_direction === 'asc'">
-                        <path d="M12 19V5" />
-                        <path d="m6 11 6-6 6 6" />
-                    </template>
-                    <template v-else>
-                        <path d="M12 5v14" />
-                        <path d="m6 13 6 6 6-6" />
-                    </template>
-                </svg>
-            </button>
+                <button
+                    type="button"
+                    class="sort-direction-button"
+                    :aria-label="filters.sort_direction === 'asc' ? t('products.sort_asc', 'Ascendente') : t('products.sort_desc', 'Discendente')"
+                    :title="filters.sort_direction === 'asc' ? t('products.sort_asc', 'Ascendente') : t('products.sort_desc', 'Discendente')"
+                    @click="toggleSortDirection"
+                >
+                    <svg class="sort-direction-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <template v-if="filters.sort_direction === 'asc'">
+                            <path d="M12 19V5" />
+                            <path d="m6 11 6-6 6 6" />
+                        </template>
+                        <template v-else>
+                            <path d="M12 5v14" />
+                            <path d="m6 13 6 6 6-6" />
+                        </template>
+                    </svg>
+                </button>
+            </div>
         </form>
 
         <OrderList
@@ -141,7 +143,21 @@ function toggleSortDirection(event) {
     font: inherit;
 }
 
+.sort-controls {
+    display: flex;
+    flex: 1 1 226px;
+    align-items: end;
+    gap: 8px;
+    min-width: min(226px, 100%);
+}
+
+.filter-field--sort {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
 .sort-direction-button {
+    flex: 0 0 auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;

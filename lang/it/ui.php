@@ -9,6 +9,7 @@ return [
     'nav.login' => 'Login',
     'nav.register' => 'Registrati',
     'nav.logout' => 'Logout',
+    'nav.menu' => 'Menu',
     'nav.theme' => 'Tema',
     'nav.dark_mode' => 'Scuro',
     'nav.light_mode' => 'Chiaro',

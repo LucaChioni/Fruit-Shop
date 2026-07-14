@@ -98,6 +98,20 @@ html.dark .page-nav-button:focus-visible {
     background: #052e16;
 }
 
+html.dark .page-nav-menu-button {
+    color: #d1fae5;
+}
+
+html.dark .page-nav-menu-button:hover,
+html.dark .page-nav-menu-button:focus-visible {
+    color: #86efac;
+}
+
+html.dark .page-nav {
+    border-color: #334155;
+    background: rgba(15, 23, 42, 0.96);
+}
+
 html.dark .page-nav-button--admin,
 html.dark .admin-nav-link {
     color: #fed7aa;
