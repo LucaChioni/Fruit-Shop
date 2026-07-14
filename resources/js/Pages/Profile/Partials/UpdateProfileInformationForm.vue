@@ -20,7 +20,6 @@ const t = useTranslations();
 
 const form = useForm({
     name: user.name,
-    email: user.email,
 });
 </script>
 
@@ -32,7 +31,7 @@ const form = useForm({
             </h2>
 
             <p class="mt-1 text-sm text-gray-600">
-                {{ t('settings.profile_information_text', "Aggiorna le informazioni del profilo e l'indirizzo email del tuo account.") }}
+                {{ t('settings.profile_information_text', 'Aggiorna le informazioni del profilo del tuo account.') }}
             </p>
         </header>
 
@@ -59,16 +58,9 @@ const form = useForm({
             <div>
                 <InputLabel for="email" :value="t('legal.email', 'Email')" />
 
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
+                <p id="email" class="mt-1 text-sm text-gray-700">
+                    {{ user.email }}
+                </p>
             </div>
 
             <div v-if="mustVerifyEmail && user.email_verified_at === null">

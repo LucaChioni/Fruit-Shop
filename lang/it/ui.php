@@ -190,7 +190,7 @@ return [
     'auth.verification_link_sent' => 'Un nuovo link di verifica è stato inviato all\'indirizzo email indicato durante la registrazione.',
     'auth.resend_verification_email' => 'Invia di nuovo email di verifica',
     'settings.profile_information' => 'Informazioni profilo',
-    'settings.profile_information_text' => 'Aggiorna le informazioni del profilo e l\'indirizzo email del tuo account.',
+    'settings.profile_information_text' => 'Aggiorna le informazioni del profilo del tuo account.',
     'settings.update_password' => 'Aggiorna password',
     'settings.update_password_text' => 'Usa una password lunga e casuale per mantenere sicuro il tuo account.',
     'settings.save' => 'Salva',

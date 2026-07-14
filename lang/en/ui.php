@@ -190,7 +190,7 @@ return [
     'auth.verification_link_sent' => 'A new verification link has been sent to the email address you provided during registration.',
     'auth.resend_verification_email' => 'Resend verification email',
     'settings.profile_information' => 'Profile information',
-    'settings.profile_information_text' => 'Update your account profile information and email address.',
+    'settings.profile_information_text' => 'Update your account profile information.',
     'settings.update_password' => 'Update password',
     'settings.update_password_text' => 'Use a long, random password to keep your account secure.',
     'settings.save' => 'Save',
