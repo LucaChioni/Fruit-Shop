@@ -42,26 +42,36 @@ function updateStatus() {
         </header>
 
         <section class="order-section">
-            <div class="order-info">
-                <p class="order-meta">
-                    {{ t('orders.reference', 'Riferimento') }} {{ order.order_number ?? '#' + order.id }} ·
-                    {{ order.created_at }} · {{ t('orders.status', 'Stato') }}:
-                    <span class="order-status" :class="`order-status--${order.status}`">
-                        {{ t(`orders.${order.status}`, order.status) }}
-                    </span>
-                </p>
+            <p class="order-meta">
+                <strong>{{ t('orders.reference', 'Riferimento') }}:</strong> {{ order.order_number ?? '#' + order.id }} · {{ order.created_at }} ·
+                <span class="order-status" :class="`order-status--${order.status}`">
+                    {{ t(`orders.${order.status}`, order.status) }}
+                </span>
+            </p>
 
-                <p v-if="order.pickup_at" class="order-meta order-meta--pickup">
-                    {{ t('orders.pickup', 'Ritiro') }}: {{ order.pickup_at }}
-                </p>
-            </div>
+            <p v-if="order.pickup_at" class="order-meta order-meta--pickup">
+                <strong>{{ t('orders.pickup', 'Ritiro') }}:</strong> {{ order.pickup_at }}
+            </p>
 
-            <p class="customer-line">
+            <p v-if="page.props.shop?.address" class="order-meta">
+                <strong>{{ t('shop.address', 'Indirizzo negozio') }}:</strong> {{ page.props.shop.address }} ·
+                <a
+                    v-if="page.props.shop.mapsUrl"
+                    :href="page.props.shop.mapsUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="maps-link"
+                >
+                    {{ t('shop.maps_link', 'Apri in Google Maps') }}
+                </a>
+            </p>
+
+            <p class="order-meta order-meta--client">
                 <strong>{{ t('orders.customer', 'Cliente') }}:</strong> {{ order.customer_name }}
             </p>
 
-            <p v-if="order.notes">
-                {{ t('orders.notes', 'Note') }}: {{ order.notes }}
+            <p v-if="order.notes" class="order-meta">
+                <strong>{{ t('orders.notes', 'Note') }}:</strong> {{ order.notes }}
             </p>
         </section>
 
@@ -151,8 +161,19 @@ function updateStatus() {
     font-weight: 700;
 }
 
-.order-info {
-    margin-bottom: 10px;
+.order-meta--client {
+    margin-top: 6px;
+    font-weight: 700;
+}
+
+.maps-link {
+    margin-left: 6px;
+    color: #166534;
+    font-weight: 700;
+}
+
+:global(html.dark) .maps-link {
+    color: #86efac;
 }
 
 .order-status {
@@ -202,10 +223,6 @@ function updateStatus() {
 .order-section h2 {
     margin: 0 0 8px;
     font-size: 18px;
-}
-
-.customer-line {
-    margin: 0 0 8px;
 }
 
 .order-items {

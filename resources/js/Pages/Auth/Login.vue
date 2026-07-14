@@ -1,35 +1,31 @@
 <script setup>
-import Checkbox from '@/Components/Checkbox.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import { useTranslations } from '@/i18n';
 
-defineProps({
-    canResetPassword: {
-        type: Boolean,
-    },
-    status: {
-        type: String,
-    },
+const props = defineProps({
+    status: String,
+    emailLoginEmail: String,
+    emailLoginNeedsName: Boolean,
 });
 
 const form = useForm({
-    email: '',
-    password: '',
-    remember: false,
+    email: props.emailLoginEmail ?? '',
+    name: '',
+    code: '',
 });
 
 const t = useTranslations();
+const codeSent = computed(() => Boolean(props.emailLoginEmail || form.errors.code));
 
 const submit = () => {
-    form.post(route('login'), {
-        onFinish: () => form.reset('password'),
-    });
+    form.post(codeSent.value ? route('login.verify') : route('login'));
 };
 
 function setLoginValidationMessage(event) {
@@ -63,15 +59,15 @@ function clearLoginValidationMessage(event) {
 
         <section class="auth-card">
             <div class="auth-help mb-4 rounded-lg text-sm">
-                {{ t('auth.login_help', 'Accedi per aggiungere prodotti al carrello e completare gli ordini.') }}
+                {{ t('auth.login_help', 'Inserisci la tua email: ti invieremo un codice per accedere. Se non hai ancora un account, lo creeremo automaticamente.') }}
             </div>
 
-            <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
+            <div v-if="status" class="auth-status mb-4 rounded-lg text-sm">
                 {{ status }}
             </div>
 
             <form @submit.prevent="submit">
-                <div>
+                <div v-if="!codeSent">
                     <InputLabel for="email" :value="t('legal.email', 'Email')" />
 
                     <TextInput
@@ -80,6 +76,7 @@ function clearLoginValidationMessage(event) {
                         class="mt-1 block w-full"
                         v-model="form.email"
                         required
+                        :readonly="codeSent"
                         autofocus
                         autocomplete="username"
                         @invalid="setLoginValidationMessage"
@@ -89,47 +86,46 @@ function clearLoginValidationMessage(event) {
                     <InputError class="mt-2" :message="form.errors.email" />
                 </div>
 
-                <div class="mt-4">
-                    <InputLabel for="password" :value="t('auth.password', 'Password')" />
+                <div v-if="codeSent && emailLoginNeedsName">
+                    <InputLabel for="name" :value="t('auth.name', 'Nome')" />
 
                     <TextInput
-                        id="password"
-                        type="password"
+                        id="name"
+                        type="text"
                         class="mt-1 block w-full"
-                        v-model="form.password"
+                        v-model="form.name"
                         required
-                        autocomplete="current-password"
+                        autofocus
+                        autocomplete="name"
                         @invalid="setLoginValidationMessage"
                         @input="clearLoginValidationMessage"
                     />
 
-                    <InputError class="mt-2" :message="form.errors.password" />
+                    <InputError class="mt-2" :message="form.errors.name" />
                 </div>
 
-                <div class="mt-4 block">
-                    <label class="flex items-center">
-                        <Checkbox name="remember" v-model:checked="form.remember" />
-                        <span class="ms-2 text-sm text-gray-600"
-                            >{{ t('auth.remember', 'Ricordami') }}</span
-                        >
-                    </label>
+                <div v-if="codeSent" class="mt-4">
+                    <InputLabel for="code" :value="t('auth.email_code', 'Codice ricevuto via email')" />
+
+                    <TextInput
+                        id="code"
+                        type="text"
+                        class="mt-1 block w-full"
+                        v-model="form.code"
+                        required
+                        inputmode="numeric"
+                        autocomplete="one-time-code"
+                    />
+
+                    <InputError class="mt-2" :message="form.errors.code" />
                 </div>
 
                 <div class="mt-4 flex items-center justify-end">
-                    <Link
-                        v-if="canResetPassword"
-                        :href="route('password.request')"
-                        class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        {{ t('auth.forgot_password', 'Password dimenticata?') }}
-                    </Link>
-
                     <PrimaryButton
-                        class="ms-4"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                     >
-                        {{ t('auth.login', 'Accedi') }}
+                        {{ codeSent ? t('auth.verify_code', 'Verifica codice') : t('auth.login', 'Accedi') }}
                     </PrimaryButton>
                 </div>
             </form>
@@ -158,6 +154,19 @@ function clearLoginValidationMessage(event) {
     color: #374151;
 }
 
+.auth-status {
+    padding: 10px 12px;
+    border: 1px solid #bbf7d0;
+    background: #f0fdf4;
+    color: #166534;
+}
+
+:global(html.dark) .auth-status {
+    border-color: #14532d;
+    background: #052e16;
+    color: #86efac;
+}
+
 :global(html.dark) .auth-help {
     border-color: #334155;
     background: #111827;
@@ -174,6 +183,10 @@ function clearLoginValidationMessage(event) {
     }
 
     .auth-help {
+        padding: 8px;
+    }
+
+    .auth-status {
         padding: 8px;
     }
 }

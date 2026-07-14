@@ -1,33 +1,24 @@
 <script setup>
 import DangerButton from '@/Components/DangerButton.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
 import Modal from '@/Components/Modal.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
-import { nextTick, ref } from 'vue';
+import { ref } from 'vue';
 import { useTranslations } from '@/i18n';
 
 const confirmingUserDeletion = ref(false);
-const passwordInput = ref(null);
 const t = useTranslations();
 
-const form = useForm({
-    password: '',
-});
+const form = useForm({});
 
 const confirmUserDeletion = () => {
     confirmingUserDeletion.value = true;
-
-    nextTick(() => passwordInput.value.focus());
 };
 
 const deleteUser = () => {
     form.delete(route('profile.destroy'), {
         preserveScroll: true,
         onSuccess: () => closeModal(),
-        onError: () => passwordInput.value.focus(),
         onFinish: () => form.reset(),
     });
 };
@@ -63,28 +54,8 @@ const closeModal = () => {
                 </h2>
 
                 <p class="mt-1 text-sm text-gray-600">
-                    {{ t('settings.delete_account_confirm_text', "Questa operazione è definitiva. Inserisci la password per confermare l'eliminazione dell'account.") }}
+                    {{ t('settings.delete_account_confirm_text', "Questa operazione è definitiva e non potrà essere annullata.") }}
                 </p>
-
-                <div class="mt-6">
-                    <InputLabel
-                        for="password"
-                        :value="t('auth.password', 'Password')"
-                        class="sr-only"
-                    />
-
-                    <TextInput
-                        id="password"
-                        ref="passwordInput"
-                        v-model="form.password"
-                        type="password"
-                        class="mt-1 block w-3/4"
-                        :placeholder="t('auth.password', 'Password')"
-                        @keyup.enter="deleteUser"
-                    />
-
-                    <InputError :message="form.errors.password" class="mt-2" />
-                </div>
 
                 <div class="mt-6 flex justify-end">
                     <SecondaryButton @click="closeModal">

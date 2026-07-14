@@ -2,37 +2,31 @@
 
 namespace App\Mail;
 
-use App\Models\Order;
-use App\Support\ShopLocation;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class OrderPlaced extends Mailable
+class EmailLoginCodeMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public Order $order)
+    public function __construct(public string $code)
     {
-        $this->order->loadMissing('items');
     }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Nuovo ordine '.$this->order->order_number,
+            subject: 'Codice di accesso',
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            view: 'emails.orders.placed',
-            with: [
-                'shop' => ShopLocation::inertia(),
-            ],
+            view: 'emails.auth.login-code',
         );
     }
 }

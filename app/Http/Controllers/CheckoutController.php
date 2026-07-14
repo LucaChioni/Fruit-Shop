@@ -30,7 +30,6 @@ class CheckoutController extends Controller
         }
 
         return Inertia::render('Checkout/Create', [
-            'customerName' => $request->user()->name,
             'pickupAtDefault' => $this->earliestPickupAt()->format('Y-m-d\TH:i'),
             'pickupAtMin' => now()->addHours(2)->format('Y-m-d\TH:i'),
             'pickupDateMax' => now()->addDays(369)->format('Y-m-d'),
@@ -49,12 +48,9 @@ class CheckoutController extends Controller
         }
 
         $validated = $request->validate([
-            'customer_name' => ['required', 'string', 'max:255'],
             'pickup_at' => ['required', 'date'],
             'notes' => ['nullable', 'string', 'max:2000'],
         ], [
-            'customer_name.required' => __('ui.validation.customer_name_required'),
-            'customer_name.max' => __('ui.validation.customer_name_max'),
             'pickup_at.required' => __('ui.validation.pickup_required'),
             'pickup_at.date' => __('ui.validation.pickup_date'),
             'notes.max' => __('ui.validation.notes_max'),
@@ -72,7 +68,7 @@ class CheckoutController extends Controller
 
             $order = Order::create([
                 'user_id' => $request->user()->id,
-                'customer_name' => $validated['customer_name'],
+                'customer_name' => $request->user()->name,
                 'status' => 'pending',
                 'total_amount' => $totalAmount,
                 'notes' => $validated['notes'] ?? null,

@@ -29,16 +29,20 @@ const form = useForm({
             <h2 class="text-lg font-medium text-gray-900">
                 {{ t('settings.profile_information', 'Informazioni profilo') }}
             </h2>
-
-            <p class="mt-1 text-sm text-gray-600">
-                {{ t('settings.profile_information_text', 'Aggiorna le informazioni del profilo del tuo account.') }}
-            </p>
         </header>
 
         <form
             @submit.prevent="form.patch(route('profile.update'))"
             class="mt-6 space-y-6"
         >
+            <div>
+                <InputLabel for="email" :value="t('legal.email', 'Email')" />
+
+                <p id="email" class="mt-1 text-sm text-gray-700">
+                    {{ user.email }}
+                </p>
+            </div>
+
             <div>
                 <InputLabel for="name" :value="t('auth.name', 'Nome')" />
 
@@ -53,14 +57,6 @@ const form = useForm({
                 />
 
                 <InputError class="mt-2" :message="form.errors.name" />
-            </div>
-
-            <div>
-                <InputLabel for="email" :value="t('legal.email', 'Email')" />
-
-                <p id="email" class="mt-1 text-sm text-gray-700">
-                    {{ user.email }}
-                </p>
             </div>
 
             <div v-if="mustVerifyEmail && user.email_verified_at === null">

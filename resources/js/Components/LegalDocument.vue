@@ -1,4 +1,5 @@
 <script setup>
+import { usePage } from '@inertiajs/vue3';
 import { useTranslations } from '@/i18n';
 
 defineProps({
@@ -9,6 +10,7 @@ defineProps({
 });
 
 const t = useTranslations();
+const page = usePage();
 </script>
 
 <template>
@@ -73,6 +75,18 @@ const t = useTranslations();
 
             <h2>{{ t('legal.terms.pickup_title', 'Ritiro') }}</h2>
             <p>{{ t('legal.terms.pickup_text', 'Il ritiro deve essere scelto negli orari disponibili indicati nel checkout. Gli ordini possono essere ritirati al massimo entro il giorno successivo.') }}</p>
+            <p v-if="page.props.shop?.address" class="shop-address">
+                <strong>{{ t('shop.address', 'Indirizzo negozio') }}:</strong>
+                {{ page.props.shop.address }}
+                <a
+                    v-if="page.props.shop.mapsUrl"
+                    :href="page.props.shop.mapsUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    {{ t('shop.maps_link', 'Apri in Google Maps') }}
+                </a>
+            </p>
 
             <h2>{{ t('legal.terms.prices_title', 'Prezzi e pagamenti') }}</h2>
             <p>{{ t('legal.terms.prices_text', 'I prezzi sono indicati per unità di misura. Eventuali arrotondamenti o variazioni di peso saranno comunicati al ritiro.') }}</p>
@@ -106,5 +120,15 @@ const t = useTranslations();
 .legal-document h2 {
     margin-top: 6px;
     font-size: 18px;
+}
+
+.shop-address a {
+    margin-left: 6px;
+    color: #166534;
+    font-weight: 700;
+}
+
+:global(html.dark) .shop-address a {
+    color: #86efac;
 }
 </style>

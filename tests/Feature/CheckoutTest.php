@@ -33,7 +33,7 @@ class CheckoutTest extends TestCase
             ->assertSessionHas('error', 'Il carrello è vuoto.');
     }
 
-    public function test_checkout_create_shows_customer_name_for_authenticated_user(): void
+    public function test_checkout_create_does_not_expose_editable_customer_name(): void
     {
         $user = User::factory()->create(['name' => 'Giulia Verdi']);
         $cart = $this->createCart(['user_id' => $user->id]);
@@ -45,7 +45,7 @@ class CheckoutTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Checkout/Create')
-                ->where('customerName', 'Giulia Verdi'));
+                ->missing('customerName'));
     }
 
     public function test_checkout_create_skips_closed_dates_for_default_pickup(): void
@@ -82,7 +82,7 @@ class CheckoutTest extends TestCase
         Mail::fake();
         config(['mail.order_notifications.address' => 'admin@example.com']);
 
-        $user = User::factory()->create(['email' => 'customer@example.com']);
+        $user = User::factory()->create(['name' => 'Cliente Account', 'email' => 'customer@example.com']);
         $cart = $this->createCart(['user_id' => $user->id]);
         $product = $this->createProduct(['name' => 'Pere', 'price' => 3.20, 'unit_type' => 'kg']);
         $this->createCartItem($cart, $product, 2);
@@ -102,7 +102,7 @@ class CheckoutTest extends TestCase
             ->assertRedirect(route('orders.show', $order));
 
         $this->assertSame($user->id, $order->user_id);
-        $this->assertSame('Cliente Test', $order->customer_name);
+        $this->assertSame('Cliente Account', $order->customer_name);
         $this->assertSame('2026-06-29 12:00:00', $order->pickup_at->format('Y-m-d H:i:s'));
         $this->assertNotNull($order->order_number);
         $this->assertSame('pending', $order->status);
@@ -160,23 +160,6 @@ class CheckoutTest extends TestCase
 
         $this->assertSame(0, Order::count());
         Mail::assertNothingSent();
-    }
-
-    public function test_checkout_customer_name_validation_uses_italian_message(): void
-    {
-        $user = User::factory()->create();
-        $cart = $this->createCart(['user_id' => $user->id]);
-        $this->createCartItem($cart, $this->createProduct(), 1);
-
-        $response = $this
-            ->actingAs($user)
-            ->post(route('checkout.store'), [
-                'customer_name' => '',
-            ]);
-
-        $response->assertSessionHasErrors([
-            'customer_name' => 'Inserisci il nome per il ritiro.',
-        ]);
     }
 
     public function test_checkout_pickup_time_must_be_at_least_two_hours_after_order(): void

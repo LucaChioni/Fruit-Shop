@@ -292,6 +292,7 @@ function toggleSortDirection(event) {
     box-sizing: border-box;
     min-width: min(180px, 100%);
     width: 100%;
+    height: 36px;
     padding: 7px 9px;
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -317,7 +318,8 @@ function toggleSortDirection(event) {
     align-items: center;
     justify-content: center;
     width: 36px;
-    height: 34px;
+    height: 36px;
+    box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 8px;
     background: #fff;

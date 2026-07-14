@@ -2,7 +2,6 @@
 import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
 import DeleteUserForm from './Partials/DeleteUserForm.vue';
-import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
 import { Head } from '@inertiajs/vue3';
 import { useTranslations } from '@/i18n';
@@ -36,10 +35,6 @@ const t = useTranslations();
                     :must-verify-email="mustVerifyEmail"
                     :status="status"
                 />
-            </section>
-
-            <section class="settings-card">
-                <UpdatePasswordForm />
             </section>
 
             <section class="settings-card">

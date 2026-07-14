@@ -9,7 +9,6 @@ import PageNav from '@/Components/PageNav.vue';
 import { useTranslations } from '@/i18n';
 
 const props = defineProps({
-    customerName: String,
     pickupAtDefault: String,
     pickupAtMin: String,
     pickupDateMax: String,
@@ -29,7 +28,6 @@ let pickupDatePicker = null;
 let pickupTimePicker = null;
 
 const form = useForm({
-    customer_name: props.customerName ?? '',
     pickup_date: pickupAtDefaultParts[0] ?? '',
     pickup_time: pickupAtDefaultParts[1] ?? '',
     notes: '',
@@ -43,7 +41,6 @@ function submitOrder() {
     }
 
     form.transform((data) => ({
-        customer_name: data.customer_name,
         pickup_at: data.pickup_date && data.pickup_time ? `${data.pickup_date}T${data.pickup_time}` : '',
         notes: data.notes,
     })).post(route('checkout.store'));
@@ -127,19 +124,6 @@ watch(dateInputLocale, async () => {
         </header>
 
         <form class="checkout-form" @submit.prevent="submitOrder">
-            <label class="form-field">
-                {{ t('checkout.name', 'Nome') }}
-                <input
-                    v-model="form.customer_name"
-                    type="text"
-                    class="form-input"
-                    required
-                />
-                <p v-if="form.errors.customer_name" class="form-error">
-                    {{ form.errors.customer_name }}
-                </p>
-            </label>
-
             <label class="form-field">
                 {{ t('checkout.pickup', 'Data e ora di ritiro') }}
                 <div class="pickup-fields">

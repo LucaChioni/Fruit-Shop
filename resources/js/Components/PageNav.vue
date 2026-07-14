@@ -197,6 +197,20 @@ function logout() {
                 {{ t('admin.manage_products', 'Gestisci prodotti') }}
             </Link>
 
+            <a
+                v-if="page.props.shop?.mapsUrl"
+                :href="page.props.shop.mapsUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="page-nav-button page-nav-button--maps"
+            >
+                <svg class="nav-svg-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M12 21s7-5.1 7-12a7 7 0 1 0-14 0c0 6.9 7 12 7 12Z" />
+                    <circle cx="12" cy="9" r="2.4" />
+                </svg>
+                {{ t('nav.maps', 'Indicazioni') }}
+            </a>
+
             <Link
                 v-if="page.props.auth.user"
                 :href="route('profile.edit')"
@@ -224,19 +238,6 @@ function logout() {
             >
                 <span class="nav-icon nav-icon--login" aria-hidden="true"></span>
                 {{ t('nav.login', 'Login') }}
-            </Link>
-
-            <Link
-                v-if="!page.props.auth.user"
-                :href="route('register')"
-                as="button"
-                type="button"
-                class="page-nav-button page-nav-button--auth"
-                :class="{ 'page-nav-button--active': route().current('register') }"
-                :aria-current="route().current('register') ? 'page' : undefined"
-            >
-                <span class="nav-icon nav-icon--register" aria-hidden="true"></span>
-                {{ t('nav.register', 'Registrati') }}
             </Link>
 
             <button
@@ -456,8 +457,7 @@ function logout() {
     height: 18px;
 }
 
-.nav-icon--orders::after,
-.nav-icon--register::after {
+.nav-icon--orders::after {
     position: absolute;
     inset: 3px;
     border-top: 2px solid currentColor;
@@ -520,6 +520,19 @@ function logout() {
 
 .page-nav-button--settings {
     color: #4b5563;
+}
+
+.page-nav-button--maps {
+    border-color: #166534;
+    background: #166534;
+    color: #fff;
+}
+
+.page-nav-button--maps:hover,
+.page-nav-button--maps:focus-visible {
+    border-color: #14532d;
+    background: #14532d;
+    color: #fff;
 }
 
 .page-nav-button--logout {

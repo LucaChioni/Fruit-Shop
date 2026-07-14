@@ -44,10 +44,6 @@ class ProfileController extends Controller
     {
         abort_if($request->user()->is_admin, 403);
 
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
-
         $user = $request->user();
 
         Auth::logout();

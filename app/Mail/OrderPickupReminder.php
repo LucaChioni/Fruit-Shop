@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class OrderPlaced extends Mailable
+class OrderPickupReminder extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -22,14 +22,14 @@ class OrderPlaced extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Nuovo ordine '.$this->order->order_number,
+            subject: 'Promemoria ritiro ordine '.$this->order->order_number,
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            view: 'emails.orders.placed',
+            view: 'emails.orders.pickup-reminder',
             with: [
                 'shop' => ShopLocation::inertia(),
             ],

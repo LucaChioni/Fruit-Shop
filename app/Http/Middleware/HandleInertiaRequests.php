@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\ShopLocation;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -33,6 +34,7 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'locale' => app()->getLocale(),
             'translations' => trans('ui'),
+            'shop' => ShopLocation::inertia(),
             'auth' => [
                 'user' => $request->user() ? [
                     'id' => $request->user()->id,

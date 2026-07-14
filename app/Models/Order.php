@@ -17,6 +17,7 @@ class Order extends Model
         'total_amount',
         'notes',
         'pickup_at',
+        'pickup_reminder_sent_at',
     ];
 
     protected static function booted(): void
@@ -31,6 +32,7 @@ class Order extends Model
     protected $casts = [
         'total_amount' => 'decimal:2',
         'pickup_at' => 'datetime',
+        'pickup_reminder_sent_at' => 'datetime',
     ];
 
     public function user(): BelongsTo
