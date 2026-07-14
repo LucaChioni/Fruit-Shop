@@ -9,6 +9,7 @@ class OrderData
 {
     public const STATUSES = [
         'pending',
+        'ready',
         'completed',
         'cancelled',
     ];

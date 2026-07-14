@@ -36,24 +36,29 @@ function updateStatus() {
         <header class="order-header">
             <PageNav />
 
-            <p class="order-meta">
-                {{ t('orders.reference', 'Riferimento') }} {{ order.order_number ?? '#' + order.id }} ·
-                {{ order.created_at }} · {{ t('orders.status', 'Stato') }}: {{ t(`orders.${order.status}`, order.status) }}
-            </p>
-
-            <p v-if="order.pickup_at" class="order-meta order-meta--pickup">
-                {{ t('orders.pickup', 'Ritiro') }}: {{ order.pickup_at }}
-            </p>
-
             <div v-if="page.props.flash?.success" class="flash-message flash-message--success">
                 {{ page.props.flash.success }}
             </div>
         </header>
 
         <section class="order-section">
-            <h2>{{ t('orders.customer', 'Cliente') }}</h2>
+            <div class="order-info">
+                <p class="order-meta">
+                    {{ t('orders.reference', 'Riferimento') }} {{ order.order_number ?? '#' + order.id }} ·
+                    {{ order.created_at }} · {{ t('orders.status', 'Stato') }}:
+                    <span class="order-status" :class="`order-status--${order.status}`">
+                        {{ t(`orders.${order.status}`, order.status) }}
+                    </span>
+                </p>
 
-            <p>{{ order.customer_name }}</p>
+                <p v-if="order.pickup_at" class="order-meta order-meta--pickup">
+                    {{ t('orders.pickup', 'Ritiro') }}: {{ order.pickup_at }}
+                </p>
+            </div>
+
+            <p class="customer-line">
+                <strong>{{ t('orders.customer', 'Cliente') }}:</strong> {{ order.customer_name }}
+            </p>
 
             <p v-if="order.notes">
                 {{ t('orders.notes', 'Note') }}: {{ order.notes }}
@@ -132,7 +137,6 @@ function updateStatus() {
     margin-bottom: 16px;
 }
 
-.order-meta,
 .flash-message {
     flex: 1 1 100%;
 }
@@ -147,6 +151,46 @@ function updateStatus() {
     font-weight: 700;
 }
 
+.order-info {
+    margin-bottom: 10px;
+}
+
+.order-status {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 3px;
+    padding: 2px 8px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.order-status--pending {
+    border-color: #fde68a;
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.order-status--ready {
+    border-color: #bbf7d0;
+    background: #dcfce7;
+    color: #166534;
+}
+
+.order-status--completed {
+    border-color: #e5e7eb;
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.order-status--cancelled {
+    border-color: #fecaca;
+    background: #fee2e2;
+    color: #991b1b;
+}
+
 .order-section {
     margin-bottom: 16px;
     padding: 14px;
@@ -158,6 +202,10 @@ function updateStatus() {
 .order-section h2 {
     margin: 0 0 8px;
     font-size: 18px;
+}
+
+.customer-line {
+    margin: 0 0 8px;
 }
 
 .order-items {

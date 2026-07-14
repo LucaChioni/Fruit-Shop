@@ -37,7 +37,10 @@ const t = useTranslations();
                 </h2>
 
                 <p class="order-card-meta">
-                    {{ order.created_at }} · {{ t('orders.status', 'Stato') }}: {{ t(`orders.${order.status}`, order.status) }}
+                    {{ order.created_at }} · {{ t('orders.status', 'Stato') }}:
+                    <span class="order-status" :class="`order-status--${order.status}`">
+                        {{ t(`orders.${order.status}`, order.status) }}
+                    </span>
                 </p>
 
                 <p v-if="order.pickup_at" class="order-card-meta">
@@ -102,6 +105,42 @@ const t = useTranslations();
     margin: 0 0 3px;
     color: #555;
     font-size: 14px;
+}
+
+.order-status {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 3px;
+    padding: 2px 8px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.order-status--pending {
+    border-color: #fde68a;
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.order-status--ready {
+    border-color: #bbf7d0;
+    background: #dcfce7;
+    color: #166534;
+}
+
+.order-status--completed {
+    border-color: #e5e7eb;
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.order-status--cancelled {
+    border-color: #fecaca;
+    background: #fee2e2;
+    color: #991b1b;
 }
 
 .customer-type {

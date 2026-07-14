@@ -139,6 +139,7 @@ class OrderTest extends TestCase
                 ->has('order.items', 1)
                 ->where('orderStatuses', [
                     'pending',
+                    'ready',
                     'completed',
                     'cancelled',
                 ]));

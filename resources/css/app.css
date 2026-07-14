@@ -346,6 +346,30 @@ html.dark .inactive {
     color: #fca5a5;
 }
 
+html.dark .order-status--pending {
+    border-color: #854d0e;
+    background: #422006;
+    color: #fde68a;
+}
+
+html.dark .order-status--ready {
+    border-color: #14532d;
+    background: #052e16;
+    color: #86efac;
+}
+
+html.dark .order-status--completed {
+    border-color: #475569;
+    background: #1f2937;
+    color: #cbd5e1;
+}
+
+html.dark .order-status--cancelled {
+    border-color: #7f1d1d;
+    background: #450a0a;
+    color: #fca5a5;
+}
+
 html.dark .customer-type-registered {
     background: #052e16;
     color: #86efac;

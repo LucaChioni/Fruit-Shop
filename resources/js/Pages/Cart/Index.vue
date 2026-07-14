@@ -65,6 +65,17 @@ function removeItem(item) {
         </section>
 
         <div v-else class="cart-content">
+            <footer class="cart-summary">
+                <div>
+                    <span>{{ t('cart.total', 'Totale') }}</span>
+                    <strong>{{ total }} €</strong>
+                </div>
+
+                <a :href="route('checkout.create')" class="checkout-link">
+                    {{ t('cart.checkout', "Procedi all'ordine") }}
+                </a>
+            </footer>
+
             <div class="cart-items">
                 <article
                     v-for="item in items"
@@ -149,17 +160,6 @@ function removeItem(item) {
                     </div>
                 </article>
             </div>
-
-            <footer class="cart-summary">
-                <div>
-                    <span>{{ t('cart.total', 'Totale') }}</span>
-                    <strong>{{ total }} €</strong>
-                </div>
-
-                <a :href="route('checkout.create')" class="checkout-link">
-                    {{ t('cart.checkout', 'Procedi al checkout') }}
-                </a>
-            </footer>
         </div>
     </PageContainer>
 </template>

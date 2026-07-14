@@ -68,8 +68,6 @@ class OrderController extends Controller
             'status' => $validated['status'],
         ]);
 
-        return redirect()
-            ->route('admin.orders.show', $order)
-            ->with('success', __('ui.flash.order_status_updated'));
+        return redirect()->route('admin.orders.show', $order);
     }
 }
