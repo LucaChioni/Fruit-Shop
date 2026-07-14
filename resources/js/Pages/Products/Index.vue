@@ -48,6 +48,22 @@ function formatQuantity(quantity) {
     });
 }
 
+function cartQuantityUnit(product) {
+    const quantity = Number(product.cart_quantity);
+
+    if (product.unit_type_key === 'vaschetta') {
+        return quantity > 1
+            ? t('units.vaschetta_cart_plural', product.unit_type)
+            : t('units.vaschetta_cart', product.unit_type);
+    }
+
+    if (quantity > 1 && product.unit_type_key === 'pz') {
+        return t(`units.${product.unit_type_key}_plural`, product.unit_type);
+    }
+
+    return product.unit_type;
+}
+
 function quantityError(product) {
     const quantity = Number(quantities[product.id]);
 
@@ -185,7 +201,7 @@ function toggleSortDirection(event) {
                         <p v-if="product.cart_quantity" class="product-cart-quantity">
                             {{ t('cart.label', 'Carrello') }}:
                             <strong>{{ formatQuantity(product.cart_quantity) }}</strong>
-                            {{ product.unit_type }}
+                            {{ cartQuantityUnit(product) }}
                         </p>
 
                         <div class="product-actions">

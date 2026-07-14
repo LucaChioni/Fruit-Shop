@@ -23,6 +23,7 @@ class ProductData
             'description' => self::translatedDescription($product),
             'image_url' => $product->image_url,
             'price' => number_format((float) $product->price, 2, '.', ''),
+            'unit_type_key' => $product->unit_type,
             'unit_type' => self::translatedUnitType($product->unit_type),
             'is_active' => $product->is_active,
             'quantity_step' => self::quantityStep($product->unit_type),

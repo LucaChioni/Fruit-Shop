@@ -31,6 +31,26 @@ const submit = () => {
         onFinish: () => form.reset('password'),
     });
 };
+
+function setLoginValidationMessage(event) {
+    const input = event.currentTarget;
+
+    if (input.validity.valueMissing) {
+        input.setCustomValidity(t('validation.required_field', 'Compila questo campo.'));
+        return;
+    }
+
+    if (input.validity.typeMismatch) {
+        input.setCustomValidity(t('validation.email_valid', 'Inserisci un indirizzo email valido.'));
+        return;
+    }
+
+    input.setCustomValidity('');
+}
+
+function clearLoginValidationMessage(event) {
+    event.currentTarget.setCustomValidity('');
+}
 </script>
 
 <template>
@@ -62,6 +82,8 @@ const submit = () => {
                         required
                         autofocus
                         autocomplete="username"
+                        @invalid="setLoginValidationMessage"
+                        @input="clearLoginValidationMessage"
                     />
 
                     <InputError class="mt-2" :message="form.errors.email" />
@@ -77,6 +99,8 @@ const submit = () => {
                         v-model="form.password"
                         required
                         autocomplete="current-password"
+                        @invalid="setLoginValidationMessage"
+                        @input="clearLoginValidationMessage"
                     />
 
                     <InputError class="mt-2" :message="form.errors.password" />
