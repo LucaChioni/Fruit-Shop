@@ -62,8 +62,6 @@ class CartController extends Controller
                 ]);
         }
 
-        return redirect()
-            ->route('cart.index')
-            ->with('success', __('ui.flash.cart_updated'));
+        return redirect()->route('cart.index');
     }
 }

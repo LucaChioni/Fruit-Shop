@@ -46,7 +46,7 @@ function removeItem(item) {
             <p>{{ t('cart.empty_text', 'Aggiungi frutta e verdura fresca prima di procedere al checkout.') }}</p>
         </section>
 
-        <form v-else class="cart-content" @submit.prevent="updateCart">
+        <div v-else class="cart-content">
             <div class="cart-items">
                 <article
                     v-for="item in items"
@@ -78,6 +78,8 @@ function removeItem(item) {
                                     :min="item.quantity_step"
                                     :step="item.quantity_step"
                                     class="quantity-input"
+                                    :disabled="form.processing"
+                                    @change="updateCart"
                                 />
                             </label>
 
@@ -105,21 +107,16 @@ function removeItem(item) {
             </div>
 
             <footer class="cart-summary">
-                <span>{{ t('cart.total', 'Totale') }}</span>
-                <strong>{{ total }} €</strong>
-            </footer>
+                <div>
+                    <span>{{ t('cart.total', 'Totale') }}</span>
+                    <strong>{{ total }} €</strong>
+                </div>
 
-            <button
-                type="submit"
-                class="update-cart-button"
-                :disabled="form.processing"
-            >
-                {{ t('cart.update', 'Aggiorna carrello') }}
-            </button>
-            <a :href="route('checkout.create')" class="checkout-link">
-                {{ t('cart.checkout', 'Procedi al checkout') }}
-            </a>
-        </form>
+                <a :href="route('checkout.create')" class="checkout-link">
+                    {{ t('cart.checkout', 'Procedi al checkout') }}
+                </a>
+            </footer>
+        </div>
     </PageContainer>
 </template>
 
@@ -207,11 +204,18 @@ function removeItem(item) {
 
 .cart-summary {
     display: flex;
+    align-items: center;
     justify-content: space-between;
+    gap: 16px;
     padding: 20px;
     border-radius: 12px;
     background: #f3f4f6;
     font-size: 20px;
+}
+
+.cart-summary div {
+    display: flex;
+    gap: 8px;
 }
 
 .quantity-form {
@@ -233,26 +237,6 @@ function removeItem(item) {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 8px;
-}
-
-.update-cart-button {
-    justify-self: start;
-    padding: 10px 16px;
-    border: 0;
-    border-radius: 8px;
-    background: #166534;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.update-cart-button:hover {
-    background: #14532d;
-}
-
-.update-cart-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
 }
 
 .cart-item-actions {
@@ -282,7 +266,6 @@ function removeItem(item) {
 }
 
 .checkout-link {
-    justify-self: start;
     display: inline-block;
     padding: 14px 22px;
     border-radius: 999px;
@@ -324,6 +307,19 @@ function removeItem(item) {
 
     .cart-item-image {
         height: 88px;
+    }
+
+    .cart-summary {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cart-summary div {
+        justify-content: space-between;
+    }
+
+    .checkout-link {
+        text-align: center;
     }
 }
 </style>

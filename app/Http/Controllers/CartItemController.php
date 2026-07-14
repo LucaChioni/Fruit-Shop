@@ -57,8 +57,6 @@ class CartItemController extends Controller
 
         $cartItem->delete();
 
-        return redirect()
-            ->route('cart.index')
-            ->with('success', __('ui.flash.product_removed'));
+        return redirect()->route('cart.index');
     }
 }

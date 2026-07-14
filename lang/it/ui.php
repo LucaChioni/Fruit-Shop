@@ -219,8 +219,6 @@ return [
     'products.items.prezzemolo.name' => 'Prezzemolo',
     'products.items.prezzemolo.description' => 'Mazzo di prezzemolo fresco.',
     'flash.product_added' => 'Prodotto aggiunto al carrello.',
-    'flash.product_removed' => 'Prodotto rimosso dal carrello.',
-    'flash.cart_updated' => 'Carrello aggiornato.',
     'flash.cart_empty' => 'Il carrello è vuoto.',
     'flash.order_created' => 'Ordine creato con successo.',
     'flash.product_created' => 'Prodotto creato.',

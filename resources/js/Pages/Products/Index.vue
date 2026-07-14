@@ -13,7 +13,7 @@ const props = defineProps({
 const t = useTranslations();
 
 const quantities = Object.fromEntries(
-    props.products.map((product) => [product.id, product.quantity_step])
+    props.products.map((product) => [product.id, 1])
 );
 
 const form = useForm({
@@ -27,6 +27,9 @@ function addToCart(product) {
 
     form.post(route('cart.items.store'), {
         preserveScroll: true,
+        onSuccess: () => {
+            quantities[product.id] = 1;
+        },
     });
 }
 

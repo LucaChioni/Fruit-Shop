@@ -219,8 +219,6 @@ return [
     'products.items.prezzemolo.name' => 'Parsley',
     'products.items.prezzemolo.description' => 'Bunch of fresh parsley.',
     'flash.product_added' => 'Product added to cart.',
-    'flash.product_removed' => 'Product removed from cart.',
-    'flash.cart_updated' => 'Cart updated.',
     'flash.cart_empty' => 'Your cart is empty.',
     'flash.order_created' => 'Order created successfully.',
     'flash.product_created' => 'Product created.',

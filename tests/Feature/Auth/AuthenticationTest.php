@@ -52,7 +52,7 @@ class AuthenticationTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors([
-            'email' => 'Le credenziali inserite non corrispondono ai nostri dati.',
+            'email' => 'Credenziali errate.',
         ]);
     }
 
