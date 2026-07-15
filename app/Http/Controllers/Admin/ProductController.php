@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Data\ProductData;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -98,7 +99,9 @@ class ProductController extends Controller
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'name_en' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
+            'description_en' => ['nullable', 'string', 'max:2000'],
             'image' => ['nullable', 'image', 'max:2048'],
             'remove_image' => ['nullable', 'boolean'],
             'price' => ['required', 'numeric', 'min:0'],
@@ -127,7 +130,7 @@ class ProductController extends Controller
             $data['image_url'] = null;
         } elseif ($request->hasFile('image')) {
             $path = $request->file('image')->store('products', 'public');
-            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+            /** @var FilesystemAdapter $disk */
             $disk = Storage::disk('public');
             $data['image_url'] = $disk->url($path);
         }
@@ -141,8 +144,10 @@ class ProductController extends Controller
             'id' => $product->id,
             'name' => ProductData::translatedName($product),
             'source_name' => $product->name,
+            'name_en' => $product->name_en,
             'description' => ProductData::translatedDescription($product),
             'source_description' => $product->description,
+            'description_en' => $product->description_en,
             'image_url' => $product->image_url,
             'price' => $product->price,
             'unit_type' => $product->unit_type,
@@ -159,7 +164,7 @@ class ProductController extends Controller
             return;
         }
 
-        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        /** @var FilesystemAdapter $disk */
         $disk = Storage::disk('public');
         $disk->delete(substr($path, strlen('/storage/')));
     }

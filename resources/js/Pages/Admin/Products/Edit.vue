@@ -14,7 +14,9 @@ const t = useTranslations();
 
 const form = useForm({
     name: props.product.source_name ?? props.product.name,
+    name_en: props.product.name_en ?? '',
     description: props.product.source_description ?? props.product.description ?? '',
+    description_en: props.product.description_en ?? '',
     image: null,
     remove_image: false,
     price: props.product.price,
@@ -85,9 +87,21 @@ function submit() {
             </label>
 
             <label class="field">
+                {{ t('admin.form.name_en', 'Nome in inglese') }}
+                <input v-model="form.name_en" type="text" class="input" />
+                <span v-if="form.errors.name_en" class="error">{{ form.errors.name_en }}</span>
+            </label>
+
+            <label class="field">
                 {{ t('admin.form.description', 'Descrizione') }}
                 <textarea v-model="form.description" class="input textarea"></textarea>
                 <span v-if="form.errors.description" class="error">{{ form.errors.description }}</span>
+            </label>
+
+            <label class="field">
+                {{ t('admin.form.description_en', 'Descrizione in inglese') }}
+                <textarea v-model="form.description_en" class="input textarea"></textarea>
+                <span v-if="form.errors.description_en" class="error">{{ form.errors.description_en }}</span>
             </label>
 
             <div class="field">

@@ -63,6 +63,7 @@ trait CreatesShopModels
             'order_id' => $order->id,
             'product_id' => $product->id,
             'product_name' => $product->name,
+            'product_name_en' => $product->name_en,
             'unit_type' => $product->unit_type,
             'unit_price' => $product->price,
             'quantity' => 2,

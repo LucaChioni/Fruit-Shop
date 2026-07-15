@@ -22,7 +22,7 @@ Artisan::command('orders:send-pickup-reminders', function () {
         ->get()
         ->each(function (Order $order) {
             if ($order->user?->email) {
-                Mail::to($order->user->email)->send(new OrderPickupReminder($order));
+                Mail::to($order->user->email)->locale($order->user->locale)->send(new OrderPickupReminder($order));
             }
 
             $order->forceFill(['pickup_reminder_sent_at' => now()])->save();

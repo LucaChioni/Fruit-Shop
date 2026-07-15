@@ -70,8 +70,8 @@ class ProductTest extends TestCase
     public function test_admin_products_index_filters_by_translated_name_for_current_locale(): void
     {
         $admin = User::factory()->create(['is_admin' => true]);
-        $this->createProduct(['name' => 'Mele Golden']);
-        $this->createProduct(['name' => 'Lattuga']);
+        $this->createProduct(['name' => 'Mele Golden', 'name_en' => 'Golden apples']);
+        $this->createProduct(['name' => 'Lattuga', 'name_en' => 'Lettuce']);
 
         $this->actingAs($admin)
             ->withSession(['locale' => 'en'])
@@ -125,7 +125,9 @@ class ProductTest extends TestCase
             ->actingAs($admin)
             ->post(route('admin.products.store'), [
                 'name' => 'Fragole',
+                'name_en' => 'Strawberries',
                 'description' => 'Vaschetta di fragole fresche.',
+                'description_en' => 'Punnet of fresh strawberries.',
                 'image' => UploadedFile::fake()->image('fragole.jpg'),
                 'price' => 3.80,
                 'unit_type' => 'vaschetta',
@@ -139,6 +141,8 @@ class ProductTest extends TestCase
         $product = Product::firstOrFail();
 
         $this->assertSame('Fragole', $product->name);
+        $this->assertSame('Strawberries', $product->name_en);
+        $this->assertSame('Punnet of fresh strawberries.', $product->description_en);
         $this->assertStringContainsString('/storage/products/', $product->image_url);
         Storage::disk('public')->assertExists(
             substr(parse_url($product->image_url, PHP_URL_PATH), strlen('/storage/'))
@@ -161,6 +165,8 @@ class ProductTest extends TestCase
                 ->component('Admin/Products/Edit')
                 ->where('product.id', $product->id)
                 ->where('product.name', 'Mele')
+                ->where('product.name_en', null)
+                ->where('product.description_en', null)
                 ->where('unitTypes', ['kg', 'pz', 'g', 'vaschetta']));
     }
 
@@ -175,7 +181,9 @@ class ProductTest extends TestCase
             ->post(route('admin.products.update', $product), [
                 '_method' => 'patch',
                 'name' => 'Mele Golden',
+                'name_en' => 'Golden apples',
                 'description' => 'Mele aggiornate.',
+                'description_en' => 'Updated apples.',
                 'image' => UploadedFile::fake()->image('mele.jpg'),
                 'price' => 2.90,
                 'unit_type' => 'kg',
@@ -189,7 +197,9 @@ class ProductTest extends TestCase
         $product->refresh();
 
         $this->assertSame('Mele Golden', $product->name);
+        $this->assertSame('Golden apples', $product->name_en);
         $this->assertSame('Mele aggiornate.', $product->description);
+        $this->assertSame('Updated apples.', $product->description_en);
         $this->assertStringContainsString('/storage/products/', $product->image_url);
         Storage::disk('public')->assertExists(
             substr(parse_url($product->image_url, PHP_URL_PATH), strlen('/storage/'))

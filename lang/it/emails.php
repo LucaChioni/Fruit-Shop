@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'login_code.subject' => 'Codice di accesso',
+    'login_code.heading' => 'Codice di accesso',
+    'login_code.instructions' => 'Usa questo codice per completare l\'accesso:',
+    'login_code.expires' => 'Il codice scade tra 10 minuti.',
+    'order_placed.subject' => 'Nuovo ordine :order',
+    'order_placed.heading' => 'Nuovo ordine :order',
+    'order_placed.customer' => 'Cliente',
+    'order_placed.status' => 'Stato',
+    'order_placed.pickup' => 'Ritiro',
+    'order_placed.shop_address' => 'Indirizzo negozio',
+    'order_placed.maps_link' => 'Apri la destinazione su Google Maps',
+    'order_placed.total' => 'Totale',
+    'order_placed.notes' => 'Note',
+    'order_placed.products' => 'Prodotti',
+    'pickup_reminder.subject' => 'Promemoria ritiro ordine :order',
+    'pickup_reminder.heading' => 'Promemoria ritiro ordine :order',
+    'pickup_reminder.message' => 'Il tuo ordine sarà pronto per il ritiro tra circa un\'ora.',
+    'pickup_reminder.pickup' => 'Ritiro previsto',
+    'pickup_reminder.shop_address' => 'Indirizzo negozio',
+    'pickup_reminder.maps_link' => 'Apri la destinazione su Google Maps',
+    'pickup_reminder.total' => 'Totale',
+];

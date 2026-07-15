@@ -41,7 +41,7 @@ class OrderController extends Controller
 
     public function show(Request $request, Order $order)
     {
-        $order->load('items', 'user');
+        $order->load('items.product', 'user');
         $user = $request->user();
 
         if ($order->user_id !== $user->id) {

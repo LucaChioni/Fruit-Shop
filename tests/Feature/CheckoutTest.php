@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Mail\OrderPickupReminder;
 use App\Mail\OrderPlaced;
 use App\Models\Order;
 use App\Models\User;
@@ -151,6 +152,39 @@ class CheckoutTest extends TestCase
         Mail::assertSent(OrderPlaced::class, fn (OrderPlaced $mail) => $mail->order->is($order) && $mail->hasTo('customer@example.com'));
     }
 
+    public function test_order_emails_use_the_recipient_locales(): void
+    {
+        $this->travelTo(Carbon::parse('2026-06-28 09:00:00'));
+        Mail::fake();
+        config(['mail.order_notifications.address' => 'admin@example.com']);
+
+        User::factory()->create(['email' => 'admin@example.com', 'is_admin' => true, 'locale' => 'en']);
+        $user = User::factory()->create(['email' => 'customer@example.com']);
+        $cart = $this->createCart(['user_id' => $user->id]);
+        $this->createCartItem($cart, $this->createProduct(['name_en' => 'Golden apples']), 1);
+
+        $this
+            ->withSession(['locale' => 'en'])
+            ->actingAs($user)
+            ->post(route('checkout.store'), [
+                'pickup_at' => '2026-06-29T12:00',
+            ]);
+
+        Mail::assertSent(OrderPlaced::class, fn (OrderPlaced $mail) => $mail->hasTo('customer@example.com')
+            && $mail->locale === 'en'
+            && str_contains($mail->render(), 'New order')
+            && str_contains($mail->render(), 'Golden apples'));
+        Mail::assertSent(OrderPlaced::class, fn (OrderPlaced $mail) => $mail->hasTo('admin@example.com')
+            && $mail->locale === 'en'
+            && str_contains($mail->render(), 'New order'));
+
+        $order = Order::firstOrFail();
+        $this->assertSame('Golden apples', $order->items()->firstOrFail()->product_name_en);
+        $reminder = (new OrderPickupReminder($order))->locale('en')->render();
+
+        $this->assertStringContainsString('Your order will be ready for pickup in about one hour.', $reminder);
+    }
+
     public function test_order_placed_email_uses_singular_and_plural_units(): void
     {
         app()->setLocale('it');
@@ -158,17 +192,20 @@ class CheckoutTest extends TestCase
         $order = $this->createOrder($user);
         $pieceProduct = $this->createProduct(['unit_type' => 'pz']);
         $trayProduct = $this->createProduct(['unit_type' => 'vaschetta']);
+        $gramProduct = $this->createProduct(['unit_type' => 'g']);
         $this->createOrderItem($order, $pieceProduct, ['quantity' => 1]);
         $this->createOrderItem($order, $pieceProduct, ['quantity' => 2]);
         $this->createOrderItem($order, $trayProduct, ['quantity' => 1]);
         $this->createOrderItem($order, $trayProduct, ['quantity' => 2]);
+        $this->createOrderItem($order, $gramProduct, ['quantity' => 2]);
 
         $email = (new OrderPlaced($order))->render();
 
-        $this->assertStringContainsString('1.00 pezzo', $email);
-        $this->assertStringContainsString('2.00 pezzi', $email);
-        $this->assertStringContainsString('1.00 vaschetta', $email);
-        $this->assertStringContainsString('2.00 vaschette', $email);
+        $this->assertStringContainsString('1 pezzo', $email);
+        $this->assertStringContainsString('2 pezzi', $email);
+        $this->assertStringContainsString('1 vaschetta', $email);
+        $this->assertStringContainsString('2 vaschette', $email);
+        $this->assertStringContainsString('2 g', $email);
     }
 
     public function test_checkout_store_redirects_when_cart_is_empty(): void

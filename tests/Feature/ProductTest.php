@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\Feature\Concerns\CreatesShopModels;
@@ -61,7 +62,7 @@ class ProductTest extends TestCase
 
     public function test_products_index_shows_current_cart_quantity(): void
     {
-        $user = \App\Models\User::factory()->create();
+        $user = User::factory()->create();
         $product = $this->createProduct(['name' => 'Arance', 'unit_type' => 'kg']);
         $cart = $this->createCart(['user_id' => $user->id]);
         $this->createCartItem($cart, $product, 1.5);
@@ -77,7 +78,11 @@ class ProductTest extends TestCase
 
     public function test_products_index_filters_by_translated_name_for_current_locale(): void
     {
-        $this->createProduct(['name' => 'Mele Golden']);
+        $this->createProduct([
+            'name' => 'Mele Golden',
+            'name_en' => 'Golden apples',
+            'description_en' => 'Sweet and crunchy apples.',
+        ]);
         $this->createProduct(['name' => 'Lattuga']);
 
         $this->withSession(['locale' => 'en'])
@@ -87,6 +92,7 @@ class ProductTest extends TestCase
                 ->component('Products/Index')
                 ->has('products', 1)
                 ->where('products.0.name', 'Golden apples')
+                ->where('products.0.description', 'Sweet and crunchy apples.')
                 ->where('filters.search', 'Golden'));
 
         $this->withSession(['locale' => 'it'])
@@ -97,5 +103,22 @@ class ProductTest extends TestCase
                 ->has('products', 1)
                 ->where('products.0.name', 'Mele Golden')
                 ->where('filters.search', 'Mele'));
+    }
+
+    public function test_products_index_falls_back_to_the_italian_name_when_english_name_is_missing(): void
+    {
+        $this->createProduct([
+            'name' => 'Lattuga',
+            'name_en' => null,
+            'description' => 'Lattuga fresca.',
+            'description_en' => null,
+        ]);
+
+        $this->withSession(['locale' => 'en'])
+            ->get(route('products.index'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('products.0.name', 'Lattuga')
+                ->where('products.0.description', 'Lattuga fresca.'));
     }
 }

@@ -154,6 +154,23 @@ class CartTest extends TestCase
         $this->assertSame('1.00', $cartItem->refresh()->quantity);
     }
 
+    public function test_cart_item_store_rejects_decimal_quantity_for_gram_products(): void
+    {
+        $user = User::factory()->create();
+        $product = $this->createProduct(['unit_type' => 'g']);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('cart.items.store'), [
+                'product_id' => $product->id,
+                'quantity' => 1.5,
+            ]);
+
+        $response->assertSessionHasErrors([
+            'quantity' => 'La quantità deve essere un numero intero.',
+        ]);
+    }
+
     public function test_cart_item_destroy_deletes_only_items_from_current_cart(): void
     {
         $user = User::factory()->create();

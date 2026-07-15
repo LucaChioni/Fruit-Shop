@@ -23,6 +23,7 @@ return new class extends Migration
                 ->constrained()
                 ->nullOnDelete();
             $table->string('product_name');
+            $table->string('product_name_en')->nullable();
             $table->string('unit_type');
             $table->decimal('unit_price', 10, 2);
             $table->decimal('quantity', 8, 2);

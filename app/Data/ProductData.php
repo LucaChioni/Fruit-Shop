@@ -43,12 +43,23 @@ class ProductData
         return self::quantityStep($unitType) === 1.0;
     }
 
-    public static function translatedName(Product|string $product): string
+    public static function displayQuantity(string $quantity, string $unitType): string
     {
-        $name = $product instanceof Product ? $product->name : $product;
-        $key = 'ui.'.self::translationKey($name).'.name';
+        if (! self::requiresWholeQuantity($unitType)) {
+            return $quantity;
+        }
 
-        return Lang::has($key) ? trans($key) : $name;
+        return number_format((float) $quantity, 0, '.', '');
+    }
+
+    public static function translatedName(Product|string $product, ?string $nameEn = null): string
+    {
+        if ($product instanceof Product) {
+            $nameEn = $product->name_en;
+            $product = $product->name;
+        }
+
+        return app()->getLocale() === 'en' && $nameEn ? $nameEn : $product;
     }
 
     public static function matchesTranslatedName(Product $product, string $search): bool
@@ -68,9 +79,9 @@ class ProductData
             return null;
         }
 
-        $key = 'ui.'.self::translationKey($product->name).'.description';
-
-        return Lang::has($key) ? trans($key) : $product->description;
+        return app()->getLocale() === 'en' && $product->description_en
+            ? $product->description_en
+            : $product->description;
     }
 
     public static function translatedUnitType(string $unitType, ?string $quantity = null): string
@@ -82,10 +93,5 @@ class ProductData
         }
 
         return Lang::has($key) ? trans($key) : $unitType;
-    }
-
-    public static function translationKey(string $name): string
-    {
-        return 'products.items.'.Str::slug($name, '_');
     }
 }

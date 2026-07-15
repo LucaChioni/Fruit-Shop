@@ -12,14 +12,12 @@ class EmailLoginCodeMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public string $code)
-    {
-    }
+    public function __construct(public string $code) {}
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Codice di accesso',
+            subject: __('emails.login_code.subject'),
         );
     }
 

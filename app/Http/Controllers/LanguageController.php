@@ -12,6 +12,8 @@ class LanguageController extends Controller
 
         session(['locale' => $locale]);
 
+        request()->user()?->update(['locale' => $locale]);
+
         return back();
     }
 }

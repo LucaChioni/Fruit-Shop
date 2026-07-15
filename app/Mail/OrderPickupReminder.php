@@ -22,7 +22,7 @@ class OrderPickupReminder extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Promemoria ritiro ordine '.$this->order->order_number,
+            subject: __('emails.pickup_reminder.subject', ['order' => $this->order->order_number]),
         );
     }
 

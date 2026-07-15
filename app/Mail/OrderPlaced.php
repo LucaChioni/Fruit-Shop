@@ -16,13 +16,13 @@ class OrderPlaced extends Mailable
 
     public function __construct(public Order $order)
     {
-        $this->order->loadMissing('items', 'user');
+        $this->order->loadMissing('items.product', 'user');
     }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Nuovo ordine '.$this->order->order_number,
+            subject: __('emails.order_placed.subject', ['order' => $this->order->order_number]),
         );
     }
 

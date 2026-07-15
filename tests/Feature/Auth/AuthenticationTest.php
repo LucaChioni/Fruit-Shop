@@ -25,15 +25,19 @@ class AuthenticationTest extends TestCase
     {
         Mail::fake();
 
-        $response = $this->post('/login', [
-            'email' => 'test@example.com',
-        ]);
+        $response = $this
+            ->withSession(['locale' => 'en'])
+            ->post('/login', [
+                'email' => 'test@example.com',
+            ]);
 
         $response->assertSessionHas('email_login_email', 'test@example.com');
         $response->assertSessionHas('email_login_needs_name', true);
         $this->assertGuest();
         $this->assertSame(1, EmailLoginCode::where('email', 'test@example.com')->count());
-        Mail::assertSent(EmailLoginCodeMail::class, fn (EmailLoginCodeMail $mail) => $mail->hasTo('test@example.com'));
+        Mail::assertSent(EmailLoginCodeMail::class, fn (EmailLoginCodeMail $mail) => $mail->hasTo('test@example.com')
+            && $mail->locale === 'en'
+            && str_contains($mail->render(), 'Login code'));
     }
 
     public function test_existing_users_can_verify_code_and_login(): void

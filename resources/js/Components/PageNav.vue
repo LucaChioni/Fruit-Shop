@@ -202,7 +202,7 @@ function logout() {
                 :class="{ 'page-nav-button--active': route().current('admin.products.*') }"
                 :aria-current="route().current('admin.products.*') ? 'page' : undefined"
             >
-                <svg class="nav-svg-icon nav-svg-icon--admin-products" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <svg class="nav-svg-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                     <rect x="4" y="4" width="6" height="6" rx="1.4" />
                     <rect x="14" y="4" width="6" height="6" rx="1.4" />
                     <rect x="4" y="14" width="6" height="6" rx="1.4" />
@@ -443,6 +443,7 @@ function logout() {
 }
 
 .nav-svg-icon {
+    flex: 0 0 auto;
     width: 16px;
     height: 16px;
     fill: none;
@@ -450,11 +451,6 @@ function logout() {
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-width: 2;
-}
-
-.nav-svg-icon--admin-products {
-    width: 18px;
-    height: 18px;
 }
 
 .nav-icon--orders::after {
@@ -651,11 +647,6 @@ function logout() {
         height: 38px;
         padding: 0 12px;
         font-size: 13px;
-    }
-
-    .nav-svg-icon--admin-products {
-        width: 16px;
-        height: 16px;
     }
 
     .theme-switcher,

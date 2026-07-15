@@ -23,7 +23,9 @@ function revokeTemporaryImagePreview() {
 
 const form = useForm({
     name: '',
+    name_en: '',
     description: '',
+    description_en: '',
     image: null,
     price: '',
     unit_type: 'kg',
@@ -67,9 +69,21 @@ function submit() {
             </label>
 
             <label class="field">
+                {{ t('admin.form.name_en', 'Nome in inglese') }}
+                <input v-model="form.name_en" type="text" class="input" />
+                <span v-if="form.errors.name_en" class="error">{{ form.errors.name_en }}</span>
+            </label>
+
+            <label class="field">
                 {{ t('admin.form.description', 'Descrizione') }}
                 <textarea v-model="form.description" class="input textarea"></textarea>
                 <span v-if="form.errors.description" class="error">{{ form.errors.description }}</span>
+            </label>
+
+            <label class="field">
+                {{ t('admin.form.description_en', 'Descrizione in inglese') }}
+                <textarea v-model="form.description_en" class="input textarea"></textarea>
+                <span v-if="form.errors.description_en" class="error">{{ form.errors.description_en }}</span>
             </label>
 
             <div class="field">

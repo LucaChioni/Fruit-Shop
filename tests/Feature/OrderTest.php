@@ -130,22 +130,43 @@ class OrderTest extends TestCase
                 ->where('order.customer_name', 'Nome aggiornato'));
     }
 
+    public function test_order_show_translates_legacy_order_items_from_the_product(): void
+    {
+        $user = User::factory()->create();
+        $order = $this->createOrder($user);
+        $product = $this->createProduct(['name' => 'Mele Golden', 'name_en' => 'Golden apples']);
+        $this->createOrderItem($order, $product, ['product_name_en' => null]);
+
+        $this->withSession(['locale' => 'en'])
+            ->actingAs($user)
+            ->get(route('orders.show', $order))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('order.items.0.product_name', 'Golden apples'));
+    }
+
     public function test_order_show_uses_singular_and_plural_tray_units(): void
     {
         app()->setLocale('it');
         $user = User::factory()->create();
         $order = $this->createOrder($user);
         $product = $this->createProduct(['unit_type' => 'vaschetta']);
+        $gramProduct = $this->createProduct(['unit_type' => 'g']);
         $this->createOrderItem($order, $product, ['quantity' => 1]);
         $this->createOrderItem($order, $product, ['quantity' => 2]);
+        $this->createOrderItem($order, $gramProduct, ['quantity' => 2]);
 
         $this->actingAs($user)
             ->get(route('orders.show', $order))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
-                ->has('order.items', 2)
+                ->has('order.items', 3)
                 ->where('order.items.0.unit_type', 'vaschetta')
-                ->where('order.items.1.unit_type', 'vaschette'));
+                ->where('order.items.0.quantity', '1')
+                ->where('order.items.1.unit_type', 'vaschette')
+                ->where('order.items.1.quantity', '2')
+                ->where('order.items.2.unit_type', 'g')
+                ->where('order.items.2.quantity', '2'));
     }
 
     public function test_order_show_forbids_other_authenticated_users(): void

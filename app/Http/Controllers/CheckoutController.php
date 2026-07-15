@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\OrderPlaced;
 use App\Models\Order;
+use App\Models\User;
 use App\Services\CartService;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
@@ -81,6 +82,7 @@ class CheckoutController extends Controller
                 $order->items()->create([
                     'product_id' => $product->id,
                     'product_name' => $product->name,
+                    'product_name_en' => $product->name_en,
                     'unit_type' => $product->unit_type,
                     'unit_price' => $product->price,
                     'quantity' => $item->quantity,
@@ -93,13 +95,20 @@ class CheckoutController extends Controller
             return $order;
         });
 
-        $recipients = collect([
-            config('mail.order_notifications.address'),
-            $request->user()->email,
-        ])->filter()->unique();
+        $adminRecipient = config('mail.order_notifications.address');
+        $customerRecipient = $request->user()->email;
 
-        foreach ($recipients as $recipient) {
-            Mail::to($recipient)->send(new OrderPlaced($order));
+        if ($adminRecipient) {
+            $adminLocale = User::query()
+                ->where('email', $adminRecipient)
+                ->where('is_admin', true)
+                ->value('locale') ?? 'it';
+
+            Mail::to($adminRecipient)->locale($adminLocale)->send(new OrderPlaced($order));
+        }
+
+        if ($customerRecipient !== $adminRecipient) {
+            Mail::to($customerRecipient)->locale(app()->getLocale())->send(new OrderPlaced($order));
         }
 
         return redirect()

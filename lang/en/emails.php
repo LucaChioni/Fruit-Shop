@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'login_code.subject' => 'Login code',
+    'login_code.heading' => 'Login code',
+    'login_code.instructions' => 'Use this code to complete your sign in:',
+    'login_code.expires' => 'This code expires in 10 minutes.',
+    'order_placed.subject' => 'New order :order',
+    'order_placed.heading' => 'New order :order',
+    'order_placed.customer' => 'Customer',
+    'order_placed.status' => 'Status',
+    'order_placed.pickup' => 'Pickup',
+    'order_placed.shop_address' => 'Shop address',
+    'order_placed.maps_link' => 'Open directions in Google Maps',
+    'order_placed.total' => 'Total',
+    'order_placed.notes' => 'Notes',
+    'order_placed.products' => 'Products',
+    'pickup_reminder.subject' => 'Pickup reminder for order :order',
+    'pickup_reminder.heading' => 'Pickup reminder for order :order',
+    'pickup_reminder.message' => 'Your order will be ready for pickup in about one hour.',
+    'pickup_reminder.pickup' => 'Expected pickup',
+    'pickup_reminder.shop_address' => 'Shop address',
+    'pickup_reminder.maps_link' => 'Open directions in Google Maps',
+    'pickup_reminder.total' => 'Total',
+];

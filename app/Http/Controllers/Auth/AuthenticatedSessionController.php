@@ -56,7 +56,7 @@ class AuthenticatedSessionController extends Controller
             'expires_at' => now()->addMinutes(10),
         ]);
 
-        Mail::to($email)->send(new EmailLoginCodeMail($code));
+        Mail::to($email)->locale(app()->getLocale())->send(new EmailLoginCodeMail($code));
 
         return back()
             ->with('email_login_email', $email)
@@ -116,6 +116,7 @@ class AuthenticatedSessionController extends Controller
         $user ??= User::create([
             'email' => $email,
             'name' => $validated['name'],
+            'locale' => app()->getLocale(),
             'password' => Hash::make(Str::random(64)),
             'email_verified_at' => now(),
         ]);

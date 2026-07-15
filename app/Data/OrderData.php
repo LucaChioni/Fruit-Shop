@@ -39,10 +39,13 @@ class OrderData
             'notes' => $order->notes,
             'items' => $order->items->map(fn ($item) => [
                 'id' => $item->id,
-                'product_name' => ProductData::translatedName($item->product_name),
+                'product_name' => ProductData::translatedName(
+                    $item->product_name,
+                    $item->product_name_en ?? $item->product?->name_en,
+                ),
                 'unit_type' => ProductData::translatedUnitType($item->unit_type, $item->quantity),
                 'unit_price' => $item->unit_price,
-                'quantity' => $item->quantity,
+                'quantity' => ProductData::displayQuantity($item->quantity, $item->unit_type),
                 'line_total' => $item->line_total,
             ]),
         ]);
