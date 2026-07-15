@@ -229,6 +229,7 @@ return [
     'validation.code_required' => 'Enter the code received by email.',
     'validation.code_size' => 'The code must be 6 digits.',
     'validation.code_invalid' => 'The code is invalid or expired.',
+    'validation.login_code_throttled' => 'You have requested too many codes. Try again tomorrow.',
     'validation.quantities_required' => 'Enter at least one quantity to update.',
     'validation.quantities_array' => 'The submitted quantities are invalid.',
     'validation.quantity_each_required' => 'Enter a quantity for each product.',

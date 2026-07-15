@@ -114,4 +114,9 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    'login_code' => [
+        'email_daily_limit' => (int) env('LOGIN_CODE_EMAIL_DAILY_LIMIT', 5),
+        'ip_daily_limit' => (int) env('LOGIN_CODE_IP_DAILY_LIMIT', 10),
+    ],
+
 ];

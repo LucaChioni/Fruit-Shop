@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
@@ -38,6 +39,47 @@ class AuthenticationTest extends TestCase
         Mail::assertSent(EmailLoginCodeMail::class, fn (EmailLoginCodeMail $mail) => $mail->hasTo('test@example.com')
             && $mail->locale === 'en'
             && str_contains($mail->render(), 'Login code'));
+    }
+
+    public function test_login_code_requests_are_limited_to_ten_per_email_per_day(): void
+    {
+        Mail::fake();
+        $key = 'login-code:email:'.hash('sha256', 'test@example.com');
+
+        foreach (range(1, 10) as $attempt) {
+            RateLimiter::hit($key, 86400);
+        }
+
+        $this->post('/login', ['email' => 'test@example.com'])
+            ->assertSessionHasErrors([
+                'email' => 'Hai richiesto troppi codici. Riprova domani.',
+            ]);
+
+        Mail::assertNothingSent();
+    }
+
+    public function test_login_code_requests_are_limited_to_ten_per_ip_per_day(): void
+    {
+        Mail::fake();
+        $ipAddress = '203.0.113.10';
+        $key = 'login-code:ip:'.hash('sha256', $ipAddress);
+
+        foreach (range(1, 10) as $attempt) {
+            RateLimiter::hit($key, 86400);
+        }
+
+        $this->withServerVariables(['REMOTE_ADDR' => $ipAddress])
+            ->post('/login', ['email' => 'test@example.com'])
+            ->assertSessionHasErrors([
+                'email' => 'Hai richiesto troppi codici. Riprova domani.',
+            ]);
+
+        Mail::assertNothingSent();
+    }
+
+    public function test_sessions_remain_active_for_ten_days_of_inactivity(): void
+    {
+        $this->assertSame(14400, config('session.lifetime'));
     }
 
     public function test_existing_users_can_verify_code_and_login(): void

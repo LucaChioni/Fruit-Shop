@@ -229,6 +229,7 @@ return [
     'validation.code_required' => 'Inserisci il codice ricevuto via email.',
     'validation.code_size' => 'Il codice deve essere di 6 cifre.',
     'validation.code_invalid' => 'Il codice non è valido o è scaduto.',
+    'validation.login_code_throttled' => 'Hai richiesto troppi codici. Riprova domani.',
     'validation.quantities_required' => 'Inserisci almeno una quantità da aggiornare.',
     'validation.quantities_array' => 'Le quantità inviate non sono valide.',
     'validation.quantity_each_required' => 'Inserisci una quantità per ogni prodotto.',

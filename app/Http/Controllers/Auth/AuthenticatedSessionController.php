@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -44,6 +45,19 @@ class AuthenticatedSessionController extends Controller
 
         $email = $validated['email'];
         $code = (string) random_int(100000, 999999);
+        $decaySeconds = max(1, now()->diffInSeconds(now()->endOfDay()));
+        $emailRateLimitKey = 'login-code:email:'.hash('sha256', $email);
+        $ipRateLimitKey = 'login-code:ip:'.hash('sha256', (string) $request->ip());
+
+        if (RateLimiter::tooManyAttempts($emailRateLimitKey, config('auth.login_code.email_daily_limit'))
+            || RateLimiter::tooManyAttempts($ipRateLimitKey, config('auth.login_code.ip_daily_limit'))) {
+            throw ValidationException::withMessages([
+                'email' => __('ui.validation.login_code_throttled'),
+            ]);
+        }
+
+        RateLimiter::hit($emailRateLimitKey, $decaySeconds);
+        RateLimiter::hit($ipRateLimitKey, $decaySeconds);
 
         EmailLoginCode::query()
             ->where('email', $email)
