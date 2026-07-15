@@ -163,6 +163,20 @@ function logout() {
                 <span class="nav-icon nav-icon--orders" aria-hidden="true"></span>
                 {{ t('nav.orders', 'I miei ordini') }}
             </Link>
+
+            <a
+                v-if="page.props.shop?.mapsUrl"
+                :href="page.props.shop.mapsUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="page-nav-button"
+            >
+                <svg class="nav-svg-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M12 21s7-5.1 7-12a7 7 0 1 0-14 0c0 6.9 7 12 7 12Z" />
+                    <circle cx="12" cy="9" r="2.4" />
+                </svg>
+                {{ t('nav.maps', 'Indicazioni') }}
+            </a>
             </div>
 
             <div class="page-nav-group page-nav-group--account">
@@ -196,20 +210,6 @@ function logout() {
                 </svg>
                 {{ t('admin.manage_products', 'Gestisci prodotti') }}
             </Link>
-
-            <a
-                v-if="page.props.shop?.mapsUrl"
-                :href="page.props.shop.mapsUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="page-nav-button page-nav-button--maps"
-            >
-                <svg class="nav-svg-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                    <path d="M12 21s7-5.1 7-12a7 7 0 1 0-14 0c0 6.9 7 12 7 12Z" />
-                    <circle cx="12" cy="9" r="2.4" />
-                </svg>
-                {{ t('nav.maps', 'Indicazioni') }}
-            </a>
 
             <Link
                 v-if="page.props.auth.user"
@@ -520,19 +520,6 @@ function logout() {
 
 .page-nav-button--settings {
     color: #4b5563;
-}
-
-.page-nav-button--maps {
-    border-color: #166534;
-    background: #166534;
-    color: #fff;
-}
-
-.page-nav-button--maps:hover,
-.page-nav-button--maps:focus-visible {
-    border-color: #14532d;
-    background: #14532d;
-    color: #fff;
 }
 
 .page-nav-button--logout {

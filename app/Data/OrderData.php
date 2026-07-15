@@ -24,7 +24,7 @@ class OrderData
         return [
             'id' => $order->id,
             'order_number' => $order->order_number,
-            'customer_name' => $order->customer_name,
+            'customer_name' => $order->user->name,
             'customer_email' => $order->user?->email,
             'status' => $order->status,
             'total_amount' => $order->total_amount,
@@ -40,7 +40,7 @@ class OrderData
             'items' => $order->items->map(fn ($item) => [
                 'id' => $item->id,
                 'product_name' => ProductData::translatedName($item->product_name),
-                'unit_type' => ProductData::translatedUnitType($item->unit_type),
+                'unit_type' => ProductData::translatedUnitType($item->unit_type, $item->quantity),
                 'unit_price' => $item->unit_price,
                 'quantity' => $item->quantity,
                 'line_total' => $item->line_total,

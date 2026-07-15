@@ -69,23 +69,16 @@ class OrderTest extends TestCase
 
     public function test_orders_index_can_be_searched_by_customer_name_or_order_number(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['name' => 'Cliente Ricercato']);
         $otherUser = User::factory()->create();
-        $nameMatch = $this->createOrder($user, [
+        $this->createOrder($user, [
             'order_number' => 'FS-NAME-001',
-            'customer_name' => 'Cliente Ricercato',
         ]);
         $codeMatch = $this->createOrder($user, [
             'order_number' => 'FS-CODE-123',
-            'customer_name' => 'Cliente Codice',
-        ]);
-        $this->createOrder($user, [
-            'order_number' => 'FS-OTHER-001',
-            'customer_name' => 'Cliente Escluso',
         ]);
         $this->createOrder($otherUser, [
             'order_number' => 'FS-CODE-999',
-            'customer_name' => 'Cliente Altro',
         ]);
 
         $this->actingAs($user)
@@ -93,8 +86,7 @@ class OrderTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Orders/Index')
-                ->has('orders', 1)
-                ->where('orders.0.id', $nameMatch->id)
+                ->has('orders', 2)
                 ->where('filters.search', 'Ricercato'));
 
         $this->actingAs($user)
@@ -123,6 +115,37 @@ class OrderTest extends TestCase
                 ->where('order.order_number', $order->order_number)
                 ->where('order.customer_name', 'Cliente Utente')
                 ->has('order.items', 1));
+    }
+
+    public function test_order_show_uses_the_current_customer_name(): void
+    {
+        $user = User::factory()->create(['name' => 'Nome precedente']);
+        $order = $this->createOrder($user);
+        $user->update(['name' => 'Nome aggiornato']);
+
+        $this->actingAs($user)
+            ->get(route('orders.show', $order))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('order.customer_name', 'Nome aggiornato'));
+    }
+
+    public function test_order_show_uses_singular_and_plural_tray_units(): void
+    {
+        app()->setLocale('it');
+        $user = User::factory()->create();
+        $order = $this->createOrder($user);
+        $product = $this->createProduct(['unit_type' => 'vaschetta']);
+        $this->createOrderItem($order, $product, ['quantity' => 1]);
+        $this->createOrderItem($order, $product, ['quantity' => 2]);
+
+        $this->actingAs($user)
+            ->get(route('orders.show', $order))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->has('order.items', 2)
+                ->where('order.items.0.unit_type', 'vaschetta')
+                ->where('order.items.1.unit_type', 'vaschette'));
     }
 
     public function test_order_show_forbids_other_authenticated_users(): void

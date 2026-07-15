@@ -1,6 +1,6 @@
 <h1>Nuovo ordine {{ $order->order_number }}</h1>
 
-<p><strong>Cliente:</strong> {{ $order->customer_name }}</p>
+<p><strong>Cliente:</strong> {{ $order->user->name }}</p>
 <p><strong>Stato:</strong> {{ $order->status }}</p>
 @if ($order->pickup_at)
     <p><strong>Ritiro:</strong> {{ $order->pickup_at->format('d/m/Y H:i') }}</p>
@@ -22,7 +22,7 @@
 <ul>
     @foreach ($order->items as $item)
         <li>
-            {{ $item->product_name }}: {{ $item->quantity }} {{ $item->unit_type }} × {{ $item->unit_price }} € = {{ $item->line_total }} €
+            {{ $item->product_name }}: {{ $item->quantity }} {{ \App\Data\ProductData::translatedUnitType($item->unit_type, $item->quantity) }} × {{ $item->unit_price }} € = {{ $item->line_total }} €
         </li>
     @endforeach
 </ul>

@@ -27,7 +27,7 @@ class OrderController extends Controller
         $orders = Order::query()
             ->with('user')
             ->when($filters['search'], fn ($query, $search) => $query->where(function ($query) use ($search) {
-                $query->where('customer_name', 'like', "%{$search}%")
+                $query->whereHas('user', fn ($query) => $query->where('name', 'like', "%{$search}%"))
                     ->orWhere('order_number', 'like', "%{$search}%");
             }))
             ->when($filters['status'] !== 'all', fn ($query) => $query->where('status', $filters['status']))
@@ -43,7 +43,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->load('items');
+        $order->load('items', 'user');
 
         return Inertia::render('Orders/Show', [
             'order' => OrderData::detail($order),

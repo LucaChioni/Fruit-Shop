@@ -73,9 +73,13 @@ class ProductData
         return Lang::has($key) ? trans($key) : $product->description;
     }
 
-    public static function translatedUnitType(string $unitType): string
+    public static function translatedUnitType(string $unitType, ?string $quantity = null): string
     {
         $key = 'ui.units.'.$unitType;
+
+        if ($quantity !== null && (float) $quantity !== 1.0 && Lang::has($key.'_plural')) {
+            $key .= '_plural';
+        }
 
         return Lang::has($key) ? trans($key) : $unitType;
     }

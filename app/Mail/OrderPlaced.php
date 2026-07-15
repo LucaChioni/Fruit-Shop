@@ -16,7 +16,7 @@ class OrderPlaced extends Mailable
 
     public function __construct(public Order $order)
     {
-        $this->order->loadMissing('items');
+        $this->order->loadMissing('items', 'user');
     }
 
     public function envelope(): Envelope

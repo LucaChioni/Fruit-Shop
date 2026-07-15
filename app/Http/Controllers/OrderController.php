@@ -23,8 +23,9 @@ class OrderController extends Controller
 
         $orders = $request->user()
             ->orders()
+            ->with('user')
             ->when($filters['search'], fn ($query, $search) => $query->where(function ($query) use ($search) {
-                $query->where('customer_name', 'like', "%{$search}%")
+                $query->whereHas('user', fn ($query) => $query->where('name', 'like', "%{$search}%"))
                     ->orWhere('order_number', 'like', "%{$search}%");
             }))
             ->when($filters['status'] !== 'all', fn ($query) => $query->where('status', $filters['status']))
@@ -40,7 +41,7 @@ class OrderController extends Controller
 
     public function show(Request $request, Order $order)
     {
-        $order->load('items');
+        $order->load('items', 'user');
         $user = $request->user();
 
         if ($order->user_id !== $user->id) {

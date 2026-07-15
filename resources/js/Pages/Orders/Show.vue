@@ -172,7 +172,7 @@ function updateStatus() {
     font-weight: 700;
 }
 
-:global(html.dark) .maps-link {
+:global(html.dark .maps-link) {
     color: #86efac;
 }
 

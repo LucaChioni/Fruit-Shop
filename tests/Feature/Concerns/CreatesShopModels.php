@@ -43,9 +43,13 @@ trait CreatesShopModels
     {
         $user ??= User::factory()->create();
 
+        if (array_key_exists('customer_name', $attributes)) {
+            $user->update(['name' => $attributes['customer_name']]);
+            unset($attributes['customer_name']);
+        }
+
         return Order::create(array_merge([
             'user_id' => $user->id,
-            'customer_name' => 'Cliente Test',
             'status' => 'pending',
             'total_amount' => 10.00,
         ], $attributes));

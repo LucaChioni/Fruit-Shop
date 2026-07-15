@@ -111,7 +111,7 @@ class CheckoutTest extends TestCase
             ->assertRedirect(route('orders.show', $order));
 
         $this->assertSame($user->id, $order->user_id);
-        $this->assertSame('Cliente Account', $order->customer_name);
+        $this->assertSame('Cliente Account', $order->user->name);
         $this->assertSame('2026-06-29 12:00:00', $order->pickup_at->format('Y-m-d H:i:s'));
         $this->assertNotNull($order->order_number);
         $this->assertSame('pending', $order->status);
@@ -149,6 +149,26 @@ class CheckoutTest extends TestCase
 
         Mail::assertSent(OrderPlaced::class, 1);
         Mail::assertSent(OrderPlaced::class, fn (OrderPlaced $mail) => $mail->order->is($order) && $mail->hasTo('customer@example.com'));
+    }
+
+    public function test_order_placed_email_uses_singular_and_plural_units(): void
+    {
+        app()->setLocale('it');
+        $user = User::factory()->create();
+        $order = $this->createOrder($user);
+        $pieceProduct = $this->createProduct(['unit_type' => 'pz']);
+        $trayProduct = $this->createProduct(['unit_type' => 'vaschetta']);
+        $this->createOrderItem($order, $pieceProduct, ['quantity' => 1]);
+        $this->createOrderItem($order, $pieceProduct, ['quantity' => 2]);
+        $this->createOrderItem($order, $trayProduct, ['quantity' => 1]);
+        $this->createOrderItem($order, $trayProduct, ['quantity' => 2]);
+
+        $email = (new OrderPlaced($order))->render();
+
+        $this->assertStringContainsString('1.00 pezzo', $email);
+        $this->assertStringContainsString('2.00 pezzi', $email);
+        $this->assertStringContainsString('1.00 vaschetta', $email);
+        $this->assertStringContainsString('2.00 vaschette', $email);
     }
 
     public function test_checkout_store_redirects_when_cart_is_empty(): void

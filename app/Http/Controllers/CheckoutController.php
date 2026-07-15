@@ -68,7 +68,6 @@ class CheckoutController extends Controller
 
             $order = Order::create([
                 'user_id' => $request->user()->id,
-                'customer_name' => $request->user()->name,
                 'status' => 'pending',
                 'total_amount' => $totalAmount,
                 'notes' => $validated['notes'] ?? null,

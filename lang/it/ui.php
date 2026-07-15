@@ -240,8 +240,6 @@ return [
     'validation.quantities_required' => 'Inserisci almeno una quantità da aggiornare.',
     'validation.quantities_array' => 'Le quantità inviate non sono valide.',
     'validation.quantity_each_required' => 'Inserisci una quantità per ogni prodotto.',
-    'validation.customer_name_required' => 'Inserisci il nome per il ritiro.',
-    'validation.customer_name_max' => 'Il nome non può superare 255 caratteri.',
     'validation.pickup_required' => 'Scegli data e ora di ritiro.',
     'validation.pickup_date' => 'Scegli una data e ora di ritiro valida.',
     'validation.notes_max' => 'Le note non possono superare 2000 caratteri.',

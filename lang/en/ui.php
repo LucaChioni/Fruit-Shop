@@ -240,8 +240,6 @@ return [
     'validation.quantities_required' => 'Enter at least one quantity to update.',
     'validation.quantities_array' => 'The submitted quantities are invalid.',
     'validation.quantity_each_required' => 'Enter a quantity for each product.',
-    'validation.customer_name_required' => 'Enter the pickup name.',
-    'validation.customer_name_max' => 'The name may not exceed 255 characters.',
     'validation.pickup_required' => 'Choose pickup date and time.',
     'validation.pickup_date' => 'Choose a valid pickup date and time.',
     'validation.notes_max' => 'Notes may not exceed 2000 characters.',

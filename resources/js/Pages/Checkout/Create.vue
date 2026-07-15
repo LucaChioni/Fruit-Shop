@@ -124,8 +124,8 @@ watch(dateInputLocale, async () => {
         </header>
 
         <form class="checkout-form" @submit.prevent="submitOrder">
-            <label class="form-field">
-                {{ t('checkout.pickup', 'Data e ora di ritiro') }}
+            <div class="form-field">
+                <span>{{ t('checkout.pickup', 'Data e ora di ritiro') }}</span>
                 <div class="pickup-fields">
                     <input
                         ref="pickupDateInput"
@@ -134,6 +134,7 @@ watch(dateInputLocale, async () => {
                         class="form-input"
                         :lang="dateInputLocale"
                         :placeholder="page.props.locale === 'it' ? 'gg/mm/aaaa' : 'mm/dd/yyyy'"
+                        :aria-label="t('checkout.pickup_date', 'Data di ritiro')"
                         required
                     />
                     <input
@@ -142,6 +143,7 @@ watch(dateInputLocale, async () => {
                         type="text"
                         class="form-input"
                         placeholder="HH:mm"
+                        :aria-label="t('checkout.pickup_time', 'Ora di ritiro')"
                         required
                     />
                 </div>
@@ -154,19 +156,20 @@ watch(dateInputLocale, async () => {
                 <p v-if="form.errors.pickup_at" class="form-error">
                     {{ form.errors.pickup_at }}
                 </p>
-            </label>
+            </div>
 
-            <label class="form-field">
-                {{ t('checkout.notes', 'Note') }}
+            <div class="form-field">
+                <span>{{ t('checkout.notes', 'Note') }}</span>
                 <textarea
                     v-model="form.notes"
                     class="form-textarea"
                     rows="4"
+                    :aria-label="t('checkout.notes', 'Note')"
                 />
                 <p v-if="form.errors.notes" class="form-error">
                     {{ form.errors.notes }}
                 </p>
-            </label>
+            </div>
 
             <button type="submit" class="submit-button">
                 {{ t('checkout.submit', 'Conferma ordine') }}

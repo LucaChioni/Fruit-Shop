@@ -18,7 +18,6 @@ return new class extends Migration
             $table->foreignId('user_id')
                 ->constrained()
                 ->cascadeOnDelete();
-            $table->string('customer_name');
             $table->string('status')->default('pending');
             $table->decimal('total_amount', 10, 2);
             $table->text('notes')->nullable();

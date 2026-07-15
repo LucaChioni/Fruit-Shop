@@ -128,7 +128,7 @@ const page = usePage();
     font-weight: 700;
 }
 
-:global(html.dark) .shop-address a {
+:global(html.dark .shop-address a) {
     color: #86efac;
 }
 </style>
