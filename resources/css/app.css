@@ -241,6 +241,12 @@ html.dark .textarea {
     color: #e5e7eb;
 }
 
+html.dark .flatpickr-time input,
+html.dark .flatpickr-time input:focus {
+    background: #0f172a;
+    color: #e5e7eb;
+}
+
 html.dark .file-button:hover,
 html.dark .file-button:focus-visible {
     border-color: #22c55e;

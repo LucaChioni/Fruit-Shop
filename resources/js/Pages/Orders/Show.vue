@@ -54,7 +54,7 @@ function updateStatus() {
             </p>
 
             <p v-if="page.props.shop?.address" class="order-meta">
-                <strong>{{ t('shop.address', 'Indirizzo negozio') }}:</strong> {{ page.props.shop.address }} ·
+                <strong>{{ t('shop.address', 'Indirizzo negozio') }}:</strong> {{ page.props.shop.address }}
                 <a
                     v-if="page.props.shop.mapsUrl"
                     :href="page.props.shop.mapsUrl"

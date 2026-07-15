@@ -48,6 +48,15 @@ class CheckoutTest extends TestCase
                 ->missing('customerName'));
     }
 
+    public function test_checkout_uses_the_rome_timezone(): void
+    {
+        $this->travelTo(Carbon::parse('2026-06-28 09:00:00', 'UTC'));
+
+        $this->assertSame('Europe/Rome', config('app.timezone'));
+        $this->assertSame('Europe/Rome', now()->getTimezone()->getName());
+        $this->assertSame('11:00', now()->format('H:i'));
+    }
+
     public function test_checkout_create_skips_closed_dates_for_default_pickup(): void
     {
         $this->travelTo(Carbon::parse('2026-12-24 23:00:00'));
