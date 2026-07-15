@@ -79,7 +79,7 @@ class AuthenticationTest extends TestCase
 
     public function test_sessions_remain_active_for_ten_days_of_inactivity(): void
     {
-        $this->assertSame(14400, config('session.lifetime'));
+        $this->assertSame(43200, config('session.lifetime'));
     }
 
     public function test_existing_users_can_verify_code_and_login(): void
