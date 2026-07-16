@@ -23,6 +23,8 @@ const form = useForm({
     quantity: 1,
 });
 
+const deleteForm = useForm({});
+
 function addToCart(product) {
     form.product_id = product.id;
     form.quantity = quantities[product.id] || product.quantity_step;
@@ -33,6 +35,16 @@ function addToCart(product) {
         onSuccess: () => {
             quantities[product.id] = 1;
         },
+    });
+}
+
+function removeFromCart(product) {
+    if (! product.cart_item_id) {
+        return;
+    }
+
+    deleteForm.delete(route('cart.items.destroy', product.cart_item_id), {
+        preserveScroll: true,
     });
 }
 
@@ -165,8 +177,19 @@ function toggleSortDirection(event) {
                 :key="product.id"
                 class="product-card"
             >
+                <img
+                    v-if="product.image_url"
+                    :src="product.image_url"
+                    alt=""
+                    class="product-image"
+                    loading="lazy"
+                />
+                <div v-else class="product-image product-image--placeholder" aria-hidden="true">
+                    {{ product.name.charAt(0) }}
+                </div>
+
                 <header class="product-card-header">
-                    <h2 class="product-name">{{ product.name }}</h2>
+                    <h2 class="product-name" :title="product.name">{{ product.name }}</h2>
 
                     <span
                         v-if="product.description"
@@ -175,34 +198,40 @@ function toggleSortDirection(event) {
                         :aria-label="product.description"
                     >
                         <span class="description-info" aria-hidden="true"></span>
-                        <span class="description-tooltip-content" role="tooltip">
-                            {{ product.description }}
-                        </span>
                     </span>
                 </header>
 
                 <div class="product-card-body">
-                    <img
-                        v-if="product.image_url"
-                        :src="product.image_url"
-                        :alt="product.name"
-                        class="product-image"
-                        loading="lazy"
-                    />
-                    <div v-else class="product-image product-image--placeholder">
-                        {{ product.name.charAt(0) }}
-                    </div>
-
                     <div class="product-card-info">
+                        <p
+                            v-if="page.props.auth.user"
+                            class="product-cart-quantity"
+                            :class="{ 'product-cart-quantity--empty': !product.cart_quantity }"
+                        >
+                            <template v-if="product.cart_quantity">
+                                {{ t('cart.label', 'Carrello') }}:
+                                <strong>{{ formatQuantity(product.cart_quantity) }}</strong>
+                                {{ cartQuantityUnit(product) }}
+
+                                <button
+                                    type="button"
+                                    class="remove-from-cart-button"
+                                    :aria-label="t('cart.remove_from_cart', 'Elimina il prodotto dal carrello')"
+                                    :title="t('cart.remove_from_cart', 'Elimina il prodotto dal carrello')"
+                                    :disabled="deleteForm.processing"
+                                    @click="removeFromCart(product)"
+                                >
+                                    <svg class="remove-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                        <path d="m6 6 12 12" />
+                                        <path d="m18 6-12 12" />
+                                    </svg>
+                                </button>
+                            </template>
+                        </p>
+
                         <p class="product-price">
                             <strong>{{ product.price }} €</strong>
                             <span>/ {{ product.unit_type }}</span>
-                        </p>
-
-                        <p v-if="page.props.auth.user && product.cart_quantity" class="product-cart-quantity">
-                            {{ t('cart.label', 'Carrello') }}:
-                            <strong>{{ formatQuantity(product.cart_quantity) }}</strong>
-                            {{ cartQuantityUnit(product) }}
                         </p>
 
                         <div v-if="page.props.auth.user" class="product-actions">
@@ -226,6 +255,7 @@ function toggleSortDirection(event) {
                                 type="button"
                                 class="add-to-cart-button"
                                 :aria-label="t('products.add_to_cart', 'Aggiungi al carrello')"
+                                :title="t('products.add_to_cart', 'Aggiungi al carrello')"
                                 @click="addToCart(product)"
                                 :disabled="form.processing"
                             >
@@ -244,6 +274,9 @@ function toggleSortDirection(event) {
                         </Link>
                     </div>
                 </div>
+                <span v-if="product.description" class="description-tooltip-content" role="tooltip">
+                    {{ product.description }}
+                </span>
             </article>
         </section>
     </PageContainer>
@@ -340,62 +373,95 @@ function toggleSortDirection(event) {
 
 .products-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(245px, 100%), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 220px));
+    justify-content: center;
     gap: 12px;
 }
 
 .product-card {
-    display: grid;
-    gap: 8px;
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 12px;
-    background: #fff;
+    background: #ecfdf5;
+}
+
+.product-card::before {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    background: linear-gradient(135deg, rgb(255 255 255 / 0.68), rgb(255 255 255 / 0.9));
+    border-radius: inherit;
+    content: '';
+    transition: opacity 200ms ease;
 }
 
 .product-card-header {
     position: relative;
+    z-index: 3;
     display: flex;
-    align-items: start;
+    align-items: center;
     justify-content: space-between;
     gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgb(22 101 52 / 0.25);
+    transition: border-color 200ms ease;
+}
+
+.product-card-header > * {
+    transition: opacity 200ms ease;
 }
 
 .product-card-body {
-    display: grid;
-    grid-template-columns: minmax(82px, 44%) minmax(0, 1fr);
-    gap: 10px;
-    align-items: stretch;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    transition: opacity 200ms ease;
 }
 
 .product-card-info {
     display: flex;
+    flex: 1;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 8px;
-    margin-top: 12px;
+    justify-content: flex-start;
+    gap: 6px;
     min-width: 0;
 }
 
 .product-image {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
     width: 100%;
-    aspect-ratio: 1;
-    border-radius: 10px;
+    height: 100%;
+    border-radius: inherit;
     object-fit: cover;
-    background: #ecfdf5;
 }
 
 .product-image--placeholder {
+    z-index: 2;
     display: grid;
     place-items: center;
-    color: #166534;
-    font-size: 28px;
+    background: #fff;
+    color: rgb(22 101 52 / 0.35);
+    font-size: 72px;
     font-weight: 800;
 }
 
 .product-name {
+    flex: 1;
+    min-width: 0;
     margin: 0;
-    font-size: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 20px;
     font-weight: 700;
     line-height: 1.2;
 }
@@ -403,6 +469,7 @@ function toggleSortDirection(event) {
 .description-tooltip {
     position: relative;
     flex: 0 0 auto;
+    transform: translateY(4px);
 }
 
 .description-info {
@@ -412,7 +479,7 @@ function toggleSortDirection(event) {
     width: 18px;
     height: 18px;
     box-sizing: border-box;
-    border: 1px solid #bbf7d0;
+    border: 1px solid currentColor;
     border-radius: 999px;
     color: #166534;
     position: relative;
@@ -444,9 +511,10 @@ function toggleSortDirection(event) {
 .description-tooltip-content {
     position: absolute;
     z-index: 10;
-    top: 24px;
-    right: 0;
-    width: min(220px, 70vw);
+    top: calc(100% + 8px);
+    left: 50%;
+    box-sizing: border-box;
+    width: 100%;
     padding: 8px 10px;
     border-radius: 10px;
     border: 1px solid #111827;
@@ -457,45 +525,78 @@ function toggleSortDirection(event) {
     line-height: 1.35;
     opacity: 0;
     pointer-events: none;
-    transform: translateY(-4px);
+    transform: translate(-50%, -4px);
     transition: opacity 150ms ease, transform 150ms ease;
 }
 
-.description-tooltip:hover .description-tooltip-content,
-.description-tooltip:focus .description-tooltip-content,
-.description-tooltip:focus-within .description-tooltip-content {
+.product-card:has(.description-tooltip:hover),
+.product-card:has(.description-tooltip:focus) {
+    z-index: 1;
+}
+
+.product-card:has(.description-tooltip:hover)::before,
+.product-card:has(.description-tooltip:focus)::before {
+    opacity: 0;
+}
+
+.product-card:has(.description-tooltip:hover) .product-card-header,
+.product-card:has(.description-tooltip:focus) .product-card-header {
+    border-bottom-color: transparent;
+}
+
+.product-card:has(.description-tooltip:hover) .product-card-header > *,
+.product-card:has(.description-tooltip:focus) .product-card-header > *,
+.product-card:has(.description-tooltip:hover) .product-card-body,
+.product-card:has(.description-tooltip:focus) .product-card-body {
+    opacity: 0;
+}
+
+.product-card:has(.description-tooltip:hover) .product-card-body,
+.product-card:has(.description-tooltip:focus) .product-card-body {
+    pointer-events: none;
+}
+
+.product-card:has(.description-tooltip:hover) .description-tooltip-content,
+.product-card:has(.description-tooltip:focus) .description-tooltip-content {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(-50%);
 }
 
 .product-price {
     margin: 0;
-    font-size: 14px;
-    line-height: 1.2;
+    font-size: 18px;
+    line-height: 1.25;
 }
 
 .product-cart-quantity {
     display: inline-flex;
+    align-items: center;
     flex-wrap: wrap;
     gap: 4px;
     max-width: 100%;
+    min-height: 26px;
+    box-sizing: border-box;
     margin: 0;
     padding: 3px 6px;
     border-radius: 999px;
     background: #dcfce7;
     color: #166534;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 700;
     line-height: 1.2;
 }
 
+.product-cart-quantity--empty {
+    visibility: hidden;
+}
+
 .add-to-cart-button {
     display: inline-flex;
-    flex: 0 0 32px;
+    flex: 0 0 28px;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     border: 0;
     border-radius: 8px;
     background: #166534;
@@ -513,12 +614,12 @@ function toggleSortDirection(event) {
 .login-required-link {
     display: inline-flex;
     justify-content: center;
-    padding: 6px 8px;
+    padding: 10px 12px;
     border: 1px solid #bbf7d0;
     border-radius: 8px;
     background: #f0fdf4;
     color: #166534;
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 700;
     line-height: 1.2;
     text-align: center;
@@ -533,19 +634,20 @@ function toggleSortDirection(event) {
 }
 
 .quantity-label {
-    display: block;
-    flex: 0 1 86px;
+    display: flex;
+    flex: 1 1 auto;
     min-width: 0;
     position: relative;
 }
 
 .quantity-input {
     width: 100%;
-    height: 30px;
+    height: 28px;
     box-sizing: border-box;
-    padding: 6px;
+    padding: 4px 7px;
     border: 1px solid #ccc;
     border-radius: 8px;
+    font-size: 12px;
 }
 
 .quantity-error {
@@ -579,15 +681,51 @@ function toggleSortDirection(event) {
 }
 
 .action-icon {
-    width: 19px;
-    height: 19px;
+    width: 17px;
+    height: 17px;
     fill: none;
     overflow: visible;
     stroke: currentColor;
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-width: 2;
-    transform: translate(-1px, 1px);
+    transform: translateX(-1px);
+}
+
+.remove-from-cart-button {
+    display: inline-flex;
+    flex: 0 0 20px;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin-left: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: currentColor;
+    cursor: pointer;
+}
+
+.remove-from-cart-button:hover,
+.remove-from-cart-button:focus-visible {
+    background: rgb(22 101 52 / 0.16);
+    outline: none;
+}
+
+.remove-from-cart-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.remove-icon {
+    width: 13px;
+    height: 13px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-width: 2.5;
 }
 
 .action-icon-plus {
@@ -601,6 +739,26 @@ function toggleSortDirection(event) {
 .add-to-cart-button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+@media (max-width: 731px) {
+    .products-list {
+        grid-template-columns: repeat(auto-fit, minmax(clamp(130px, 25vw, 170px), 170px));
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .product-card {
+        justify-self: center;
+        width: 100%;
+        max-width: 170px;
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .product-name {
+        font-size: 18px;
+    }
 }
 
 @media (max-width: 640px) {
@@ -620,15 +778,22 @@ function toggleSortDirection(event) {
     }
 
     .products-list {
+        grid-template-columns: repeat(auto-fit, minmax(clamp(130px, 25vw, 170px), 170px));
+        justify-content: center;
         gap: 10px;
     }
 
     .product-card {
+        justify-self: center;
+        width: 100%;
+        max-width: 170px;
+        gap: 8px;
         padding: 10px;
     }
 
     .product-name {
-        font-size: 15px;
+        font-size: 18px;
     }
+
 }
 </style>

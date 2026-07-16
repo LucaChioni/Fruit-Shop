@@ -57,85 +57,94 @@ function clearLoginValidationMessage(event) {
             <PageNav />
         </header>
 
-        <section class="auth-card">
-            <div class="auth-help mb-4 rounded-lg text-sm">
-                {{ t('auth.login_help', 'Inserisci la tua email: ti invieremo un codice per accedere. Se non hai ancora un account, lo creeremo automaticamente.') }}
-            </div>
-
-            <div v-if="status" class="auth-status mb-4 rounded-lg text-sm">
-                {{ status }}
-            </div>
-
-            <form @submit.prevent="submit">
-                <div v-if="!codeSent">
-                    <InputLabel for="email" :value="t('legal.email', 'Email')" />
-
-                    <TextInput
-                        id="email"
-                        type="email"
-                        class="mt-1 block w-full"
-                        v-model="form.email"
-                        required
-                        :readonly="codeSent"
-                        autofocus
-                        autocomplete="username"
-                        @invalid="setLoginValidationMessage"
-                        @input="clearLoginValidationMessage"
-                    />
-
-                    <InputError class="mt-2" :message="form.errors.email" />
+        <div class="auth-content">
+            <section class="auth-card">
+                <div class="auth-help mb-4 rounded-lg text-sm">
+                    {{ t('auth.login_help', 'Inserisci la tua email: ti invieremo un codice per accedere. Se non hai ancora un account, lo creeremo automaticamente.') }}
                 </div>
 
-                <div v-if="codeSent && emailLoginNeedsName">
-                    <InputLabel for="name" :value="t('auth.name', 'Nome')" />
-
-                    <TextInput
-                        id="name"
-                        type="text"
-                        class="mt-1 block w-full"
-                        v-model="form.name"
-                        required
-                        autofocus
-                        autocomplete="name"
-                        @invalid="setLoginValidationMessage"
-                        @input="clearLoginValidationMessage"
-                    />
-
-                    <InputError class="mt-2" :message="form.errors.name" />
+                <div v-if="status" class="auth-status mb-4 rounded-lg text-sm">
+                    {{ status }}
                 </div>
 
-                <div v-if="codeSent" class="mt-4">
-                    <InputLabel for="code" :value="t('auth.email_code', 'Codice ricevuto via email')" />
+                <form @submit.prevent="submit">
+                    <div v-if="!codeSent">
+                        <InputLabel for="email" :value="t('legal.email', 'Email')" />
 
-                    <TextInput
-                        id="code"
-                        type="text"
-                        class="mt-1 block w-full"
-                        v-model="form.code"
-                        required
-                        inputmode="numeric"
-                        autocomplete="one-time-code"
-                    />
+                        <TextInput
+                            id="email"
+                            type="email"
+                            class="mt-1 block w-full"
+                            v-model="form.email"
+                            required
+                            :readonly="codeSent"
+                            autofocus
+                            autocomplete="username"
+                            @invalid="setLoginValidationMessage"
+                            @input="clearLoginValidationMessage"
+                        />
 
-                    <InputError class="mt-2" :message="form.errors.code" />
-                </div>
+                        <InputError class="mt-2" :message="form.errors.email" />
+                    </div>
 
-                <div class="mt-4 flex items-center justify-end">
-                    <PrimaryButton
-                        :class="{ 'opacity-25': form.processing }"
-                        :disabled="form.processing"
-                    >
-                        {{ codeSent ? t('auth.verify_code', 'Verifica codice') : t('auth.login', 'Accedi') }}
-                    </PrimaryButton>
-                </div>
-            </form>
-        </section>
+                    <div v-if="codeSent && emailLoginNeedsName">
+                        <InputLabel for="name" :value="t('auth.name', 'Nome')" />
+
+                        <TextInput
+                            id="name"
+                            type="text"
+                            class="mt-1 block w-full"
+                            v-model="form.name"
+                            required
+                            autofocus
+                            autocomplete="name"
+                            @invalid="setLoginValidationMessage"
+                            @input="clearLoginValidationMessage"
+                        />
+
+                        <InputError class="mt-2" :message="form.errors.name" />
+                    </div>
+
+                    <div v-if="codeSent" class="mt-4">
+                        <InputLabel for="code" :value="t('auth.email_code', 'Codice ricevuto via email')" />
+
+                        <TextInput
+                            id="code"
+                            type="text"
+                            class="mt-1 block w-full"
+                            v-model="form.code"
+                            required
+                            inputmode="numeric"
+                            autocomplete="one-time-code"
+                        />
+
+                        <InputError class="mt-2" :message="form.errors.code" />
+                    </div>
+
+                    <div class="mt-4 flex items-center justify-end">
+                        <PrimaryButton
+                            :class="{ 'opacity-25': form.processing }"
+                            :disabled="form.processing"
+                        >
+                            {{ codeSent ? t('auth.verify_code', 'Verifica codice') : t('auth.login', 'Accedi') }}
+                        </PrimaryButton>
+                    </div>
+                </form>
+            </section>
+        </div>
     </PageContainer>
 </template>
 
 <style scoped>
 .auth-header {
     margin-bottom: 16px;
+}
+
+.auth-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .auth-card {

@@ -171,6 +171,24 @@ html.dark .cookie-banner {
     color: #e5e7eb;
 }
 
+html.dark .product-card::before,
+html.dark .cart-item::before {
+    background: linear-gradient(135deg, rgb(15 23 42 / 0.68), rgb(15 23 42 / 0.9));
+}
+
+html.dark .product-card .product-card-header {
+    border-bottom-color: rgb(134 239 172 / 0.5);
+}
+
+html.dark .cart-item .cart-item-header {
+    border-bottom-color: rgb(134 239 172 / 0.5);
+}
+
+html.dark .cart-item-total {
+    background: #052e16;
+    color: #86efac;
+}
+
 html.dark .cart-summary,
 html.dark .order-total {
     background: #1f2937;
@@ -180,10 +198,14 @@ html.dark .order-total {
 html.dark .product-image,
 html.dark .cart-item-image,
 html.dark .current-image,
-html.dark .image-placeholder,
+html.dark .image-placeholder {
+    background: #052e16;
+}
+
 html.dark .product-image--placeholder,
 html.dark .cart-item-image--placeholder {
-    background: #052e16;
+    background: #111827;
+    color: rgb(134 239 172 / 0.35);
 }
 
 html.dark .image-placeholder {

@@ -29,16 +29,20 @@ class ProductController extends Controller
             ->filter(fn (Product $product) => ProductData::matchesTranslatedName($product, $filters['search']))
             ->values();
 
-        $cartQuantities = $cartService->findCurrentCart($request)
+        $cartItems = $cartService->findCurrentCart($request)
             ?->items()
-            ->pluck('quantity', 'product_id')
+            ->get()
+            ->keyBy('product_id')
             ?? collect();
 
         return Inertia::render('Products/Index', [
-            'products' => $products->map(function (Product $product) use ($cartQuantities) {
+            'products' => $products->map(function (Product $product) use ($cartItems) {
+                $cartItem = $cartItems->get($product->id);
+
                 return [
                     ...ProductData::catalog($product),
-                    'cart_quantity' => $cartQuantities->get($product->id),
+                    'cart_quantity' => $cartItem?->quantity,
+                    'cart_item_id' => $cartItem?->id,
                 ];
             }),
             'filters' => $filters,

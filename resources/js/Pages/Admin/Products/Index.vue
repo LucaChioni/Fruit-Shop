@@ -118,6 +118,17 @@ function toggleSortDirection(event) {
                 :key="product.id"
                 class="product-card"
             >
+                <img
+                    v-if="product.image_url"
+                    :src="product.image_url"
+                    :alt="product.name"
+                    class="product-image"
+                    loading="lazy"
+                />
+                <div v-else class="product-image product-image--placeholder" aria-hidden="true">
+                    {{ product.name.charAt(0) }}
+                </div>
+
                 <header class="product-card-header">
                     <h2 class="product-title">{{ product.name }}</h2>
 
@@ -128,30 +139,11 @@ function toggleSortDirection(event) {
                         :aria-label="product.description"
                     >
                         <span class="description-info" aria-hidden="true"></span>
-                        <span class="description-tooltip-content" role="tooltip">
-                            {{ product.description }}
-                        </span>
                     </span>
                 </header>
 
                 <div class="product-card-body">
-                    <img
-                        v-if="product.image_url"
-                        :src="product.image_url"
-                        :alt="product.name"
-                        class="product-image"
-                        loading="lazy"
-                    />
-                    <div v-else class="product-image product-image--placeholder">
-                        {{ product.name.charAt(0) }}
-                    </div>
-
                     <div class="product-card-info">
-                        <p class="product-meta">
-                            <strong>{{ product.price }} €</strong>
-                            <span>/ {{ product.display_unit_type }}</span>
-                        </p>
-
                         <span
                             class="status-pill"
                             :class="product.is_active ? 'status-pill--active' : 'status-pill--inactive'"
@@ -159,8 +151,13 @@ function toggleSortDirection(event) {
                             :aria-label="product.is_active ? t('admin.active', 'Attivo') : t('admin.inactive', 'Disattivato')"
                         >
                             <span class="status-dot" aria-hidden="true"></span>
-                            {{ product.is_active ? 'On' : 'Off' }}
+                            {{ product.is_active ? t('admin.active', 'Attivo') : t('admin.inactive', 'Inattivo') }}
                         </span>
+
+                        <p class="product-meta">
+                            <strong>{{ product.price }} €</strong>
+                            <span>/ {{ product.display_unit_type }}</span>
+                        </p>
 
                         <div class="product-actions">
                             <a :href="route('admin.products.edit', product.id)" class="edit-link">
@@ -177,6 +174,9 @@ function toggleSortDirection(event) {
                         </div>
                     </div>
                 </div>
+                <span v-if="product.description" class="description-tooltip-content" role="tooltip">
+                    {{ product.description }}
+                </span>
             </article>
         </section>
     </PageContainer>
@@ -346,50 +346,82 @@ function toggleSortDirection(event) {
 
 .products-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(245px, 100%), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 220px));
+    justify-content: center;
     gap: 12px;
 }
 
 .product-card {
-    display: grid;
-    gap: 8px;
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    background: #ecfdf5;
+}
+
+.product-card::before {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    background: linear-gradient(135deg, rgb(255 255 255 / 0.68), rgb(255 255 255 / 0.9));
+    border-radius: inherit;
+    content: '';
+    transition: opacity 200ms ease;
 }
 
 .product-card-header {
     position: relative;
+    z-index: 3;
     display: flex;
-    align-items: start;
+    align-items: center;
     justify-content: space-between;
     gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgb(22 101 52 / 0.25);
+    transition: border-color 200ms ease;
+}
+
+.product-card-header > * {
+    transition: opacity 200ms ease;
 }
 
 .product-card-body {
-    display: grid;
-    grid-template-columns: 82px minmax(0, 1fr);
-    gap: 10px;
-    align-items: start;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    transition: opacity 200ms ease;
 }
 
 .product-card-info {
-    display: grid;
-    align-content: start;
-    gap: 8px;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 6px;
     min-width: 0;
 }
 
 .product-image {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
     width: 100%;
-    aspect-ratio: 1;
-    border-radius: 10px;
+    height: 100%;
+    border-radius: inherit;
     object-fit: cover;
-    background: #fff7ed;
 }
 
 .product-image--placeholder {
+    z-index: 2;
     display: grid;
     place-items: center;
-    color: #7c2d12;
-    font-size: 26px;
+    background: #fff;
+    color: rgb(22 101 52 / 0.35);
+    font-size: 72px;
     font-weight: 800;
 }
 
@@ -400,8 +432,13 @@ function toggleSortDirection(event) {
 }
 
 .product-title {
+    flex: 1;
+    min-width: 0;
     margin: 0;
-    font-size: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 20px;
     font-weight: 700;
     line-height: 1.2;
 }
@@ -409,6 +446,7 @@ function toggleSortDirection(event) {
 .description-tooltip {
     position: relative;
     flex: 0 0 auto;
+    transform: translateY(4px);
 }
 
 .description-info {
@@ -418,9 +456,9 @@ function toggleSortDirection(event) {
     width: 18px;
     height: 18px;
     box-sizing: border-box;
-    border: 1px solid #fed7aa;
+    border: 1px solid currentColor;
+    color: #166534;
     border-radius: 999px;
-    color: #7c2d12;
     position: relative;
     cursor: help;
 }
@@ -450,11 +488,13 @@ function toggleSortDirection(event) {
 .description-tooltip-content {
     position: absolute;
     z-index: 10;
-    top: 24px;
-    right: 0;
-    width: min(220px, 70vw);
+    top: calc(100% + 8px);
+    left: 50%;
+    box-sizing: border-box;
+    width: 100%;
     padding: 8px 10px;
     border-radius: 10px;
+    border: 1px solid #111827;
     background: #111827;
     color: #fff;
     font-size: 13px;
@@ -462,35 +502,64 @@ function toggleSortDirection(event) {
     line-height: 1.35;
     opacity: 0;
     pointer-events: none;
-    transform: translateY(-4px);
+    transform: translate(-50%, -4px);
     transition: opacity 150ms ease, transform 150ms ease;
 }
 
-.description-tooltip:hover .description-tooltip-content,
-.description-tooltip:focus .description-tooltip-content,
-.description-tooltip:focus-within .description-tooltip-content {
+.product-card:has(.description-tooltip:hover),
+.product-card:has(.description-tooltip:focus) {
+    z-index: 1;
+}
+
+.product-card:has(.description-tooltip:hover)::before,
+.product-card:has(.description-tooltip:focus)::before {
+    opacity: 0;
+}
+
+.product-card:has(.description-tooltip:hover) .product-card-header,
+.product-card:has(.description-tooltip:focus) .product-card-header {
+    border-bottom-color: transparent;
+}
+
+.product-card:has(.description-tooltip:hover) .product-card-header > *,
+.product-card:has(.description-tooltip:focus) .product-card-header > *,
+.product-card:has(.description-tooltip:hover) .product-card-body,
+.product-card:has(.description-tooltip:focus) .product-card-body {
+    opacity: 0;
+}
+
+.product-card:has(.description-tooltip:hover) .product-card-body,
+.product-card:has(.description-tooltip:focus) .product-card-body {
+    pointer-events: none;
+}
+
+.product-card:has(.description-tooltip:hover) .description-tooltip-content,
+.product-card:has(.description-tooltip:focus) .description-tooltip-content {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(-50%);
 }
 
 .product-meta {
     margin: 0;
-    color: #555;
-    font-size: 14px;
+    font-size: 18px;
+    line-height: 1.25;
 }
 
 .status-pill {
     display: inline-flex;
     align-items: center;
+    align-self: flex-start;
+    flex-wrap: wrap;
     gap: 4px;
-    justify-self: start;
+    max-width: 100%;
+    min-height: 26px;
+    box-sizing: border-box;
     padding: 3px 6px;
     border: 1px solid transparent;
     border-radius: 999px;
-    font-size: 11px;
+    font-size: 14px;
     font-weight: 700;
-    line-height: 1;
-    text-transform: uppercase;
+    line-height: 1.2;
 }
 
 .status-dot {
@@ -508,6 +577,26 @@ function toggleSortDirection(event) {
 .status-pill--inactive {
     background: #fee2e2;
     color: #b91c1c;
+}
+
+@media (max-width: 731px) {
+    .products-list {
+        grid-template-columns: repeat(auto-fit, minmax(clamp(130px, 25vw, 170px), 170px));
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .product-card {
+        justify-self: center;
+        width: 100%;
+        max-width: 170px;
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .product-title {
+        font-size: 18px;
+    }
 }
 
 @media (max-width: 640px) {
@@ -536,6 +625,8 @@ function toggleSortDirection(event) {
     }
 
     .products-list {
+        grid-template-columns: repeat(auto-fit, minmax(clamp(130px, 25vw, 170px), 170px));
+        justify-content: center;
         gap: 10px;
     }
 
@@ -545,11 +636,14 @@ function toggleSortDirection(event) {
     }
 
     .product-card {
+        justify-self: center;
+        width: 100%;
+        max-width: 170px;
         gap: 8px;
     }
 
     .product-title {
-        font-size: 15px;
+        font-size: 18px;
     }
 }
 </style>

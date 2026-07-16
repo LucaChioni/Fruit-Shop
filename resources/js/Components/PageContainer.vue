@@ -30,7 +30,7 @@ defineProps({
     margin-top: auto;
 }
 
-.page-container > :not(.legal-footer):last-of-type {
+.page-container > :not(.legal-footer):nth-last-child(2) {
     margin-bottom: 40px;
 }
 

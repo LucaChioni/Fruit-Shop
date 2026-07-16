@@ -113,6 +113,7 @@ return [
     'cart.in_cart' => 'Nel carrello',
     'cart.label' => 'Carrello',
     'cart.remove' => 'Rimuovi',
+    'cart.remove_from_cart' => 'Elimina il prodotto dal carrello',
     'cart.total' => 'Totale',
     'cart.update' => 'Aggiorna carrello',
     'cart.checkout' => 'Procedi all\'ordine',

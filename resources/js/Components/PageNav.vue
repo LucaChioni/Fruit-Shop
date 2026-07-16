@@ -118,6 +118,8 @@ function logout() {
                 as="button"
                 type="button"
                 class="page-nav-button"
+                :title="t('nav.products', 'Prodotti')"
+                :aria-label="t('nav.products', 'Prodotti')"
                 :class="{
                     'page-nav-button--active': route().current('dashboard') || route().current('products.index'),
                 }"
@@ -129,7 +131,7 @@ function logout() {
                     <rect x="4" y="14" width="6" height="6" rx="1.4" />
                     <rect x="14" y="14" width="6" height="6" rx="1.4" />
                 </svg>
-                {{ t('nav.products', 'Prodotti') }}
+                <span class="page-nav-button-label">{{ t('nav.products', 'Prodotti') }}</span>
             </Link>
 
             <Link
@@ -138,6 +140,8 @@ function logout() {
                 as="button"
                 type="button"
                 class="page-nav-button"
+                :title="t('nav.cart', 'Carrello')"
+                :aria-label="t('nav.cart', 'Carrello')"
                 :class="{
                     'page-nav-button--active': route().current('cart.*') || route().current('checkout.*'),
                 }"
@@ -148,7 +152,7 @@ function logout() {
                     <circle cx="18" cy="20" r="1.7" />
                     <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6" />
                 </svg>
-                {{ t('nav.cart', 'Carrello') }}
+                <span class="page-nav-button-label">{{ t('nav.cart', 'Carrello') }}</span>
             </Link>
 
             <Link
@@ -157,11 +161,13 @@ function logout() {
                 as="button"
                 type="button"
                 class="page-nav-button"
+                :title="t('nav.orders', 'I miei ordini')"
+                :aria-label="t('nav.orders', 'I miei ordini')"
                 :class="{ 'page-nav-button--active': route().current('orders.*') }"
                 :aria-current="route().current('orders.*') ? 'page' : undefined"
             >
                 <span class="nav-icon nav-icon--orders" aria-hidden="true"></span>
-                {{ t('nav.orders', 'I miei ordini') }}
+                <span class="page-nav-button-label">{{ t('nav.orders', 'I miei ordini') }}</span>
             </Link>
 
             <a
@@ -170,12 +176,14 @@ function logout() {
                 target="_blank"
                 rel="noopener noreferrer"
                 class="page-nav-button"
+                :title="t('nav.maps', 'Indicazioni')"
+                :aria-label="t('nav.maps', 'Indicazioni')"
             >
                 <svg class="nav-svg-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                     <path d="M12 21s7-5.1 7-12a7 7 0 1 0-14 0c0 6.9 7 12 7 12Z" />
                     <circle cx="12" cy="9" r="2.4" />
                 </svg>
-                {{ t('nav.maps', 'Indicazioni') }}
+                <span class="page-nav-button-label">{{ t('nav.maps', 'Indicazioni') }}</span>
             </a>
             </div>
 
@@ -186,11 +194,13 @@ function logout() {
                 as="button"
                 type="button"
                 class="page-nav-button page-nav-button--admin"
+                :title="t('admin.manage_orders', 'Gestisci ordini')"
+                :aria-label="t('admin.manage_orders', 'Gestisci ordini')"
                 :class="{ 'page-nav-button--active': route().current('admin.orders.*') }"
                 :aria-current="route().current('admin.orders.*') ? 'page' : undefined"
             >
                 <span class="nav-icon nav-icon--orders" aria-hidden="true"></span>
-                {{ t('admin.manage_orders', 'Gestisci ordini') }}
+                <span class="page-nav-button-label">{{ t('admin.manage_orders', 'Gestisci ordini') }}</span>
             </Link>
 
             <Link
@@ -199,6 +209,8 @@ function logout() {
                 as="button"
                 type="button"
                 class="page-nav-button page-nav-button--admin"
+                :title="t('admin.manage_products', 'Gestisci prodotti')"
+                :aria-label="t('admin.manage_products', 'Gestisci prodotti')"
                 :class="{ 'page-nav-button--active': route().current('admin.products.*') }"
                 :aria-current="route().current('admin.products.*') ? 'page' : undefined"
             >
@@ -208,7 +220,7 @@ function logout() {
                     <rect x="4" y="14" width="6" height="6" rx="1.4" />
                     <rect x="14" y="14" width="6" height="6" rx="1.4" />
                 </svg>
-                {{ t('admin.manage_products', 'Gestisci prodotti') }}
+                <span class="page-nav-button-label">{{ t('admin.manage_products', 'Gestisci prodotti') }}</span>
             </Link>
 
             <Link
@@ -217,6 +229,8 @@ function logout() {
                 as="button"
                 type="button"
                 class="page-nav-button page-nav-button--settings"
+                :title="t('nav.settings', 'Impostazioni')"
+                :aria-label="t('nav.settings', 'Impostazioni')"
                 :class="{ 'page-nav-button--active': route().current('profile.*') }"
                 :aria-current="route().current('profile.*') ? 'page' : undefined"
             >
@@ -224,7 +238,7 @@ function logout() {
                     <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
                     <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.88.34l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.88l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.88-.34l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 0 1 0 4h-.09A1.7 1.7 0 0 0 19.4 15Z" />
                 </svg>
-                {{ t('nav.settings', 'Impostazioni') }}
+                <span class="page-nav-button-label">{{ t('nav.settings', 'Impostazioni') }}</span>
             </Link>
 
             <Link
@@ -233,17 +247,21 @@ function logout() {
                 as="button"
                 type="button"
                 class="page-nav-button page-nav-button--auth"
+                :title="t('nav.login', 'Login')"
+                :aria-label="t('nav.login', 'Login')"
                 :class="{ 'page-nav-button--active': route().current('login') }"
                 :aria-current="route().current('login') ? 'page' : undefined"
             >
                 <span class="nav-icon nav-icon--login" aria-hidden="true"></span>
-                {{ t('nav.login', 'Login') }}
+                <span class="page-nav-button-label">{{ t('nav.login', 'Login') }}</span>
             </Link>
 
             <button
                 v-if="page.props.auth.user"
                 type="button"
                 class="page-nav-button page-nav-button--logout"
+                :title="t('nav.logout', 'Logout')"
+                :aria-label="t('nav.logout', 'Logout')"
                 @click="confirmLogout"
             >
                 <svg class="nav-svg-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -251,7 +269,7 @@ function logout() {
                     <path d="M16 17l5-5-5-5" />
                     <path d="M21 12H9" />
                 </svg>
-                {{ t('nav.logout', 'Logout') }}
+                <span class="page-nav-button-label">{{ t('nav.logout', 'Logout') }}</span>
             </button>
 
             <span class="theme-switcher" :aria-label="t('nav.theme', 'Tema')">
@@ -343,6 +361,7 @@ function logout() {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    container-type: inline-size;
     gap: 10px 20px;
     width: 100%;
 }
@@ -594,6 +613,20 @@ function logout() {
     margin-top: 24px;
 }
 
+@container (max-width: 1620px) {
+    .page-nav-button,
+    .page-nav-button--admin {
+        width: 36px;
+        padding: 0;
+        gap: 0;
+        border-radius: 10px;
+    }
+
+    .page-nav-button-label {
+        display: none;
+    }
+}
+
 @media (max-width: 640px) {
     .page-nav-shell {
         gap: 8px 12px;
@@ -647,6 +680,10 @@ function logout() {
         height: 38px;
         padding: 0 12px;
         font-size: 13px;
+    }
+
+    .page-nav-button-label {
+        display: inline;
     }
 
     .theme-switcher,

@@ -22,6 +22,7 @@ class CartController extends Controller
                 'product_name' => ProductData::translatedName($product),
                 'product_description' => ProductData::translatedDescription($product),
                 'product_image_url' => $product->image_url,
+                'unit_type_key' => $product->unit_type,
                 'unit_type' => ProductData::translatedUnitType($product->unit_type),
                 'unit_price' => number_format((float) $product->price, 2, '.', ''),
                 'quantity' => $item->quantity,

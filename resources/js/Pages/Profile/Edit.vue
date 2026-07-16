@@ -29,27 +29,29 @@ const t = useTranslations();
             <PageNav />
         </header>
 
-        <div class="settings-grid">
-            <section class="settings-card">
-                <UpdateProfileInformationForm
-                    :must-verify-email="mustVerifyEmail"
-                    :status="status"
-                />
-            </section>
+        <div class="settings-content">
+            <div class="settings-grid">
+                <section class="settings-card">
+                    <UpdateProfileInformationForm
+                        :must-verify-email="mustVerifyEmail"
+                        :status="status"
+                    />
+                </section>
 
-            <section class="settings-card">
-                <DeleteUserForm v-if="canDeleteAccount" />
+                <section class="settings-card">
+                    <DeleteUserForm v-if="canDeleteAccount" />
 
-                <div v-else class="space-y-2">
-                    <h2 class="text-lg font-medium text-gray-900">
-                        {{ t('settings.delete_account', 'Elimina account') }}
-                    </h2>
+                    <div v-else class="space-y-2">
+                        <h2 class="text-lg font-medium text-gray-900">
+                            {{ t('settings.delete_account', 'Elimina account') }}
+                        </h2>
 
-                    <p class="text-sm text-gray-600">
-                        {{ t('settings.admin_delete_disabled', 'Gli account amministratore non possono essere eliminati.') }}
-                    </p>
-                </div>
-            </section>
+                        <p class="text-sm text-gray-600">
+                            {{ t('settings.admin_delete_disabled', 'Gli account amministratore non possono essere eliminati.') }}
+                        </p>
+                    </div>
+                </section>
+            </div>
         </div>
     </PageContainer>
 </template>
@@ -57,6 +59,13 @@ const t = useTranslations();
 <style scoped>
 .settings-header {
     margin-bottom: 16px;
+}
+
+.settings-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .settings-grid {

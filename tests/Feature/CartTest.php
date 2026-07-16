@@ -36,6 +36,7 @@ class CartTest extends TestCase
                 ->has('items', 1)
                 ->where('items.0.id', $cartItem->id)
                 ->where('items.0.product_name', 'Mele')
+                ->where('items.0.unit_type_key', 'kg')
                 ->where('items.0.unit_price', '2.50')
                 ->where('items.0.quantity_step', 0.1)
                 ->where('items.0.line_total', '5.00'));
@@ -196,6 +197,19 @@ class CartTest extends TestCase
             ->assertRedirect(route('cart.index'));
 
         $this->assertNull($cartItem->fresh());
+    }
+
+    public function test_cart_item_destroy_returns_to_the_previous_page(): void
+    {
+        $user = User::factory()->create();
+        $cart = $this->createCart(['user_id' => $user->id]);
+        $product = $this->createProduct();
+        $cartItem = $this->createCartItem($cart, $product, 1);
+
+        $this->actingAs($user)
+            ->from(route('products.index'))
+            ->delete(route('cart.items.destroy', $cartItem))
+            ->assertRedirect(route('products.index'));
     }
 
     public function test_cart_item_quantity_validation_uses_italian_message(): void

@@ -44,6 +44,22 @@ function formatDisplayNumber(value) {
     return String(value).replace(/([,.])0+$/, '');
 }
 
+function cartQuantityUnit(item) {
+    const quantity = Number(item.quantity);
+
+    if (item.unit_type_key === 'vaschetta') {
+        return quantity > 1
+            ? t('units.vaschetta_cart_plural', item.unit_type)
+            : t('units.vaschetta_cart', item.unit_type);
+    }
+
+    if (quantity > 1 && item.unit_type_key === 'pz') {
+        return t('units.pz_plural', item.unit_type);
+    }
+
+    return item.unit_type;
+}
+
 function removeItem(item) {
     deleteForm.delete(route('cart.items.destroy', item.id), {
         preserveScroll: true,
@@ -82,6 +98,17 @@ function removeItem(item) {
                     :key="item.id"
                     class="cart-item"
                 >
+                    <img
+                        v-if="item.product_image_url"
+                        :src="item.product_image_url"
+                        :alt="item.product_name"
+                        class="cart-item-image"
+                        loading="lazy"
+                    />
+                    <div v-else class="cart-item-image cart-item-image--placeholder" aria-hidden="true">
+                        {{ item.product_name.charAt(0) }}
+                    </div>
+
                     <header class="cart-item-header">
                         <h2 class="cart-item-name">
                             {{ item.product_name }}
@@ -94,32 +121,19 @@ function removeItem(item) {
                             :aria-label="item.product_description"
                         >
                             <span class="description-info" aria-hidden="true"></span>
-                            <span class="description-tooltip-content" role="tooltip">
-                                {{ item.product_description }}
-                            </span>
                         </span>
                     </header>
 
                     <div class="cart-item-body">
-                        <img
-                            v-if="item.product_image_url"
-                            :src="item.product_image_url"
-                            :alt="item.product_name"
-                            class="cart-item-image"
-                            loading="lazy"
-                        />
-                        <div v-else class="cart-item-image cart-item-image--placeholder">
-                            {{ item.product_name.charAt(0) }}
-                        </div>
-
                         <div class="cart-item-info">
-                            <p class="cart-item-details">
-                                {{ formatDisplayNumber(item.unit_price) }} € / {{ item.unit_type }}
-                            </p>
-
                             <div class="cart-item-total">
-                                {{ formatDisplayNumber(item.line_total) }} €
+                                {{ formatDisplayNumber(item.quantity) }} {{ cartQuantityUnit(item) }} × {{ formatDisplayNumber(item.unit_price) }} € = {{ formatDisplayNumber(item.line_total) }} €
                             </div>
+
+                            <p class="cart-item-details">
+                                <strong>{{ formatDisplayNumber(item.unit_price) }} €</strong>
+                                <span>/ {{ item.unit_type }}</span>
+                            </p>
 
                             <div class="cart-item-actions">
                                 <label class="quantity-label">
@@ -143,7 +157,8 @@ function removeItem(item) {
                                 <button
                                     type="button"
                                     class="remove-item-button"
-                                    :aria-label="t('cart.remove', 'Rimuovi')"
+                                    :aria-label="t('cart.remove_from_cart', 'Elimina il prodotto dal carrello')"
+                                    :title="t('cart.remove_from_cart', 'Elimina il prodotto dal carrello')"
                                     :disabled="deleteForm.processing"
                                     @click="removeItem(item)"
                                 >
@@ -158,6 +173,9 @@ function removeItem(item) {
                             </div>
                         </div>
                     </div>
+                    <span v-if="item.product_description" class="description-tooltip-content" role="tooltip">
+                        {{ item.product_description }}
+                    </span>
                 </article>
             </div>
         </div>
@@ -202,61 +220,95 @@ function removeItem(item) {
 
 .cart-items {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(245px, 100%), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 220px));
+    justify-content: center;
     gap: 12px;
 }
 
 .cart-item {
-    display: grid;
-    gap: 8px;
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 12px;
-    background: #fff;
+    background: #ecfdf5;
+}
+
+.cart-item::before {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    background: linear-gradient(135deg, rgb(255 255 255 / 0.68), rgb(255 255 255 / 0.9));
+    border-radius: inherit;
+    content: '';
+    transition: opacity 200ms ease;
 }
 
 .cart-item-header {
     position: relative;
+    z-index: 3;
     display: flex;
-    align-items: start;
+    align-items: center;
     justify-content: space-between;
     gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgb(22 101 52 / 0.25);
+    transition: border-color 200ms ease;
+}
+
+.cart-item-header > * {
+    transition: opacity 200ms ease;
 }
 
 .cart-item-body {
-    display: grid;
-    grid-template-columns: minmax(82px, 44%) minmax(0, 1fr);
-    gap: 10px;
-    align-items: start;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    transition: opacity 200ms ease;
 }
 
 .cart-item-info {
-    display: grid;
-    align-content: start;
-    gap: 8px;
-    margin-top: 12px;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 6px;
     min-width: 0;
 }
 
 .cart-item-image {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
     width: 100%;
-    aspect-ratio: 1;
-    border-radius: 10px;
+    height: 100%;
+    border-radius: inherit;
     object-fit: cover;
-    background: #ecfdf5;
 }
 
 .cart-item-image--placeholder {
+    z-index: 2;
     display: grid;
     place-items: center;
-    color: #166534;
-    font-size: 24px;
+    background: #fff;
+    color: rgb(22 101 52 / 0.35);
+    font-size: 72px;
     font-weight: 800;
 }
 
 .cart-item-name {
+    flex: 1;
+    min-width: 0;
     margin: 0;
-    font-size: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 20px;
     font-weight: 700;
     line-height: 1.2;
 }
@@ -264,6 +316,7 @@ function removeItem(item) {
 .description-tooltip {
     position: relative;
     flex: 0 0 auto;
+    transform: translateY(4px);
 }
 
 .description-info {
@@ -273,7 +326,7 @@ function removeItem(item) {
     width: 18px;
     height: 18px;
     box-sizing: border-box;
-    border: 1px solid #bbf7d0;
+    border: 1px solid currentColor;
     border-radius: 999px;
     color: #166534;
     position: relative;
@@ -305,9 +358,10 @@ function removeItem(item) {
 .description-tooltip-content {
     position: absolute;
     z-index: 10;
-    top: 24px;
-    right: 0;
-    width: min(220px, 70vw);
+    top: calc(100% + 8px);
+    left: 50%;
+    box-sizing: border-box;
+    width: 100%;
     padding: 8px 10px;
     border-radius: 10px;
     border: 1px solid #111827;
@@ -318,26 +372,62 @@ function removeItem(item) {
     line-height: 1.35;
     opacity: 0;
     pointer-events: none;
-    transform: translateY(-4px);
+    transform: translate(-50%, -4px);
     transition: opacity 150ms ease, transform 150ms ease;
 }
 
-.description-tooltip:hover .description-tooltip-content,
-.description-tooltip:focus .description-tooltip-content,
-.description-tooltip:focus-within .description-tooltip-content {
+.cart-item:has(.description-tooltip:hover),
+.cart-item:has(.description-tooltip:focus) {
+    z-index: 1;
+}
+
+.cart-item:has(.description-tooltip:hover)::before,
+.cart-item:has(.description-tooltip:focus)::before {
+    opacity: 0;
+}
+
+.cart-item:has(.description-tooltip:hover) .cart-item-header,
+.cart-item:has(.description-tooltip:focus) .cart-item-header {
+    border-bottom-color: transparent;
+}
+
+.cart-item:has(.description-tooltip:hover) .cart-item-header > *,
+.cart-item:has(.description-tooltip:focus) .cart-item-header > *,
+.cart-item:has(.description-tooltip:hover) .cart-item-body,
+.cart-item:has(.description-tooltip:focus) .cart-item-body {
+    opacity: 0;
+}
+
+.cart-item:has(.description-tooltip:hover) .cart-item-body,
+.cart-item:has(.description-tooltip:focus) .cart-item-body {
+    pointer-events: none;
+}
+
+.cart-item:has(.description-tooltip:hover) .description-tooltip-content,
+.cart-item:has(.description-tooltip:focus) .description-tooltip-content {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(-50%);
 }
 
 .cart-item-details {
     margin: 0;
-    color: #555;
-    font-size: 14px;
+    font-size: 18px;
+    line-height: 1.25;
 }
 
 .cart-item-total {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    min-height: 26px;
+    box-sizing: border-box;
+    padding: 3px 6px;
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #166534;
     font-size: 14px;
     font-weight: 700;
+    line-height: 1.2;
 }
 
 .cart-summary {
@@ -345,7 +435,7 @@ function removeItem(item) {
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    padding: 20px;
+    padding: 14px 20px;
     border-radius: 12px;
     background: #f3f4f6;
     font-size: 20px;
@@ -357,7 +447,7 @@ function removeItem(item) {
 }
 
 .quantity-label {
-    display: block;
+    display: flex;
     flex: 1 1 auto;
     min-width: 0;
     position: relative;
@@ -365,11 +455,12 @@ function removeItem(item) {
 
 .quantity-input {
     width: 100%;
-    height: 30px;
+    height: 28px;
     box-sizing: border-box;
-    padding: 6px;
+    padding: 4px 7px;
     border: 1px solid #ccc;
     border-radius: 8px;
+    font-size: 12px;
 }
 
 .quantity-error {
@@ -406,16 +497,15 @@ function removeItem(item) {
     display: flex;
     align-items: end;
     gap: 6px;
-    width: 100%;
 }
 
 .remove-item-button {
     display: inline-flex;
-    flex: 0 0 32px;
+    flex: 0 0 28px;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     border: 1px solid #b91c1c;
     border-radius: 8px;
     background: white;
@@ -446,9 +536,10 @@ function removeItem(item) {
 .checkout-link {
     display: inline-block;
     padding: 14px 22px;
-    border-radius: 999px;
+    border-radius: 12px;
     background: #166534;
     color: white;
+    font-size: 18px;
     font-weight: 700;
     text-decoration: none;
     box-shadow: 0 10px 20px rgb(22 101 52 / 0.18);
@@ -468,6 +559,26 @@ function removeItem(item) {
     text-decoration: underline;
 }
 
+@media (max-width: 731px) {
+    .cart-items {
+        grid-template-columns: repeat(auto-fit, minmax(clamp(130px, 25vw, 170px), 170px));
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .cart-item {
+        justify-self: center;
+        width: 100%;
+        max-width: 170px;
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .cart-item-name {
+        font-size: 18px;
+    }
+}
+
 @media (max-width: 640px) {
     .cart-header {
         gap: 8px;
@@ -475,11 +586,21 @@ function removeItem(item) {
     }
 
     .cart-items {
+        grid-template-columns: repeat(auto-fit, minmax(clamp(130px, 25vw, 170px), 170px));
+        justify-content: center;
         gap: 10px;
     }
 
     .cart-item {
+        justify-self: center;
+        width: 100%;
+        max-width: 170px;
+        gap: 8px;
         padding: 10px;
+    }
+
+    .cart-item-name {
+        font-size: 18px;
     }
 
     .cart-summary {

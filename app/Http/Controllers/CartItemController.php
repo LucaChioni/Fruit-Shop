@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Data\ProductData;
+use App\Models\CartItem;
+use App\Models\Product;
+use App\Services\CartService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use App\Models\Product;
-use App\Models\CartItem;
-use App\Services\CartService;
 
 class CartItemController extends Controller
 {
@@ -64,6 +64,6 @@ class CartItemController extends Controller
 
         $cartItem->delete();
 
-        return redirect()->route('cart.index');
+        return redirect()->back(fallback: route('cart.index'));
     }
 }

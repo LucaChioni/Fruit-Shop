@@ -65,7 +65,7 @@ class ProductTest extends TestCase
         $user = User::factory()->create();
         $product = $this->createProduct(['name' => 'Arance', 'unit_type' => 'kg']);
         $cart = $this->createCart(['user_id' => $user->id]);
-        $this->createCartItem($cart, $product, 1.5);
+        $cartItem = $this->createCartItem($cart, $product, 1.5);
 
         $this->actingAs($user)
             ->get(route('products.index'))
@@ -73,7 +73,8 @@ class ProductTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Products/Index')
                 ->where('products.0.id', $product->id)
-                ->where('products.0.cart_quantity', '1.50'));
+                ->where('products.0.cart_quantity', '1.50')
+                ->where('products.0.cart_item_id', $cartItem->id));
     }
 
     public function test_products_index_filters_by_translated_name_for_current_locale(): void

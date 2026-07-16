@@ -113,6 +113,7 @@ return [
     'cart.in_cart' => 'In cart',
     'cart.label' => 'Cart',
     'cart.remove' => 'Remove',
+    'cart.remove_from_cart' => 'Remove product from cart',
     'cart.total' => 'Total',
     'cart.update' => 'Update cart',
     'cart.checkout' => 'Proceed to order',
