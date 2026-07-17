@@ -561,17 +561,17 @@ function removeItem(item) {
 
 @media (max-width: 731px) {
     .cart-items {
-        grid-template-columns: repeat(auto-fit, minmax(clamp(130px, 25vw, 170px), 170px));
+        grid-template-columns: repeat(auto-fit, minmax(clamp(130px, 25vw, 160px), 160px));
         justify-content: center;
-        gap: 10px;
+        gap: 4px;
     }
 
     .cart-item {
         justify-self: center;
         width: 100%;
-        max-width: 170px;
+        max-width: 160px;
         gap: 8px;
-        padding: 10px;
+        padding: 6px;
     }
 
     .cart-item-name {
@@ -586,17 +586,17 @@ function removeItem(item) {
     }
 
     .cart-items {
-        grid-template-columns: repeat(auto-fit, minmax(clamp(130px, 25vw, 170px), 170px));
+        grid-template-columns: repeat(auto-fit, minmax(clamp(130px, 25vw, 160px), 160px));
         justify-content: center;
-        gap: 10px;
+        gap: 4px;
     }
 
     .cart-item {
         justify-self: center;
         width: 100%;
-        max-width: 170px;
+        max-width: 160px;
         gap: 8px;
-        padding: 10px;
+        padding: 6px;
     }
 
     .cart-item-name {

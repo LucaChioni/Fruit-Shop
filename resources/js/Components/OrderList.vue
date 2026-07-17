@@ -158,13 +158,18 @@ const t = useTranslations();
 }
 
 @media (max-width: 640px) {
-    .empty-orders,
-    .order-card {
+    .empty-orders {
         padding: 10px;
     }
 
+    .order-card {
+        padding: 6px;
+    }
+
     .orders-list {
-        gap: 10px;
+        grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 280px));
+        justify-content: center;
+        gap: 4px;
     }
 
     .order-card {
