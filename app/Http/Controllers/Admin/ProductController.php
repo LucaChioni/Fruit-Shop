@@ -19,10 +19,12 @@ class ProductController extends Controller
     {
         $sort = request()->string('sort', 'name')->toString();
         $sortDirection = request()->string('sort_direction', 'asc')->toString();
+        $category = request()->string('category', 'all')->toString();
 
         $filters = [
             'search' => request()->string('search')->toString(),
             'status' => request()->string('status', 'all')->toString(),
+            'category' => in_array($category, ProductData::CATEGORIES, true) ? $category : 'all',
             'sort' => in_array($sort, ['name', 'price', 'created_at'], true) ? $sort : 'name',
             'sort_direction' => in_array($sortDirection, ['asc', 'desc'], true) ? $sortDirection : 'asc',
         ];
@@ -30,6 +32,7 @@ class ProductController extends Controller
         $products = Product::query()
             ->when($filters['status'] === 'active', fn ($query) => $query->where('is_active', true))
             ->when($filters['status'] === 'inactive', fn ($query) => $query->where('is_active', false))
+            ->when($filters['category'] !== 'all', fn ($query) => $query->where('category', $filters['category']))
             ->orderBy($filters['sort'], $filters['sort_direction'])
             ->get()
             ->filter(fn (Product $product) => ProductData::matchesTranslatedName($product, $filters['search']))
@@ -45,6 +48,7 @@ class ProductController extends Controller
     {
         return Inertia::render('Admin/Products/Create', [
             'unitTypes' => ProductData::UNIT_TYPES,
+            'categories' => ProductData::CATEGORIES,
         ]);
     }
 
@@ -62,6 +66,7 @@ class ProductController extends Controller
         return Inertia::render('Admin/Products/Edit', [
             'product' => $this->productData($product),
             'unitTypes' => ProductData::UNIT_TYPES,
+            'categories' => ProductData::CATEGORIES,
         ]);
     }
 
@@ -102,6 +107,7 @@ class ProductController extends Controller
             'name_en' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
             'description_en' => ['nullable', 'string', 'max:2000'],
+            'category' => ['required', Rule::in(ProductData::CATEGORIES)],
             'image' => ['nullable', 'image', 'max:2048'],
             'remove_image' => ['nullable', 'boolean'],
             'price' => ['required', 'numeric', 'min:0'],
@@ -111,6 +117,8 @@ class ProductController extends Controller
             'name.required' => __('ui.validation.product_name_required'),
             'name.max' => __('ui.validation.product_name_max'),
             'description.max' => __('ui.validation.product_description_max'),
+            'category.required' => __('ui.validation.category_required'),
+            'category.in' => __('ui.validation.category_in'),
             'image.image' => __('ui.validation.image_valid'),
             'image.max' => __('ui.validation.image_max'),
             'price.required' => __('ui.validation.price_required'),
@@ -148,6 +156,7 @@ class ProductController extends Controller
             'description' => ProductData::translatedDescription($product),
             'source_description' => $product->description,
             'description_en' => $product->description_en,
+            'category' => $product->category,
             'image_url' => $product->image_url,
             'price' => $product->price,
             'unit_type' => $product->unit_type,

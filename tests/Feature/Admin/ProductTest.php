@@ -36,6 +36,7 @@ class ProductTest extends TestCase
                 ->where('products.1.is_active', true)
                 ->where('filters.search', '')
                 ->where('filters.status', 'all')
+                ->where('filters.category', 'all')
                 ->where('filters.sort', 'name')
                 ->where('filters.sort_direction', 'asc'));
     }
@@ -45,11 +46,12 @@ class ProductTest extends TestCase
         $admin = User::factory()->create(['is_admin' => true]);
         $this->createProduct(['name' => 'Arance Navel', 'price' => 3.20, 'is_active' => false]);
         $this->createProduct(['name' => 'Arance Tarocco', 'price' => 2.80, 'is_active' => false]);
-        $this->createProduct(['name' => 'Zucchine', 'price' => 1.90, 'is_active' => true]);
+        $this->createProduct(['name' => 'Zucchine', 'price' => 1.90, 'category' => 'vegetable', 'is_active' => true]);
 
         $response = $this->actingAs($admin)->get(route('admin.products.index', [
             'search' => 'Arance',
             'status' => 'inactive',
+            'category' => 'fruit',
             'sort' => 'price',
             'sort_direction' => 'asc',
         ]));
@@ -63,6 +65,7 @@ class ProductTest extends TestCase
                 ->where('products.1.name', 'Arance Navel')
                 ->where('filters.search', 'Arance')
                 ->where('filters.status', 'inactive')
+                ->where('filters.category', 'fruit')
                 ->where('filters.sort', 'price')
                 ->where('filters.sort_direction', 'asc'));
     }
@@ -113,7 +116,8 @@ class ProductTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Admin/Products/Create')
-                ->where('unitTypes', ['kg', 'pz', 'g', 'vaschetta']));
+                ->where('unitTypes', ['kg', 'pz', 'g', 'vaschetta'])
+                ->where('categories', ['fruit', 'vegetable', 'dried_fruit', 'herbs', 'mushrooms']));
     }
 
     public function test_admin_can_create_product(): void
@@ -128,6 +132,7 @@ class ProductTest extends TestCase
                 'name_en' => 'Strawberries',
                 'description' => 'Vaschetta di fragole fresche.',
                 'description_en' => 'Punnet of fresh strawberries.',
+                'category' => 'fruit',
                 'image' => UploadedFile::fake()->image('fragole.jpg'),
                 'price' => 3.80,
                 'unit_type' => 'vaschetta',
@@ -143,6 +148,7 @@ class ProductTest extends TestCase
         $this->assertSame('Fragole', $product->name);
         $this->assertSame('Strawberries', $product->name_en);
         $this->assertSame('Punnet of fresh strawberries.', $product->description_en);
+        $this->assertSame('fruit', $product->category);
         $this->assertStringContainsString('/storage/products/', $product->image_url);
         Storage::disk('public')->assertExists(
             substr(parse_url($product->image_url, PHP_URL_PATH), strlen('/storage/'))
@@ -167,7 +173,9 @@ class ProductTest extends TestCase
                 ->where('product.name', 'Mele')
                 ->where('product.name_en', null)
                 ->where('product.description_en', null)
-                ->where('unitTypes', ['kg', 'pz', 'g', 'vaschetta']));
+                ->where('product.category', 'fruit')
+                ->where('unitTypes', ['kg', 'pz', 'g', 'vaschetta'])
+                ->where('categories', ['fruit', 'vegetable', 'dried_fruit', 'herbs', 'mushrooms']));
     }
 
     public function test_admin_can_update_and_deactivate_product(): void
@@ -184,6 +192,7 @@ class ProductTest extends TestCase
                 'name_en' => 'Golden apples',
                 'description' => 'Mele aggiornate.',
                 'description_en' => 'Updated apples.',
+                'category' => 'fruit',
                 'image' => UploadedFile::fake()->image('mele.jpg'),
                 'price' => 2.90,
                 'unit_type' => 'kg',
@@ -224,6 +233,7 @@ class ProductTest extends TestCase
                 '_method' => 'patch',
                 'name' => 'Mele',
                 'description' => $product->description,
+                'category' => $product->category,
                 'remove_image' => true,
                 'price' => $product->price,
                 'unit_type' => $product->unit_type,
@@ -282,6 +292,7 @@ class ProductTest extends TestCase
             ->post(route('admin.products.store'), [
                 'name' => 'Prodotto test',
                 'description' => null,
+                'category' => 'fruit',
                 'price' => 1.50,
                 'unit_type' => 'cassetta',
                 'is_active' => true,
@@ -292,5 +303,24 @@ class ProductTest extends TestCase
         ]);
 
         $this->assertSame(0, Product::count());
+    }
+
+    public function test_product_category_must_be_valid(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->post(route('admin.products.store'), [
+                'name' => 'Prodotto test',
+                'price' => 1.50,
+                'category' => 'erbe',
+                'unit_type' => 'kg',
+                'is_active' => true,
+            ]);
+
+        $response->assertSessionHasErrors([
+            'category' => 'Scegli una categoria valida.',
+        ]);
     }
 }

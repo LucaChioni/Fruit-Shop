@@ -16,6 +16,7 @@ trait CreatesShopModels
         return Product::create(array_merge([
             'name' => 'Mele Golden',
             'description' => 'Mele dolci e croccanti.',
+            'category' => 'fruit',
             'image_url' => null,
             'price' => 2.50,
             'unit_type' => 'kg',

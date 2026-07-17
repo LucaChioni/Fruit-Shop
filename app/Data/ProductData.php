@@ -15,12 +15,21 @@ class ProductData
         'vaschetta',
     ];
 
+    public const CATEGORIES = [
+        'fruit',
+        'vegetable',
+        'dried_fruit',
+        'herbs',
+        'mushrooms',
+    ];
+
     public static function catalog(Product $product): array
     {
         return [
             'id' => $product->id,
             'name' => self::translatedName($product),
             'description' => self::translatedDescription($product),
+            'category' => $product->category,
             'image_url' => $product->image_url,
             'price' => number_format((float) $product->price, 2, '.', ''),
             'unit_type_key' => $product->unit_type,

@@ -74,6 +74,18 @@ function toggleSortDirection(event) {
                     </select>
                 </label>
 
+                <label class="filter-field">
+                    {{ t('products.category', 'Categoria') }}
+                    <select name="category" class="filter-input">
+                        <option value="all" :selected="filters.category === 'all'">{{ t('products.all_categories', 'Tutte le categorie') }}</option>
+                        <option value="fruit" :selected="filters.category === 'fruit'">{{ t('categories.fruit', 'Frutta') }}</option>
+                        <option value="vegetable" :selected="filters.category === 'vegetable'">{{ t('categories.vegetable', 'Verdura') }}</option>
+                        <option value="dried_fruit" :selected="filters.category === 'dried_fruit'">{{ t('categories.dried_fruit', 'Frutta secca') }}</option>
+                        <option value="herbs" :selected="filters.category === 'herbs'">{{ t('categories.herbs', 'Erbe aromatiche') }}</option>
+                        <option value="mushrooms" :selected="filters.category === 'mushrooms'">{{ t('categories.mushrooms', 'Funghi') }}</option>
+                    </select>
+                </label>
+
                 <div class="sort-controls">
                     <label class="filter-field filter-field--sort">
                         {{ t('products.sort', 'Ordina') }}

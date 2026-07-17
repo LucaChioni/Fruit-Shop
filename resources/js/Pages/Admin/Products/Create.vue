@@ -7,6 +7,7 @@ import { useTranslations } from '@/i18n';
 
 defineProps({
     unitTypes: Array,
+    categories: Array,
 });
 
 const t = useTranslations();
@@ -26,6 +27,7 @@ const form = useForm({
     name_en: '',
     description: '',
     description_en: '',
+    category: 'fruit',
     image: null,
     price: '',
     unit_type: 'kg',
@@ -94,6 +96,16 @@ function submit() {
                 {{ t('admin.form.description_en', 'Descrizione in inglese') }}
                 <textarea v-model="form.description_en" class="input textarea"></textarea>
                 <span v-if="form.errors.description_en" class="error">{{ form.errors.description_en }}</span>
+            </label>
+
+            <label class="field">
+                {{ t('admin.form.category', 'Categoria') }}
+                <select v-model="form.category" class="input">
+                    <option v-for="category in categories" :key="category" :value="category">
+                        {{ t(`categories.${category}`, category) }}
+                    </option>
+                </select>
+                <span v-if="form.errors.category" class="error">{{ form.errors.category }}</span>
             </label>
 
             <div class="field">

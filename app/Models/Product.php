@@ -11,6 +11,7 @@ class Product extends Model
         'name_en',
         'description',
         'description_en',
+        'category',
         'image_url',
         'price',
         'unit_type',

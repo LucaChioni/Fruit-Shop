@@ -15,15 +15,18 @@ class ProductController extends Controller
     {
         $sort = $request->string('sort', 'name')->toString();
         $sortDirection = $request->string('sort_direction', 'asc')->toString();
+        $category = $request->string('category', 'all')->toString();
 
         $filters = [
             'search' => $request->string('search')->toString(),
+            'category' => in_array($category, ProductData::CATEGORIES, true) ? $category : 'all',
             'sort' => in_array($sort, ['name', 'price'], true) ? $sort : 'name',
             'sort_direction' => in_array($sortDirection, ['asc', 'desc'], true) ? $sortDirection : 'asc',
         ];
 
         $products = Product::query()
             ->where('is_active', true)
+            ->when($filters['category'] !== 'all', fn ($query) => $query->where('category', $filters['category']))
             ->orderBy($filters['sort'], $filters['sort_direction'])
             ->get()
             ->filter(fn (Product $product) => ProductData::matchesTranslatedName($product, $filters['search']))

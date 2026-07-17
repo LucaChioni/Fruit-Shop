@@ -15,6 +15,7 @@ class ProductSeeder extends Seeder
         $products = [
             [
                 'name' => 'Mele Golden',
+                'category' => 'fruit',
                 'name_en' => 'Golden apples',
                 'description' => 'Mele dolci e croccanti.',
                 'description_en' => 'Sweet and crunchy apples.',
@@ -24,6 +25,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Arance Tarocco',
+                'category' => 'fruit',
                 'name_en' => 'Tarocco oranges',
                 'description' => 'Arance succose di stagione.',
                 'description_en' => 'Juicy seasonal oranges.',
@@ -33,6 +35,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Lattuga',
+                'category' => 'vegetable',
                 'name_en' => 'Lettuce',
                 'description' => 'Lattuga fresca.',
                 'description_en' => 'Fresh lettuce.',
@@ -42,6 +45,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Fragole',
+                'category' => 'fruit',
                 'name_en' => 'Strawberries',
                 'description' => 'Vaschetta di fragole fresche.',
                 'description_en' => 'Punnet of fresh strawberries.',
@@ -51,6 +55,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Prezzemolo',
+                'category' => 'herbs',
                 'name_en' => 'Parsley',
                 'description' => 'Mazzo di prezzemolo fresco.',
                 'description_en' => 'Bunch of fresh parsley.',
@@ -60,6 +65,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Banane',
+                'category' => 'fruit',
                 'name_en' => 'Bananas',
                 'description' => 'Banane mature e cremose.',
                 'description_en' => 'Ripe and creamy bananas.',
@@ -69,6 +75,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Pere Abate',
+                'category' => 'fruit',
                 'name_en' => 'Abate pears',
                 'description' => 'Pere dolci dalla polpa morbida.',
                 'description_en' => 'Sweet pears with soft flesh.',
@@ -78,6 +85,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Kiwi',
+                'category' => 'fruit',
                 'name_en' => 'Kiwis',
                 'description' => 'Kiwi verdi ricchi di vitamina C.',
                 'description_en' => 'Green kiwis rich in vitamin C.',
@@ -87,6 +95,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Limoni',
+                'category' => 'fruit',
                 'name_en' => 'Lemons',
                 'description' => 'Limoni profumati non trattati.',
                 'description_en' => 'Fragrant untreated lemons.',
@@ -96,6 +105,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Uva Italia',
+                'category' => 'fruit',
                 'name_en' => 'Italia grapes',
                 'description' => 'Uva bianca dolce e croccante.',
                 'description_en' => 'Sweet and crisp white grapes.',
@@ -105,6 +115,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Pesche Gialle',
+                'category' => 'fruit',
                 'name_en' => 'Yellow peaches',
                 'description' => 'Pesche mature e succose.',
                 'description_en' => 'Ripe and juicy peaches.',
@@ -114,6 +125,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Albicocche',
+                'category' => 'fruit',
                 'name_en' => 'Apricots',
                 'description' => 'Albicocche dolci di stagione.',
                 'description_en' => 'Sweet seasonal apricots.',
@@ -123,6 +135,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Ciliegie',
+                'category' => 'fruit',
                 'name_en' => 'Cherries',
                 'description' => 'Ciliegie rosse e croccanti.',
                 'description_en' => 'Red and crunchy cherries.',
@@ -132,6 +145,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Melone Retato',
+                'category' => 'fruit',
                 'name_en' => 'Cantaloupe melon',
                 'description' => 'Melone retato dolce e profumato.',
                 'description_en' => 'Sweet and fragrant cantaloupe melon.',
@@ -141,6 +155,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Anguria',
+                'category' => 'fruit',
                 'name_en' => 'Watermelon',
                 'description' => 'Anguria fresca e dissetante.',
                 'description_en' => 'Fresh and refreshing watermelon.',
@@ -150,6 +165,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Ananas',
+                'category' => 'fruit',
                 'name_en' => 'Pineapple',
                 'description' => 'Ananas dolce pronto da gustare.',
                 'description_en' => 'Sweet pineapple ready to enjoy.',
@@ -159,6 +175,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Mango',
+                'category' => 'fruit',
                 'name_en' => 'Mango',
                 'description' => 'Mango maturo dalla polpa morbida.',
                 'description_en' => 'Ripe mango with soft flesh.',
@@ -168,6 +185,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Avocado',
+                'category' => 'fruit',
                 'name_en' => 'Avocado',
                 'description' => 'Avocado Hass pronto al consumo.',
                 'description_en' => 'Hass avocado ready to eat.',
@@ -177,6 +195,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Pomodori Ramati',
+                'category' => 'vegetable',
                 'name_en' => 'Vine tomatoes',
                 'description' => 'Pomodori ramati maturati al sole.',
                 'description_en' => 'Sun-ripened vine tomatoes.',
@@ -186,6 +205,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Pomodorini Ciliegino',
+                'category' => 'vegetable',
                 'name_en' => 'Cherry tomatoes',
                 'description' => 'Pomodorini dolci in vaschetta.',
                 'description_en' => 'Sweet cherry tomatoes in a punnet.',
@@ -195,6 +215,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Zucchine',
+                'category' => 'vegetable',
                 'name_en' => 'Courgettes',
                 'description' => 'Zucchine verdi fresche.',
                 'description_en' => 'Fresh green courgettes.',
@@ -204,6 +225,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Melanzane',
+                'category' => 'vegetable',
                 'name_en' => 'Aubergines',
                 'description' => 'Melanzane viola dalla polpa soda.',
                 'description_en' => 'Purple aubergines with firm flesh.',
@@ -213,6 +235,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Peperoni Rossi',
+                'category' => 'vegetable',
                 'name_en' => 'Red peppers',
                 'description' => 'Peperoni rossi dolci e carnosi.',
                 'description_en' => 'Sweet and fleshy red peppers.',
@@ -222,6 +245,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Carote',
+                'category' => 'vegetable',
                 'name_en' => 'Carrots',
                 'description' => 'Carote fresche e croccanti.',
                 'description_en' => 'Fresh and crunchy carrots.',
@@ -231,6 +255,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Patate Novelle',
+                'category' => 'vegetable',
                 'name_en' => 'New potatoes',
                 'description' => 'Patate novelle a pasta gialla.',
                 'description_en' => 'Yellow-fleshed new potatoes.',
@@ -240,6 +265,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Cipolle Dorate',
+                'category' => 'vegetable',
                 'name_en' => 'Yellow onions',
                 'description' => 'Cipolle dorate dal gusto delicato.',
                 'description_en' => 'Mild-flavoured yellow onions.',
@@ -249,6 +275,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Aglio',
+                'category' => 'vegetable',
                 'name_en' => 'Garlic',
                 'description' => 'Aglio fresco italiano.',
                 'description_en' => 'Fresh Italian garlic.',
@@ -258,6 +285,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Broccoli',
+                'category' => 'vegetable',
                 'name_en' => 'Broccoli',
                 'description' => 'Broccoli verdi appena raccolti.',
                 'description_en' => 'Freshly picked green broccoli.',
@@ -267,6 +295,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Cavolfiore',
+                'category' => 'vegetable',
                 'name_en' => 'Cauliflower',
                 'description' => 'Cavolfiore bianco compatto.',
                 'description_en' => 'Compact white cauliflower.',
@@ -276,6 +305,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Spinaci',
+                'category' => 'vegetable',
                 'name_en' => 'Spinach',
                 'description' => 'Spinaci freschi da cuocere.',
                 'description_en' => 'Fresh spinach for cooking.',
@@ -285,6 +315,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Bietole',
+                'category' => 'vegetable',
                 'name_en' => 'Swiss chard',
                 'description' => 'Mazzo di bietole tenere.',
                 'description_en' => 'Bunch of tender Swiss chard.',
@@ -294,6 +325,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Finocchi',
+                'category' => 'vegetable',
                 'name_en' => 'Fennel',
                 'description' => 'Finocchi croccanti dal sapore aromatico.',
                 'description_en' => 'Crisp fennel with an aromatic flavour.',
@@ -303,6 +335,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Sedano',
+                'category' => 'vegetable',
                 'name_en' => 'Celery',
                 'description' => 'Sedano verde da cucina.',
                 'description_en' => 'Green celery for cooking.',
@@ -312,6 +345,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Porri',
+                'category' => 'vegetable',
                 'name_en' => 'Leeks',
                 'description' => 'Porri freschi dal gusto delicato.',
                 'description_en' => 'Fresh leeks with a mild flavour.',
@@ -321,6 +355,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Funghi Champignon',
+                'category' => 'mushrooms',
                 'name_en' => 'Button mushrooms',
                 'description' => 'Funghi champignon freschi affettati.',
                 'description_en' => 'Fresh sliced button mushrooms.',
@@ -330,6 +365,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Rucola',
+                'category' => 'vegetable',
                 'name_en' => 'Rocket salad',
                 'description' => 'Rucola fresca dal gusto intenso.',
                 'description_en' => 'Fresh rocket salad with a bold flavour.',
@@ -339,6 +375,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Basilico',
+                'category' => 'herbs',
                 'name_en' => 'Basil',
                 'description' => 'Mazzo di basilico profumato.',
                 'description_en' => 'Bunch of fragrant basil.',
@@ -348,6 +385,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Menta',
+                'category' => 'herbs',
                 'name_en' => 'Mint',
                 'description' => 'Mazzo di menta fresca.',
                 'description_en' => 'Bunch of fresh mint.',
@@ -357,6 +395,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Noci',
+                'category' => 'dried_fruit',
                 'name_en' => 'Walnuts',
                 'description' => 'Noci sgusciate selezionate.',
                 'description_en' => 'Selected shelled walnuts.',
@@ -366,6 +405,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Mandorle',
+                'category' => 'dried_fruit',
                 'name_en' => 'Almonds',
                 'description' => 'Mandorle pelate croccanti.',
                 'description_en' => 'Crunchy blanched almonds.',
@@ -375,6 +415,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Mirtilli',
+                'category' => 'fruit',
                 'name_en' => 'Blueberries',
                 'description' => 'Mirtilli freschi in vaschetta.',
                 'description_en' => 'Fresh blueberries in a punnet.',
@@ -384,6 +425,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Lamponi',
+                'category' => 'fruit',
                 'name_en' => 'Raspberries',
                 'description' => 'Lamponi delicati e dolci.',
                 'description_en' => 'Delicate and sweet raspberries.',
@@ -393,6 +435,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'More',
+                'category' => 'fruit',
                 'name_en' => 'Blackberries',
                 'description' => 'More fresche dal gusto intenso.',
                 'description_en' => 'Fresh blackberries with a bold flavour.',
@@ -402,6 +445,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Clementine',
+                'category' => 'fruit',
                 'name_en' => 'Clementines',
                 'description' => 'Clementine senza semi e profumate.',
                 'description_en' => 'Fragrant seedless clementines.',
@@ -411,6 +455,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Pompelmo Rosa',
+                'category' => 'fruit',
                 'name_en' => 'Pink grapefruit',
                 'description' => 'Pompelmo rosa fresco e succoso.',
                 'description_en' => 'Fresh and juicy pink grapefruit.',
@@ -420,6 +465,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Radicchio',
+                'category' => 'vegetable',
                 'name_en' => 'Radicchio',
                 'description' => 'Radicchio rosso croccante.',
                 'description_en' => 'Crunchy red radicchio.',
@@ -429,6 +475,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Cavolo Nero',
+                'category' => 'vegetable',
                 'name_en' => 'Tuscan kale',
                 'description' => 'Cavolo nero ideale per zuppe.',
                 'description_en' => 'Tuscan kale ideal for soups.',
@@ -438,6 +485,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Zucca Butternut',
+                'category' => 'vegetable',
                 'name_en' => 'Butternut squash',
                 'description' => 'Zucca dolce dalla polpa compatta.',
                 'description_en' => 'Sweet squash with firm flesh.',
@@ -447,6 +495,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Cetrioli',
+                'category' => 'vegetable',
                 'name_en' => 'Cucumbers',
                 'description' => 'Cetrioli freschi e croccanti.',
                 'description_en' => 'Fresh and crunchy cucumbers.',
@@ -456,6 +505,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Fagiolini',
+                'category' => 'vegetable',
                 'name_en' => 'Green beans',
                 'description' => 'Fagiolini verdi teneri.',
                 'description_en' => 'Tender green beans.',
@@ -465,6 +515,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Piselli',
+                'category' => 'vegetable',
                 'name_en' => 'Peas',
                 'description' => 'Piselli freschi già sgranati.',
                 'description_en' => 'Fresh shelled peas.',
@@ -474,6 +525,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Mais Dolce',
+                'category' => 'vegetable',
                 'name_en' => 'Sweetcorn',
                 'description' => 'Pannocchie di mais dolce fresco.',
                 'description_en' => 'Fresh sweetcorn cobs.',
@@ -483,6 +535,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Barbabietole Rosse',
+                'category' => 'vegetable',
                 'name_en' => 'Beetroots',
                 'description' => 'Barbabietole rosse cotte al vapore.',
                 'description_en' => 'Steam-cooked red beetroots.',

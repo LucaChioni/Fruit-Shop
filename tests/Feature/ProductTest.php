@@ -28,10 +28,12 @@ class ProductTest extends TestCase
                 ->has('products', 2)
                 ->where('products.0.name', 'Arance')
                 ->where('products.0.image_url', 'https://example.com/arance.jpg')
+                ->where('products.0.category', 'fruit')
                 ->where('products.0.price', '2.50')
                 ->where('products.0.quantity_step', 0.1)
                 ->where('products.1.name', 'Zucchine')
                 ->where('filters.search', '')
+                ->where('filters.category', 'all')
                 ->where('filters.sort', 'name')
                 ->where('filters.sort_direction', 'asc'));
     }
@@ -40,10 +42,11 @@ class ProductTest extends TestCase
     {
         $this->createProduct(['name' => 'Arance Navel', 'price' => 3.20]);
         $this->createProduct(['name' => 'Arance Tarocco', 'price' => 2.80]);
-        $this->createProduct(['name' => 'Zucchine', 'price' => 1.90]);
+        $this->createProduct(['name' => 'Zucchine', 'price' => 1.90, 'category' => 'vegetable']);
 
         $response = $this->get(route('products.index', [
             'search' => 'Arance',
+            'category' => 'fruit',
             'sort' => 'price',
             'sort_direction' => 'desc',
         ]));
@@ -56,6 +59,7 @@ class ProductTest extends TestCase
                 ->where('products.0.name', 'Arance Navel')
                 ->where('products.1.name', 'Arance Tarocco')
                 ->where('filters.search', 'Arance')
+                ->where('filters.category', 'fruit')
                 ->where('filters.sort', 'price')
                 ->where('filters.sort_direction', 'desc'));
     }
