@@ -678,6 +678,7 @@ function logout() {
         width: 100%;
         min-width: 0;
         height: 38px;
+        gap: 8px;
         padding: 0 12px;
         font-size: 13px;
     }

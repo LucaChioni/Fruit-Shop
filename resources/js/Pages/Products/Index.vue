@@ -771,6 +771,10 @@ function toggleSortDirection(event) {
     .product-name {
         font-size: 18px;
     }
+
+    .product-cart-quantity {
+        font-size: 12px;
+    }
 }
 
 @media (max-width: 640px) {
