@@ -625,7 +625,10 @@ function toggleSortDirection(event) {
 
 .login-required-link {
     display: inline-flex;
+    align-items: center;
     justify-content: center;
+    min-height: 60px;
+    box-sizing: border-box;
     padding: 10px 12px;
     border: 1px solid #bbf7d0;
     border-radius: 8px;
