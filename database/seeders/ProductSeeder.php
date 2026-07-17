@@ -280,7 +280,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Spinaci freschi da cuocere.',
                 'description_en' => 'Fresh spinach for cooking.',
                 'price' => 2.20,
-                'unit_type' => 'busta',
+                'unit_type' => 'kg',
                 'is_active' => true,
             ],
             [
@@ -334,7 +334,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Rucola fresca dal gusto intenso.',
                 'description_en' => 'Fresh rocket salad with a bold flavour.',
                 'price' => 1.50,
-                'unit_type' => 'busta',
+                'unit_type' => 'kg',
                 'is_active' => true,
             ],
             [
@@ -433,7 +433,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Cavolo nero ideale per zuppe.',
                 'description_en' => 'Tuscan kale ideal for soups.',
                 'price' => 2.60,
-                'unit_type' => 'busta',
+                'unit_type' => 'kg',
                 'is_active' => true,
             ],
             [
