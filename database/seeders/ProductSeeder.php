@@ -361,7 +361,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Noci sgusciate selezionate.',
                 'description_en' => 'Selected shelled walnuts.',
                 'price' => 4.90,
-                'unit_type' => 'confezione',
+                'unit_type' => 'kg',
                 'is_active' => true,
             ],
             [
@@ -370,7 +370,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Mandorle pelate croccanti.',
                 'description_en' => 'Crunchy blanched almonds.',
                 'price' => 5.20,
-                'unit_type' => 'confezione',
+                'unit_type' => 'kg',
                 'is_active' => true,
             ],
             [
@@ -487,7 +487,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Barbabietole rosse cotte al vapore.',
                 'description_en' => 'Steam-cooked red beetroots.',
                 'price' => 2.10,
-                'unit_type' => 'confezione',
+                'unit_type' => 'kg',
                 'is_active' => true,
             ],
         ];

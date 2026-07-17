@@ -358,7 +358,7 @@ function toggleSortDirection(event) {
     flex-direction: column;
     gap: 10px;
     padding: 10px;
-    background: #ecfdf5;
+    background: #fff;
 }
 
 .product-card::before {

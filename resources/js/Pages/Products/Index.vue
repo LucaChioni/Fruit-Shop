@@ -387,7 +387,7 @@ function toggleSortDirection(event) {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 12px;
-    background: #ecfdf5;
+    background: #fff;
 }
 
 .product-card::before {
