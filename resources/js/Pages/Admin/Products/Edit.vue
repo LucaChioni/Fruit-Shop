@@ -73,7 +73,7 @@ function submit() {
 </script>
 
 <template>
-    <PageContainer>
+    <PageContainer narrow>
         <header class="product-form-header">
             <PageNav />
 
@@ -205,8 +205,8 @@ function submit() {
 }
 
 .current-image {
-    width: 160px;
-    height: 160px;
+    width: 218px;
+    height: 153px;
     border-radius: 8px;
     object-fit: cover;
     background: #fff7ed;
@@ -215,8 +215,8 @@ function submit() {
 .image-placeholder {
     display: grid;
     place-items: center;
-    width: 160px;
-    height: 160px;
+    width: 218px;
+    height: 153px;
     box-sizing: border-box;
     padding: 10px;
     border: 1px dashed #ccc;
@@ -239,7 +239,7 @@ function submit() {
     display: grid;
     grid-template-rows: repeat(2, minmax(0, 1fr));
     gap: 8px;
-    height: 160px;
+    height: 153px;
     justify-items: start;
 }
 
@@ -262,6 +262,13 @@ function submit() {
     color: #111827;
 }
 
+.file-button:hover,
+.file-button:focus-visible {
+    border-color: #9a3412;
+    background: #fff7ed;
+    outline: none;
+}
+
 .file-input {
     position: absolute;
     width: 1px;
@@ -282,6 +289,12 @@ function submit() {
     border: 1px solid #b91c1c;
     background: #fff;
     color: #b91c1c;
+}
+
+.remove-image-button:hover,
+.remove-image-button:focus-visible {
+    background: #fee2e2;
+    outline: none;
 }
 
 .submit-button {

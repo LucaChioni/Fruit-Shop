@@ -45,6 +45,16 @@ function setImage(event) {
     }
 }
 
+function removeImage() {
+    revokeTemporaryImagePreview();
+    form.image = null;
+    imagePreviewUrl.value = null;
+
+    if (imageInput.value) {
+        imageInput.value.value = '';
+    }
+}
+
 onBeforeUnmount(revokeTemporaryImagePreview);
 
 function submit() {
@@ -92,6 +102,14 @@ function submit() {
                     <div class="image-actions">
                         <button type="button" class="file-button" @click="imageInput?.click()">
                             {{ t('admin.form.choose_image', 'Scegli immagine') }}
+                        </button>
+                        <button
+                            v-if="imagePreviewUrl"
+                            type="button"
+                            class="remove-image-button"
+                            @click="removeImage"
+                        >
+                            {{ t('admin.form.remove_image', 'Rimuovi immagine') }}
                         </button>
                     </div>
                     <img
@@ -178,8 +196,8 @@ function submit() {
 }
 
 .current-image {
-    width: 160px;
-    height: 160px;
+    width: 218px;
+    height: 153px;
     border-radius: 8px;
     object-fit: cover;
     background: #fff7ed;
@@ -188,8 +206,8 @@ function submit() {
 .image-placeholder {
     display: grid;
     place-items: center;
-    width: 160px;
-    height: 160px;
+    width: 218px;
+    height: 153px;
     box-sizing: border-box;
     padding: 10px;
     border: 1px dashed #ccc;
@@ -210,24 +228,49 @@ function submit() {
 
 .image-actions {
     display: grid;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
     justify-items: start;
     gap: 8px;
+    height: 153px;
 }
 
-.file-button {
+.file-button,
+.remove-image-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 160px;
-    min-height: 38px;
     padding: 8px 12px;
-    border: 1px solid #ccc;
     border-radius: 8px;
-    background: #fff;
-    color: #111827;
     font-weight: 600;
     cursor: pointer;
     font: inherit;
+}
+
+.file-button {
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #111827;
+}
+
+.file-button:hover,
+.file-button:focus-visible {
+    border-color: #9a3412;
+    background: #fff7ed;
+    outline: none;
+}
+
+.remove-image-button {
+    justify-self: start;
+    border: 1px solid #b91c1c;
+    background: #fff;
+    color: #b91c1c;
+}
+
+.remove-image-button:hover,
+.remove-image-button:focus-visible {
+    background: #fee2e2;
+    outline: none;
 }
 
 .file-input {
