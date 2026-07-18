@@ -161,6 +161,7 @@ return [
     'orders.save_pickup' => 'Salva ritiro',
     'orders.cancel_order' => 'Annulla ordine',
     'orders.cancel_confirm' => 'Vuoi annullare questo ordine?',
+    'orders.pickup_reminder_sent' => 'Non puoi più modificare il ritiro.',
     'admin.pending_orders' => 'Ordini in attesa',
     'admin.today_orders' => 'Ordini di oggi',
     'admin.total_orders' => 'Ordini totali',
@@ -271,4 +272,5 @@ return [
     'validation.status_required' => 'Scegli lo stato dell\'ordine.',
     'validation.status_in' => 'Lo stato selezionato non è valido.',
     'validation.order_not_editable' => 'L\'ordine non può più essere modificato o annullato.',
+    'validation.pickup_reminder_sent' => 'Non puoi più modificare il ritiro.',
 ];

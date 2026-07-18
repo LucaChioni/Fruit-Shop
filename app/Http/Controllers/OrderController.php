@@ -60,6 +60,7 @@ class OrderController extends Controller
     {
         $this->ensureOwner($request, $order);
         $this->ensurePending($order);
+        $this->ensurePickupCanBeUpdated($order);
 
         $validated = $request->validate([
             'pickup_at' => ['required', 'date'],
@@ -105,6 +106,15 @@ class OrderController extends Controller
         if ($order->status !== 'pending') {
             throw ValidationException::withMessages([
                 'order' => __('ui.validation.order_not_editable'),
+            ]);
+        }
+    }
+
+    private function ensurePickupCanBeUpdated(Order $order): void
+    {
+        if ($order->pickup_reminder_sent_at !== null) {
+            throw ValidationException::withMessages([
+                'pickup_at' => __('ui.validation.pickup_reminder_sent'),
             ]);
         }
     }

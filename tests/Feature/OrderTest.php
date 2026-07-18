@@ -211,7 +211,6 @@ class OrderTest extends TestCase
         $user = User::factory()->create();
         $order = $this->createOrder($user, [
             'pickup_at' => '2026-06-30 11:00:00',
-            'pickup_reminder_sent_at' => '2026-06-30 10:00:00',
         ]);
 
         $this->actingAs($user)
@@ -287,6 +286,26 @@ class OrderTest extends TestCase
         $this->assertDatabaseHas('orders', [
             'id' => $order->id,
             'pickup_at' => '2026-06-30 11:00:00',
+        ]);
+    }
+
+    public function test_order_pickup_cannot_be_updated_after_its_reminder_has_been_sent(): void
+    {
+        $user = User::factory()->create();
+        $order = $this->createOrder($user, [
+            'pickup_at' => '2026-07-01 11:00:00',
+            'pickup_reminder_sent_at' => '2026-07-01 10:00:00',
+        ]);
+
+        $this->actingAs($user)
+            ->patch(route('orders.pickup.update', $order), ['pickup_at' => '2026-07-02T11:00'])
+            ->assertSessionHasErrors([
+                'pickup_at' => 'Non puoi più modificare il ritiro dopo l\'invio del promemoria.',
+            ]);
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'pickup_at' => '2026-07-01 11:00:00',
         ]);
     }
 }

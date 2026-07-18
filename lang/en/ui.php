@@ -161,6 +161,7 @@ return [
     'orders.save_pickup' => 'Save pickup time',
     'orders.cancel_order' => 'Cancel order',
     'orders.cancel_confirm' => 'Do you want to cancel this order?',
+    'orders.pickup_reminder_sent' => 'You can no longer change the pickup time.',
     'admin.pending_orders' => 'Pending orders',
     'admin.today_orders' => 'Today\'s orders',
     'admin.total_orders' => 'Total orders',
@@ -271,4 +272,5 @@ return [
     'validation.status_required' => 'Choose the order status.',
     'validation.status_in' => 'The selected status is invalid.',
     'validation.order_not_editable' => 'The order can no longer be changed or cancelled.',
+    'validation.pickup_reminder_sent' => 'You can no longer change the pickup time.',
 ];

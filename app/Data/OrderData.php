@@ -38,6 +38,7 @@ class OrderData
         return array_merge(self::summary($order), [
             'notes' => $order->notes,
             'pickup_at_input' => $order->pickup_at?->format('Y-m-d\TH:i'),
+            'can_update_pickup' => $order->status === 'pending' && $order->pickup_reminder_sent_at === null,
             'items' => $order->items->map(fn ($item) => [
                 'id' => $item->id,
                 'product_name' => ProductData::translatedName(

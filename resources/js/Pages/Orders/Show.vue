@@ -239,7 +239,7 @@ watch(dateInputLocale, async () => {
         <section v-if="!isAdminView && order.status === 'pending'" class="order-section">
             <h2>{{ t('orders.manage_order', 'Gestisci ordine') }}</h2>
 
-            <form class="pickup-form" @submit.prevent="updatePickup">
+            <form v-if="order.can_update_pickup" class="pickup-form" @submit.prevent="updatePickup">
                 <div class="pickup-label">
                     <span>{{ t('orders.update_pickup', 'Modifica data e ora di ritiro') }}</span>
                     <div class="pickup-actions">
@@ -281,6 +281,10 @@ watch(dateInputLocale, async () => {
 
             <p v-if="pickupForm.errors.pickup_at" class="status-error">
                 {{ pickupForm.errors.pickup_at }}
+            </p>
+
+            <p v-if="!order.can_update_pickup" class="pickup-help">
+                {{ t('orders.pickup_reminder_sent', 'Non puoi più modificare il ritiro.') }}
             </p>
 
             <form class="cancel-form" @submit.prevent="cancelOrder">
