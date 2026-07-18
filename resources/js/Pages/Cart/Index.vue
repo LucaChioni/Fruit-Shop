@@ -44,22 +44,6 @@ function formatDisplayNumber(value) {
     return String(value).replace(/([,.])0+$/, '');
 }
 
-function cartQuantityUnit(item) {
-    const quantity = Number(item.quantity);
-
-    if (item.unit_type_key === 'vaschetta') {
-        return quantity > 1
-            ? t('units.vaschetta_cart_plural', item.unit_type)
-            : t('units.vaschetta_cart', item.unit_type);
-    }
-
-    if (quantity > 1 && item.unit_type_key === 'pz') {
-        return t('units.pz_plural', item.unit_type);
-    }
-
-    return item.unit_type;
-}
-
 function removeItem(item) {
     deleteForm.delete(route('cart.items.destroy', item.id), {
         preserveScroll: true,
@@ -127,7 +111,7 @@ function removeItem(item) {
                     <div class="cart-item-body">
                         <div class="cart-item-info">
                             <div class="cart-item-total">
-                                {{ formatDisplayNumber(item.quantity) }} {{ cartQuantityUnit(item) }} × {{ formatDisplayNumber(item.unit_price) }} € = {{ formatDisplayNumber(item.line_total) }} €
+                                {{ formatDisplayNumber(item.unit_price) }} € × {{ formatDisplayNumber(item.quantity) }} = {{ formatDisplayNumber(item.line_total) }} €
                             </div>
 
                             <p class="cart-item-details">
@@ -460,7 +444,7 @@ function removeItem(item) {
     padding: 4px 7px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    font-size: 12px;
+    font-size: 16px;
 }
 
 .quantity-error {
@@ -561,7 +545,7 @@ function removeItem(item) {
 
 @media (max-width: 731px) {
     .cart-items {
-        grid-template-columns: repeat(auto-fit, minmax(clamp(130px, 25vw, 160px), 160px));
+        grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
         justify-content: center;
         gap: 4px;
     }
@@ -569,13 +553,17 @@ function removeItem(item) {
     .cart-item {
         justify-self: center;
         width: 100%;
-        max-width: 160px;
+        max-width: 220px;
         gap: 8px;
         padding: 6px;
     }
 
     .cart-item-name {
         font-size: 18px;
+    }
+
+    .cart-item-total {
+        font-size: 12px;
     }
 }
 
@@ -586,7 +574,7 @@ function removeItem(item) {
     }
 
     .cart-items {
-        grid-template-columns: repeat(auto-fit, minmax(clamp(130px, 25vw, 160px), 160px));
+        grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
         justify-content: center;
         gap: 4px;
     }
@@ -594,7 +582,7 @@ function removeItem(item) {
     .cart-item {
         justify-self: center;
         width: 100%;
-        max-width: 160px;
+        max-width: 220px;
         gap: 8px;
         padding: 6px;
     }

@@ -593,7 +593,7 @@ function toggleSortDirection(event) {
 
 @media (max-width: 731px) {
     .products-list {
-        grid-template-columns: repeat(auto-fit, minmax(clamp(130px, 25vw, 160px), 160px));
+        grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
         justify-content: center;
         gap: 4px;
     }
@@ -601,7 +601,7 @@ function toggleSortDirection(event) {
     .product-card {
         justify-self: center;
         width: 100%;
-        max-width: 160px;
+        max-width: 220px;
         gap: 8px;
         padding: 6px;
     }
@@ -637,7 +637,7 @@ function toggleSortDirection(event) {
     }
 
     .products-list {
-        grid-template-columns: repeat(auto-fit, minmax(clamp(130px, 25vw, 160px), 160px));
+        grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
         justify-content: center;
         gap: 4px;
     }
@@ -649,7 +649,7 @@ function toggleSortDirection(event) {
     .product-card {
         justify-self: center;
         width: 100%;
-        max-width: 160px;
+        max-width: 220px;
         gap: 8px;
         padding: 6px;
     }

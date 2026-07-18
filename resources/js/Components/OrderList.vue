@@ -167,7 +167,7 @@ const t = useTranslations();
     }
 
     .orders-list {
-        grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 280px));
+        grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
         justify-content: center;
         gap: 4px;
     }
