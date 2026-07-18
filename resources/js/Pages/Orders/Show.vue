@@ -1,5 +1,9 @@
 <script setup>
 import { useForm, usePage } from '@inertiajs/vue3';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import flatpickr from 'flatpickr';
+import { Italian } from 'flatpickr/dist/l10n/it.js';
+import 'flatpickr/dist/flatpickr.css';
 import PageNav from '@/Components/PageNav.vue';
 import PageContainer from '@/Components/PageContainer.vue';
 import { useTranslations } from '@/i18n';
@@ -14,21 +18,143 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    pickupAtMin: {
+        type: String,
+        default: '',
+    },
+    pickupDateMax: {
+        type: String,
+        default: '',
+    },
+    closedPickupDates: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const page = usePage();
 
 const t = useTranslations();
+const pickupAtDefaultParts = props.order.pickup_at_input?.split('T') ?? ['', ''];
+const pickupAtMinDate = props.pickupAtMin?.split('T')[0] ?? '';
+const closedPickupDates = new Set(props.closedPickupDates ?? []);
+const pickupDateError = ref('');
+const dateInputLocale = computed(() => page.props.locale === 'it' ? 'it-IT' : 'en-US');
+const pickupDateInput = ref(null);
+const pickupTimeInput = ref(null);
+let pickupDatePicker = null;
+let pickupTimePicker = null;
 
 const statusForm = useForm({
     status: props.order.status,
 });
+
+const pickupForm = useForm({
+    pickup_date: pickupAtDefaultParts[0] ?? '',
+    pickup_time: pickupAtDefaultParts[1] ?? '',
+});
+
+const cancelForm = useForm({});
 
 function updateStatus() {
     statusForm.patch(route('admin.orders.status.update', props.order.id), {
         preserveScroll: true,
     });
 }
+
+function updatePickup() {
+    validatePickupDate();
+
+    if (pickupDateError.value) {
+        return;
+    }
+
+    pickupForm.transform((data) => ({
+        pickup_at: data.pickup_date && data.pickup_time ? `${data.pickup_date}T${data.pickup_time}` : '',
+    })).patch(route('orders.pickup.update', props.order.id), {
+        preserveScroll: true,
+    });
+}
+
+function validatePickupDate() {
+    pickupDateError.value = '';
+
+    if (! pickupForm.pickup_date) {
+        return;
+    }
+
+    if (closedPickupDates.has(pickupForm.pickup_date)) {
+        pickupForm.pickup_date = '';
+        pickupDateError.value = t('checkout.closed_date_error', 'Il ritiro non è disponibile la domenica o nei giorni festivi.');
+    }
+}
+
+function setupPickupDatePicker() {
+    if (! pickupDateInput.value) {
+        return;
+    }
+
+    pickupDatePicker?.destroy();
+    pickupDatePicker = flatpickr(pickupDateInput.value, {
+        allowInput: false,
+        altInput: true,
+        altFormat: page.props.locale === 'it' ? 'd/m/Y' : 'm/d/Y',
+        dateFormat: 'Y-m-d',
+        defaultDate: pickupForm.pickup_date || null,
+        disable: [...closedPickupDates],
+        locale: page.props.locale === 'it' ? Italian : 'default',
+        maxDate: props.pickupDateMax,
+        minDate: pickupAtMinDate,
+        onChange: (selectedDates, dateValue) => {
+            pickupForm.pickup_date = dateValue;
+            validatePickupDate();
+        },
+    });
+}
+
+function setupPickupTimePicker() {
+    if (! pickupTimeInput.value) {
+        return;
+    }
+
+    pickupTimePicker?.destroy();
+    pickupTimePicker = flatpickr(pickupTimeInput.value, {
+        allowInput: false,
+        dateFormat: 'H:i',
+        defaultDate: pickupForm.pickup_time || null,
+        enableTime: true,
+        noCalendar: true,
+        time_24hr: true,
+        onChange: (selectedDates, timeValue) => {
+            pickupForm.pickup_time = timeValue;
+        },
+    });
+}
+
+function cancelOrder() {
+    if (! confirm(t('orders.cancel_confirm', 'Vuoi annullare questo ordine?'))) {
+        return;
+    }
+
+    cancelForm.patch(route('orders.cancel', props.order.id), {
+        preserveScroll: true,
+    });
+}
+
+onMounted(() => {
+    setupPickupDatePicker();
+    setupPickupTimePicker();
+});
+
+onBeforeUnmount(() => {
+    pickupDatePicker?.destroy();
+    pickupTimePicker?.destroy();
+});
+
+watch(dateInputLocale, async () => {
+    await nextTick();
+    setupPickupDatePicker();
+});
 </script>
 
 <template>
@@ -38,6 +164,10 @@ function updateStatus() {
 
             <div v-if="page.props.flash?.success" class="flash-message flash-message--success">
                 {{ page.props.flash.success }}
+            </div>
+
+            <div v-if="page.props.flash?.error" class="flash-message flash-message--error">
+                {{ page.props.flash.error }}
             </div>
         </header>
 
@@ -103,6 +233,64 @@ function updateStatus() {
 
             <p v-if="statusForm.errors.status" class="status-error">
                 {{ statusForm.errors.status }}
+            </p>
+        </section>
+
+        <section v-if="!isAdminView && order.status === 'pending'" class="order-section">
+            <h2>{{ t('orders.manage_order', 'Gestisci ordine') }}</h2>
+
+            <form class="pickup-form" @submit.prevent="updatePickup">
+                <div class="pickup-label">
+                    <span>{{ t('orders.update_pickup', 'Modifica data e ora di ritiro') }}</span>
+                    <div class="pickup-actions">
+                        <div class="pickup-fields">
+                            <input
+                                ref="pickupDateInput"
+                                v-model="pickupForm.pickup_date"
+                                type="text"
+                                class="pickup-input"
+                                :lang="dateInputLocale"
+                                :placeholder="page.props.locale === 'it' ? 'gg/mm/aaaa' : 'mm/dd/yyyy'"
+                                :aria-label="t('checkout.pickup_date', 'Data di ritiro')"
+                                required
+                            />
+                            <input
+                                ref="pickupTimeInput"
+                                v-model="pickupForm.pickup_time"
+                                type="text"
+                                class="pickup-input"
+                                placeholder="HH:mm"
+                                :aria-label="t('checkout.pickup_time', 'Ora di ritiro')"
+                                required
+                            />
+                        </div>
+
+                        <button type="submit" class="pickup-button" :disabled="pickupForm.processing">
+                            {{ t('orders.save_pickup', 'Salva ritiro') }}
+                        </button>
+                    </div>
+                    <span class="pickup-help">
+                        {{ t('checkout.pickup_help', "Il ritiro non è possibile prima di 2 ore dall'ordine. Fasce: 11:00-13:00 e 16:00-19:30. Domenica e festivi esclusi.") }}
+                    </span>
+                </div>
+            </form>
+
+            <p v-if="pickupDateError" class="status-error">
+                {{ pickupDateError }}
+            </p>
+
+            <p v-if="pickupForm.errors.pickup_at" class="status-error">
+                {{ pickupForm.errors.pickup_at }}
+            </p>
+
+            <form class="cancel-form" @submit.prevent="cancelOrder">
+                <button type="submit" class="cancel-button" :disabled="cancelForm.processing">
+                    {{ t('orders.cancel_order', 'Annulla ordine') }}
+                </button>
+            </form>
+
+            <p v-if="cancelForm.errors.order" class="status-error">
+                {{ cancelForm.errors.order }}
             </p>
         </section>
 
@@ -299,6 +487,12 @@ function updateStatus() {
     color: #15803d;
 }
 
+.flash-message--error {
+    border-color: #fecaca;
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
 .status-form {
     display: flex;
     flex-wrap: wrap;
@@ -344,5 +538,92 @@ function updateStatus() {
     margin: 8px 0 0;
     color: #b91c1c;
     font-weight: 600;
+}
+
+.pickup-form {
+    display: block;
+}
+
+.pickup-label {
+    display: grid;
+    gap: 6px;
+    font-weight: 600;
+}
+
+.pickup-input {
+    box-sizing: border-box;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+    font: inherit;
+}
+
+.pickup-fields {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.pickup-actions {
+    display: flex;
+    align-items: end;
+    gap: 12px;
+}
+
+.pickup-help {
+    color: #666;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.pickup-button,
+.cancel-button {
+    padding: 9px 14px;
+    border: 0;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.pickup-button {
+    background: #166534;
+}
+
+:global(html.dark .pickup-fields input) {
+    border-color: #334155;
+    background: #0f172a;
+    color: #e5e7eb;
+}
+
+.pickup-button:hover {
+    background: #14532d;
+}
+
+.cancel-form {
+    margin-top: 12px;
+}
+
+.cancel-button {
+    background: #b91c1c;
+}
+
+.cancel-button:hover {
+    background: #991b1b;
+}
+
+.pickup-button:disabled,
+.cancel-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 520px) {
+    .pickup-fields {
+        grid-template-columns: 1fr;
+    }
 }
 </style>

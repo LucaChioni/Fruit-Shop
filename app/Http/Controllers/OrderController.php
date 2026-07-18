@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Data\OrderData;
 use App\Models\Order;
+use App\Services\PickupSchedule;
+use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class OrderController extends Controller
@@ -39,17 +43,69 @@ class OrderController extends Controller
         ]);
     }
 
-    public function show(Request $request, Order $order)
+    public function show(Request $request, Order $order, PickupSchedule $pickupSchedule)
     {
         $order->load('items.product', 'user');
-        $user = $request->user();
-
-        if ($order->user_id !== $user->id) {
-            abort(403);
-        }
+        $this->ensureOwner($request, $order);
 
         return Inertia::render('Orders/Show', [
             'order' => OrderData::detail($order),
+            'pickupAtMin' => now()->addHours(2)->format('Y-m-d\TH:i'),
+            'pickupDateMax' => now()->addDays(369)->format('Y-m-d'),
+            'closedPickupDates' => $pickupSchedule->closedDates(now()->startOfDay()),
         ]);
+    }
+
+    public function updatePickup(Request $request, Order $order, PickupSchedule $pickupSchedule): RedirectResponse
+    {
+        $this->ensureOwner($request, $order);
+        $this->ensurePending($order);
+
+        $validated = $request->validate([
+            'pickup_at' => ['required', 'date'],
+        ], [
+            'pickup_at.required' => __('ui.validation.pickup_required'),
+            'pickup_at.date' => __('ui.validation.pickup_date'),
+        ]);
+
+        $pickupAt = Carbon::parse($validated['pickup_at'])->seconds(0);
+        $pickupSchedule->validate($pickupAt);
+
+        $order->update([
+            'pickup_at' => $pickupAt,
+            'pickup_reminder_sent_at' => null,
+        ]);
+
+        return redirect()
+            ->route('orders.show', $order)
+            ->with('success', __('ui.flash.order_pickup_updated'));
+    }
+
+    public function cancel(Request $request, Order $order): RedirectResponse
+    {
+        $this->ensureOwner($request, $order);
+        $this->ensurePending($order);
+
+        $order->update(['status' => 'cancelled']);
+
+        return redirect()
+            ->route('orders.show', $order)
+            ->with('success', __('ui.flash.order_cancelled'));
+    }
+
+    private function ensureOwner(Request $request, Order $order): void
+    {
+        if ($order->user_id !== $request->user()->id) {
+            abort(403);
+        }
+    }
+
+    private function ensurePending(Order $order): void
+    {
+        if ($order->status !== 'pending') {
+            throw ValidationException::withMessages([
+                'order' => __('ui.validation.order_not_editable'),
+            ]);
+        }
     }
 }

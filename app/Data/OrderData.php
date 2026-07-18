@@ -37,6 +37,7 @@ class OrderData
     {
         return array_merge(self::summary($order), [
             'notes' => $order->notes,
+            'pickup_at_input' => $order->pickup_at?->format('Y-m-d\TH:i'),
             'items' => $order->items->map(fn ($item) => [
                 'id' => $item->id,
                 'product_name' => ProductData::translatedName(

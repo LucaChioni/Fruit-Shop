@@ -6,21 +6,17 @@ use App\Mail\OrderPlaced;
 use App\Models\Order;
 use App\Models\User;
 use App\Services\CartService;
+use App\Services\PickupSchedule;
 use Carbon\Carbon;
-use Carbon\CarbonInterface;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
-use Yasumi\Yasumi;
 
 class CheckoutController extends Controller
 {
-    private array $italianHolidayProviders = [];
-
-    public function create(Request $request, CartService $cartService)
+    public function create(Request $request, CartService $cartService, PickupSchedule $pickupSchedule)
     {
         $cart = $cartService->getCurrentCart($request);
 
@@ -31,14 +27,14 @@ class CheckoutController extends Controller
         }
 
         return Inertia::render('Checkout/Create', [
-            'pickupAtDefault' => $this->earliestPickupAt()->format('Y-m-d\TH:i'),
+            'pickupAtDefault' => $pickupSchedule->earliestPickupAt()->format('Y-m-d\TH:i'),
             'pickupAtMin' => now()->addHours(2)->format('Y-m-d\TH:i'),
             'pickupDateMax' => now()->addDays(369)->format('Y-m-d'),
-            'closedPickupDates' => $this->closedPickupDates(now()->startOfDay()),
+            'closedPickupDates' => $pickupSchedule->closedDates(now()->startOfDay()),
         ]);
     }
 
-    public function store(Request $request, CartService $cartService): RedirectResponse
+    public function store(Request $request, CartService $cartService, PickupSchedule $pickupSchedule): RedirectResponse
     {
         $cart = $cartService->getCurrentCart($request);
 
@@ -58,7 +54,7 @@ class CheckoutController extends Controller
         ]);
 
         $pickupAt = Carbon::parse($validated['pickup_at'])->seconds(0);
-        $this->validatePickupAt($pickupAt);
+        $pickupSchedule->validate($pickupAt);
 
         $order = DB::transaction(function () use ($request, $validated, $cart, $pickupAt) {
             $totalAmount = 0;
@@ -114,89 +110,5 @@ class CheckoutController extends Controller
         return redirect()
             ->route('orders.show', $order)
             ->with('success', __('ui.flash.order_created'));
-    }
-
-    private function earliestPickupAt(): CarbonInterface
-    {
-        $pickupAt = now()->addHours(2)->seconds(0);
-
-        while (true) {
-            if ($this->isClosedPickupDate($pickupAt)) {
-                $pickupAt = $pickupAt->addDay()->setTime(11, 0);
-
-                continue;
-            }
-
-            $minutes = ($pickupAt->hour * 60) + $pickupAt->minute;
-
-            if ($minutes < 11 * 60) {
-                return $pickupAt->setTime(11, 0);
-            }
-
-            if ($minutes > 13 * 60 && $minutes < 16 * 60) {
-                return $pickupAt->setTime(16, 0);
-            }
-
-            if ($minutes > (19 * 60) + 30) {
-                $pickupAt = $pickupAt->addDay()->setTime(11, 0);
-
-                continue;
-            }
-
-            return $pickupAt;
-        }
-    }
-
-    private function validatePickupAt(CarbonInterface $pickupAt): void
-    {
-        $minimum = now()->addHours(2);
-        $minutes = ($pickupAt->hour * 60) + $pickupAt->minute;
-        $isOpen = ($minutes >= 11 * 60 && $minutes <= 13 * 60)
-            || ($minutes >= 16 * 60 && $minutes <= (19 * 60) + 30);
-
-        if ($pickupAt->lt($minimum)) {
-            throw ValidationException::withMessages([
-                'pickup_at' => __('ui.validation.pickup_minimum'),
-            ]);
-        }
-
-        if ($this->isClosedPickupDate($pickupAt)) {
-            throw ValidationException::withMessages([
-                'pickup_at' => 'Il ritiro non è disponibile la domenica o nei giorni festivi.',
-            ]);
-        }
-
-        if (! $isOpen) {
-            throw ValidationException::withMessages([
-                'pickup_at' => __('ui.validation.pickup_time_slot'),
-            ]);
-        }
-    }
-
-    private function isClosedPickupDate(CarbonInterface $date): bool
-    {
-        return $date->isSunday() || $this->italianHolidays($date->year)->isHoliday($date);
-    }
-
-    private function closedPickupDates(CarbonInterface $startFrom): array
-    {
-        $dates = [];
-        $date = Carbon::parse($startFrom)->startOfDay();
-
-        for ($day = 0; $day < 370; $day++) {
-            if ($this->isClosedPickupDate($date)) {
-                $dates[] = $date->toDateString();
-            }
-
-            $date->addDay();
-        }
-
-        return $dates;
-    }
-
-    private function italianHolidays(int $year)
-    {
-        return $this->italianHolidayProviders[$year]
-            ??= Yasumi::create('Italy', $year, 'it_IT');
     }
 }

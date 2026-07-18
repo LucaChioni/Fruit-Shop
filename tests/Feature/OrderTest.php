@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\Feature\Concerns\CreatesShopModels;
@@ -185,5 +186,107 @@ class OrderTest extends TestCase
         $order = $this->createOrder();
 
         $this->get(route('orders.show', $order))->assertRedirect(route('login'));
+    }
+
+    public function test_order_owner_can_cancel_a_pending_order(): void
+    {
+        $user = User::factory()->create();
+        $order = $this->createOrder($user);
+
+        $this->actingAs($user)
+            ->patch(route('orders.cancel', $order))
+            ->assertRedirect(route('orders.show', $order))
+            ->assertSessionHas('success', 'Ordine annullato.');
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'status' => 'cancelled',
+        ]);
+    }
+
+    public function test_order_owner_can_update_a_pending_order_pickup_time(): void
+    {
+        $this->travelTo(Carbon::parse('2026-06-29 09:00:00'));
+
+        $user = User::factory()->create();
+        $order = $this->createOrder($user, [
+            'pickup_at' => '2026-06-30 11:00:00',
+            'pickup_reminder_sent_at' => '2026-06-30 10:00:00',
+        ]);
+
+        $this->actingAs($user)
+            ->patch(route('orders.pickup.update', $order), [
+                'pickup_at' => '2026-06-29T11:30',
+            ])
+            ->assertRedirect(route('orders.show', $order))
+            ->assertSessionHas('success', 'Data e ora di ritiro aggiornate.');
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'pickup_at' => '2026-06-29 11:30:00',
+        ]);
+        $this->assertNull($order->fresh()->pickup_reminder_sent_at);
+    }
+
+    public function test_other_users_cannot_cancel_or_update_an_order(): void
+    {
+        $owner = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $order = $this->createOrder($owner);
+
+        $this->actingAs($otherUser)
+            ->patch(route('orders.pickup.update', $order), ['pickup_at' => '2026-07-01T11:00'])
+            ->assertForbidden();
+
+        $this->actingAs($otherUser)
+            ->patch(route('orders.cancel', $order))
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'status' => 'pending',
+        ]);
+    }
+
+    public function test_non_pending_orders_cannot_be_cancelled_or_rescheduled_by_the_owner(): void
+    {
+        $user = User::factory()->create();
+        $order = $this->createOrder($user, [
+            'status' => 'ready',
+            'pickup_at' => '2026-07-01 11:00:00',
+        ]);
+
+        $this->actingAs($user)
+            ->patch(route('orders.pickup.update', $order), ['pickup_at' => '2026-07-02T11:00'])
+            ->assertSessionHasErrors('order');
+
+        $this->actingAs($user)
+            ->patch(route('orders.cancel', $order))
+            ->assertSessionHasErrors('order');
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'status' => 'ready',
+            'pickup_at' => '2026-07-01 11:00:00',
+        ]);
+    }
+
+    public function test_order_pickup_update_must_use_an_available_time_slot(): void
+    {
+        $this->travelTo(Carbon::parse('2026-06-29 09:00:00'));
+
+        $user = User::factory()->create();
+        $order = $this->createOrder($user, ['pickup_at' => '2026-06-30 11:00:00']);
+
+        $this->actingAs($user)
+            ->patch(route('orders.pickup.update', $order), ['pickup_at' => '2026-06-29T14:30'])
+            ->assertSessionHasErrors([
+                'pickup_at' => 'Scegli un orario di ritiro tra 11:00-13:00 o 16:00-19:30.',
+            ]);
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'pickup_at' => '2026-06-30 11:00:00',
+        ]);
     }
 }
