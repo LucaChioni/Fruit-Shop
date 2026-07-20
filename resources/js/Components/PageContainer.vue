@@ -40,11 +40,6 @@ defineProps({
     padding: 28px 0;
 }
 
-.page-container--narrow :deep(.legal-header),
-.page-container--narrow :deep(.checkout-header),
-.page-container--narrow :deep(.order-header),
-.page-container--narrow :deep(.product-form-header),
-.page-container--narrow :deep(.settings-header),
 .page-container--narrow :deep(.page-header) {
     box-sizing: border-box;
     width: 100vw;
@@ -58,11 +53,6 @@ defineProps({
         padding: 20px 14px;
     }
 
-    .page-container--narrow :deep(.legal-header),
-    .page-container--narrow :deep(.checkout-header),
-    .page-container--narrow :deep(.order-header),
-    .page-container--narrow :deep(.product-form-header),
-    .page-container--narrow :deep(.settings-header),
     .page-container--narrow :deep(.page-header) {
         padding: 0 16px;
     }

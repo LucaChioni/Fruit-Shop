@@ -25,7 +25,7 @@ const t = useTranslations();
     <Head title="Il giardino della frutta" />
 
     <PageContainer narrow>
-        <header class="settings-header">
+        <header class="settings-header page-header">
             <PageNav />
         </header>
 

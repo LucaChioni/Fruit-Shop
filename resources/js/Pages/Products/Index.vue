@@ -4,11 +4,20 @@ import { reactive } from 'vue';
 import FlashMessage from '@/Components/FlashMessage.vue';
 import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
+import QuantityInput from '@/Components/QuantityInput.vue';
+import SortDirectionButton from '@/Components/SortDirectionButton.vue';
+import { submitFilterForm } from '@/filterForm';
 import { useTranslations } from '@/i18n';
 
 const props = defineProps({
-    products: Array,
-    filters: Object,
+    products: {
+        type: Array,
+        required: true,
+    },
+    filters: {
+        type: Object,
+        required: true,
+    },
 });
 
 const t = useTranslations();
@@ -26,8 +35,14 @@ const form = useForm({
 const deleteForm = useForm({});
 
 function addToCart(product) {
+    const quantity = quantities[product.id];
+
+    if (product.quantity_step === 1 && ! Number.isInteger(Number(quantity))) {
+        return;
+    }
+
     form.product_id = product.id;
-    form.quantity = quantities[product.id] || product.quantity_step;
+    form.quantity = quantity ?? product.quantity_step;
     form.clearErrors();
 
     form.post(route('cart.items.store'), {
@@ -97,22 +112,11 @@ function clearQuantityError(product) {
     }
 }
 
-function toggleSortDirection(event) {
-    const formElement = event.currentTarget.form;
-    const directionInput = formElement?.querySelector('input[name="sort_direction"]');
-
-    if (! formElement || ! directionInput) {
-        return;
-    }
-
-    directionInput.value = directionInput.value === 'asc' ? 'desc' : 'asc';
-    formElement.requestSubmit();
-}
 </script>
 
 <template>
     <PageContainer>
-        <header class="products-header">
+        <header class="products-header page-list-header">
             <PageNav />
 
             <FlashMessage />
@@ -122,7 +126,8 @@ function toggleSortDirection(event) {
             :action="route('products.index')"
             method="get"
             class="filters-form"
-            @change="$event.currentTarget.submit()"
+            @change="submitFilterForm"
+            @submit.prevent="submitFilterForm"
         >
             <label class="filter-field">
                 {{ t('products.search', 'Cerca') }}
@@ -158,24 +163,11 @@ function toggleSortDirection(event) {
 
                 <input type="hidden" name="sort_direction" :value="filters.sort_direction" />
 
-                <button
-                    type="button"
-                    class="sort-direction-button"
-                    :aria-label="filters.sort_direction === 'asc' ? t('products.sort_asc', 'Ascendente') : t('products.sort_desc', 'Discendente')"
-                    :title="filters.sort_direction === 'asc' ? t('products.sort_asc', 'Ascendente') : t('products.sort_desc', 'Discendente')"
-                    @click="toggleSortDirection"
-                >
-                    <svg class="sort-direction-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                        <template v-if="filters.sort_direction === 'asc'">
-                            <path d="M12 19V5" />
-                            <path d="m6 11 6-6 6 6" />
-                        </template>
-                        <template v-else>
-                            <path d="M12 5v14" />
-                            <path d="m6 13 6 6 6-6" />
-                        </template>
-                    </svg>
-                </button>
+                <SortDirectionButton
+                    :direction="filters.sort_direction"
+                    :ascending-label="t('products.sort_asc', 'Ascendente')"
+                    :descending-label="t('products.sort_desc', 'Discendente')"
+                />
             </div>
         </form>
 
@@ -208,6 +200,7 @@ function toggleSortDirection(event) {
                         class="description-tooltip"
                         tabindex="0"
                         :aria-label="product.description"
+                        :aria-describedby="`product-description-${product.id}`"
                     >
                         <span class="description-info" aria-hidden="true"></span>
                     </span>
@@ -247,21 +240,14 @@ function toggleSortDirection(event) {
                         </p>
 
                         <div v-if="page.props.auth.user" class="product-actions">
-                            <label class="quantity-label">
-                                <input
-                                    v-model="quantities[product.id]"
-                                    type="number"
-                                    :min="product.quantity_step"
-                                    :step="product.quantity_step"
-                                    :inputmode="product.quantity_step === 1 ? 'numeric' : 'decimal'"
-                                    class="quantity-input"
-                                    :aria-label="t('products.quantity', 'Quantità')"
-                                    @input="clearQuantityError(product)"
-                                />
-                                <span v-if="quantityError(product)" class="quantity-error" role="alert">
-                                    {{ quantityError(product) }}
-                                </span>
-                            </label>
+                            <QuantityInput
+                                v-model="quantities[product.id]"
+                                :min="product.quantity_step"
+                                :step="product.quantity_step"
+                                :label="t('products.quantity', 'Quantità')"
+                                :error="quantityError(product)"
+                                @input="clearQuantityError(product)"
+                            />
 
                             <button
                                 type="button"
@@ -286,7 +272,12 @@ function toggleSortDirection(event) {
                         </Link>
                     </div>
                 </div>
-                <span v-if="product.description" class="description-tooltip-content" role="tooltip">
+                <span
+                    v-if="product.description"
+                    :id="`product-description-${product.id}`"
+                    class="description-tooltip-content"
+                    role="tooltip"
+                >
                     {{ product.description }}
                 </span>
             </article>
@@ -294,15 +285,9 @@ function toggleSortDirection(event) {
     </PageContainer>
 </template>
 
-<style scoped>
-.products-header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px 20px;
-    margin-bottom: 16px;
-}
+<style scoped src="../../../css/product-cards.css"></style>
 
+<style scoped>
 .empty-message {
     color: #666;
 }
@@ -349,235 +334,6 @@ function toggleSortDirection(event) {
 .filter-field--sort {
     flex: 1 1 auto;
     min-width: 0;
-}
-
-.sort-direction-button {
-    flex: 0 0 auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background: #fff;
-    color: #166534;
-    cursor: pointer;
-}
-
-.sort-direction-button:hover,
-.sort-direction-button:focus-visible {
-    border-color: #22c55e;
-    background: #f0fdf4;
-    outline: none;
-}
-
-.sort-direction-icon {
-    width: 18px;
-    height: 18px;
-    fill: none;
-    stroke: currentColor;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-width: 2;
-}
-
-.products-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 220px));
-    justify-content: center;
-    gap: 12px;
-}
-
-.product-card {
-    position: relative;
-    isolation: isolate;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    background: #fff;
-}
-
-.product-card::before {
-    position: absolute;
-    z-index: 1;
-    inset: 0;
-    background: linear-gradient(135deg, rgb(255 255 255 / 0.68), rgb(255 255 255 / 0.9));
-    border-radius: inherit;
-    content: '';
-    transition: opacity 200ms ease;
-}
-
-.product-card-header {
-    position: relative;
-    z-index: 3;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid rgb(22 101 52 / 0.25);
-    transition: border-color 200ms ease;
-}
-
-.product-card-header > * {
-    transition: opacity 200ms ease;
-}
-
-.product-card-body {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    flex: 1;
-    min-height: 0;
-    transition: opacity 200ms ease;
-}
-
-.product-card-info {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: 6px;
-    min-width: 0;
-}
-
-.product-image {
-    position: absolute;
-    z-index: 0;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
-    object-fit: cover;
-}
-
-.product-image--placeholder {
-    z-index: 2;
-    display: grid;
-    place-items: center;
-    background: #fff;
-    color: rgb(22 101 52 / 0.35);
-    font-size: 72px;
-    font-weight: 800;
-}
-
-.product-name {
-    flex: 1;
-    min-width: 0;
-    margin: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 20px;
-    font-weight: 700;
-    line-height: 1.2;
-}
-
-.description-tooltip {
-    position: relative;
-    flex: 0 0 auto;
-    transform: translateY(4px);
-}
-
-.description-info {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    box-sizing: border-box;
-    border: 1px solid currentColor;
-    border-radius: 999px;
-    color: #166534;
-    position: relative;
-    cursor: help;
-}
-
-.description-info::before,
-.description-info::after {
-    position: absolute;
-    left: 50%;
-    border-radius: 999px;
-    background: currentColor;
-    content: '';
-    transform: translateX(-50%);
-}
-
-.description-info::before {
-    top: 7px;
-    width: 2px;
-    height: 6px;
-}
-
-.description-info::after {
-    top: 4px;
-    width: 2px;
-    height: 2px;
-}
-
-.description-tooltip-content {
-    position: absolute;
-    z-index: 10;
-    top: calc(100% + 8px);
-    left: 50%;
-    box-sizing: border-box;
-    width: 100%;
-    padding: 8px 10px;
-    border-radius: 10px;
-    border: 1px solid #111827;
-    background: #111827;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 500;
-    line-height: 1.35;
-    opacity: 0;
-    pointer-events: none;
-    transform: translate(-50%, -4px);
-    transition: opacity 150ms ease, transform 150ms ease;
-}
-
-.product-card:has(.description-tooltip:hover),
-.product-card:has(.description-tooltip:focus) {
-    z-index: 1;
-}
-
-.product-card:has(.description-tooltip:hover)::before,
-.product-card:has(.description-tooltip:focus)::before {
-    opacity: 0;
-}
-
-.product-card:has(.description-tooltip:hover) .product-card-header,
-.product-card:has(.description-tooltip:focus) .product-card-header {
-    border-bottom-color: transparent;
-}
-
-.product-card:has(.description-tooltip:hover) .product-card-header > *,
-.product-card:has(.description-tooltip:focus) .product-card-header > *,
-.product-card:has(.description-tooltip:hover) .product-card-body,
-.product-card:has(.description-tooltip:focus) .product-card-body {
-    opacity: 0;
-}
-
-.product-card:has(.description-tooltip:hover) .product-card-body,
-.product-card:has(.description-tooltip:focus) .product-card-body {
-    pointer-events: none;
-}
-
-.product-card:has(.description-tooltip:hover) .description-tooltip-content,
-.product-card:has(.description-tooltip:focus) .description-tooltip-content {
-    opacity: 1;
-    transform: translateX(-50%);
-}
-
-.product-price {
-    margin: 0;
-    font-size: 18px;
-    line-height: 1.25;
 }
 
 .product-cart-quantity {
@@ -648,53 +404,6 @@ function toggleSortDirection(event) {
     outline: none;
 }
 
-.quantity-label {
-    display: flex;
-    flex: 1 1 auto;
-    min-width: 0;
-    position: relative;
-}
-
-.quantity-input {
-    width: 100%;
-    height: 28px;
-    box-sizing: border-box;
-    padding: 4px 7px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 16px;
-}
-
-.quantity-error {
-    position: absolute;
-    z-index: 20;
-    top: calc(100% + 6px);
-    left: 0;
-    display: block;
-    width: max-content;
-    max-width: 170px;
-    padding: 6px 8px;
-    border-radius: 8px;
-    border: 1px solid #fecaca;
-    background: #b91c1c;
-    color: #fff;
-    font-size: 11px;
-    font-weight: 700;
-    line-height: 1.2;
-    box-shadow: 0 8px 18px rgb(185 28 28 / 0.24);
-}
-
-.quantity-error::before {
-    position: absolute;
-    top: -4px;
-    left: 14px;
-    width: 8px;
-    height: 8px;
-    background: inherit;
-    content: '';
-    transform: rotate(45deg);
-}
-
 .action-icon {
     width: 17px;
     height: 17px;
@@ -757,35 +466,12 @@ function toggleSortDirection(event) {
 }
 
 @media (max-width: 731px) {
-    .products-list {
-        grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
-        justify-content: center;
-        gap: 4px;
-    }
-
-    .product-card {
-        justify-self: center;
-        width: 100%;
-        max-width: 220px;
-        gap: 8px;
-        padding: 6px;
-    }
-
-    .product-name {
-        font-size: 18px;
-    }
-
     .product-cart-quantity {
         font-size: 12px;
     }
 }
 
 @media (max-width: 640px) {
-    .products-header {
-        gap: 8px;
-        margin-bottom: 12px;
-    }
-
     .filters-form {
         gap: 8px;
         margin-bottom: 12px;
@@ -794,24 +480,6 @@ function toggleSortDirection(event) {
 
     .filter-field {
         flex-basis: 140px;
-    }
-
-    .products-list {
-        grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
-        justify-content: center;
-        gap: 4px;
-    }
-
-    .product-card {
-        justify-self: center;
-        width: 100%;
-        max-width: 220px;
-        gap: 8px;
-        padding: 6px;
-    }
-
-    .product-name {
-        font-size: 18px;
     }
 
 }

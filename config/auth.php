@@ -117,6 +117,8 @@ return [
     'login_code' => [
         'email_daily_limit' => (int) env('LOGIN_CODE_EMAIL_DAILY_LIMIT', 5),
         'ip_daily_limit' => (int) env('LOGIN_CODE_IP_DAILY_LIMIT', 10),
+        'verification_attempt_limit' => (int) env('LOGIN_CODE_VERIFICATION_ATTEMPT_LIMIT', 5),
+        'verification_ip_attempt_limit' => (int) env('LOGIN_CODE_VERIFICATION_IP_ATTEMPT_LIMIT', 25),
     ],
 
 ];

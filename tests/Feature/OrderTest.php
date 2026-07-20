@@ -300,7 +300,7 @@ class OrderTest extends TestCase
         $this->actingAs($user)
             ->patch(route('orders.pickup.update', $order), ['pickup_at' => '2026-07-02T11:00'])
             ->assertSessionHasErrors([
-                'pickup_at' => 'Non puoi più modificare il ritiro dopo l\'invio del promemoria.',
+                'pickup_at' => 'Non puoi più modificare il ritiro.',
             ]);
 
         $this->assertDatabaseHas('orders', [

@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Mail\EmailLoginCodeMail;
 use App\Models\EmailLoginCode;
 use App\Models\User;
+use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
@@ -70,6 +72,9 @@ class AuthenticatedSessionController extends Controller
             'expires_at' => now()->addMinutes(10),
         ]);
 
+        $verificationRateLimitKeys = $this->verificationRateLimitKeys($request, $email);
+        RateLimiter::clear($verificationRateLimitKeys['email']);
+
         Mail::to($email)->locale(app()->getLocale())->send(new EmailLoginCodeMail($code));
 
         return back()
@@ -88,62 +93,85 @@ class AuthenticatedSessionController extends Controller
         ]);
 
         $email = $validated['email'];
+        $emailVerificationLockKey = 'login-code-verification-lock:email:'.hash('sha256', Str::lower(trim($email)));
+        $ipVerificationLockKey = 'login-code-verification-lock:ip:'.hash('sha256', (string) $request->ip());
 
-        $loginCode = EmailLoginCode::query()
-            ->where('email', $email)
-            ->whereNull('used_at')
-            ->where('expires_at', '>', now())
-            ->latest()
-            ->first();
+        try {
+            return Cache::lock($ipVerificationLockKey, 10)->block(5, fn () => Cache::lock(
+                $emailVerificationLockKey,
+                10,
+            )->block(5, function () use ($request, $validated, $email) {
+                $verificationRateLimitKeys = $this->verificationRateLimitKeys($request, $email);
+                $emailAttemptLimit = max(1, (int) config('auth.login_code.verification_attempt_limit', 5));
+                $ipAttemptLimit = max(1, (int) config('auth.login_code.verification_ip_attempt_limit', 25));
 
-        if (! $loginCode || ! Hash::check($validated['code'], $loginCode->code_hash)) {
-            $request->session()->flash('email_login_email', $email);
-            $request->session()->flash('email_login_needs_name', User::where('email', $email)->doesntExist());
+                if (RateLimiter::tooManyAttempts($verificationRateLimitKeys['email'], $emailAttemptLimit)
+                    || RateLimiter::tooManyAttempts($verificationRateLimitKeys['ip'], $ipAttemptLimit)) {
+                    $this->throwInvalidLoginCode($request, $email);
+                }
 
-            throw ValidationException::withMessages([
-                'code' => __('ui.validation.code_invalid'),
-            ]);
+                $loginCode = EmailLoginCode::query()
+                    ->where('email', $email)
+                    ->whereNull('used_at')
+                    ->where('expires_at', '>', now())
+                    ->latest()
+                    ->first();
+                $decaySeconds = $loginCode
+                    ? max(1, (int) ceil(now()->diffInSeconds($loginCode->expires_at)))
+                    : 600;
+
+                foreach ($verificationRateLimitKeys as $rateLimitKey) {
+                    RateLimiter::hit($rateLimitKey, $decaySeconds);
+                }
+
+                if (! $loginCode || ! Hash::check($validated['code'], $loginCode->code_hash)) {
+                    $this->throwInvalidLoginCode($request, $email);
+                }
+
+                $user = User::where('email', $email)->first();
+
+                if (! $user) {
+                    $nameValidator = Validator::make($request->only('name'), [
+                        'name' => 'required|string|max:255',
+                    ], [
+                        'name.required' => __('ui.validation.name_required'),
+                        'name.max' => __('ui.validation.name_max'),
+                    ]);
+
+                    if ($nameValidator->fails()) {
+                        $request->session()->flash('email_login_email', $email);
+                        $request->session()->flash('email_login_needs_name', true);
+
+                        throw new ValidationException($nameValidator);
+                    }
+
+                    $validated = array_merge($validated, $nameValidator->validated());
+                }
+
+                $loginCode->update(['used_at' => now()]);
+
+                $user ??= User::create([
+                    'email' => $email,
+                    'name' => $validated['name'],
+                    'locale' => app()->getLocale(),
+                    'password' => Hash::make(Str::random(64)),
+                    'email_verified_at' => now(),
+                ]);
+
+                if (! $user->email_verified_at) {
+                    $user->forceFill(['email_verified_at' => now()])->save();
+                }
+
+                Auth::login($user);
+                RateLimiter::clear($verificationRateLimitKeys['email']);
+
+                $request->session()->regenerate();
+
+                return redirect()->intended(route('dashboard', absolute: false));
+            }));
+        } catch (LockTimeoutException) {
+            $this->throwInvalidLoginCode($request, $email);
         }
-
-        $user = User::where('email', $email)->first();
-
-        if (! $user) {
-            $nameValidator = Validator::make($request->only('name'), [
-                'name' => 'required|string|max:255',
-            ], [
-                'name.required' => __('ui.validation.name_required'),
-                'name.max' => __('ui.validation.name_max'),
-            ]);
-
-            if ($nameValidator->fails()) {
-                $request->session()->flash('email_login_email', $email);
-                $request->session()->flash('email_login_needs_name', true);
-
-                throw new ValidationException($nameValidator);
-            }
-
-            $validated = array_merge($validated, $nameValidator->validated());
-        }
-
-        $loginCode->update(['used_at' => now()]);
-
-        $user ??= User::create([
-            'email' => $email,
-            'name' => $validated['name'],
-            'locale' => app()->getLocale(),
-            'password' => Hash::make(Str::random(64)),
-            'email_verified_at' => now(),
-        ]);
-
-        if (! $user->email_verified_at) {
-            $user->forceFill(['email_verified_at' => now()])->save();
-        }
-
-        Auth::login($user);
-
-        $request->session()->regenerate();
-
-        return redirect()->intended(route('dashboard', absolute: false));
     }
 
     /**
@@ -158,5 +186,28 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    /**
+     * @return array{email: string, ip: string}
+     */
+    private function verificationRateLimitKeys(Request $request, string $email): array
+    {
+        $normalizedEmail = Str::lower(trim($email));
+
+        return [
+            'email' => 'login-code-verification:email:'.hash('sha256', $normalizedEmail),
+            'ip' => 'login-code-verification:ip:'.hash('sha256', (string) $request->ip()),
+        ];
+    }
+
+    private function throwInvalidLoginCode(Request $request, string $email): never
+    {
+        $request->session()->flash('email_login_email', $email);
+        $request->session()->flash('email_login_needs_name', User::where('email', $email)->doesntExist());
+
+        throw ValidationException::withMessages([
+            'code' => __('ui.validation.code_invalid'),
+        ]);
     }
 }

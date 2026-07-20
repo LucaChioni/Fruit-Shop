@@ -70,7 +70,8 @@ RUN apk add --no-cache \
 COPY --from=composer /app /var/www/html
 COPY --from=frontend /app/public/build /var/www/html/public/build
 
-RUN mkdir -p \
+RUN rm -f public/hot \
+    && mkdir -p \
         storage/app/public \
         storage/framework/cache \
         storage/framework/sessions \
@@ -95,7 +96,8 @@ COPY docker/production/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=composer /app/public /var/www/html/public
 COPY --from=frontend /app/public/build /var/www/html/public/build
 
-RUN ln -sfn /var/www/html/storage/app/public /var/www/html/public/storage
+RUN rm -f /var/www/html/public/hot \
+    && ln -sfn /var/www/html/storage/app/public /var/www/html/public/storage
 
 EXPOSE 80
 

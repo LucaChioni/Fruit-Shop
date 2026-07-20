@@ -1,13 +1,20 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
 import FlashMessage from '@/Components/FlashMessage.vue';
 import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
+import QuantityInput from '@/Components/QuantityInput.vue';
 import { useTranslations } from '@/i18n';
 
 const props = defineProps({
-    items: Array,
-    total: String,
+    items: {
+        type: Array,
+        required: true,
+    },
+    total: {
+        type: String,
+        required: true,
+    },
 });
 
 const t = useTranslations();
@@ -18,7 +25,11 @@ const form = useForm({
     ),
 });
 
-function updateCart() {
+function updateCart(item) {
+    if (item.quantity_step === 1 && ! Number.isInteger(Number(form.quantities[item.id]))) {
+        return;
+    }
+
     form.patch(route('cart.update'), {
         preserveScroll: true,
     });
@@ -53,7 +64,7 @@ function removeItem(item) {
 
 <template>
     <PageContainer>
-        <header class="cart-header">
+        <header class="cart-header page-list-header">
             <PageNav />
 
             <FlashMessage />
@@ -71,9 +82,9 @@ function removeItem(item) {
                     <strong>{{ total }} €</strong>
                 </div>
 
-                <a :href="route('checkout.create')" class="checkout-link">
+                <Link :href="route('checkout.create')" class="checkout-link">
                     {{ t('cart.checkout', "Procedi all'ordine") }}
-                </a>
+                </Link>
             </footer>
 
             <div class="cart-items">
@@ -103,6 +114,7 @@ function removeItem(item) {
                             class="description-tooltip"
                             tabindex="0"
                             :aria-label="item.product_description"
+                            :aria-describedby="`cart-item-description-${item.id}`"
                         >
                             <span class="description-info" aria-hidden="true"></span>
                         </span>
@@ -120,23 +132,16 @@ function removeItem(item) {
                             </p>
 
                             <div class="cart-item-actions">
-                                <label class="quantity-label">
-                                    <input
-                                        v-model="form.quantities[item.id]"
-                                        type="number"
-                                        :min="item.quantity_step"
-                                        :step="item.quantity_step"
-                                        :inputmode="item.quantity_step === 1 ? 'numeric' : 'decimal'"
-                                        class="quantity-input"
-                                        :aria-label="t('cart.quantity', 'Quantità')"
-                                        :disabled="form.processing"
-                                        @input="clearQuantityError(item)"
-                                        @change="updateCart"
-                                    />
-                                    <span v-if="quantityError(item)" class="quantity-error" role="alert">
-                                        {{ quantityError(item) }}
-                                    </span>
-                                </label>
+                                <QuantityInput
+                                    v-model="form.quantities[item.id]"
+                                    :min="item.quantity_step"
+                                    :step="item.quantity_step"
+                                    :label="t('cart.quantity', 'Quantità')"
+                                    :error="quantityError(item)"
+                                    :disabled="form.processing"
+                                    @input="clearQuantityError(item)"
+                                    @change="updateCart(item)"
+                                />
 
                                 <button
                                     type="button"
@@ -157,7 +162,12 @@ function removeItem(item) {
                             </div>
                         </div>
                     </div>
-                    <span v-if="item.product_description" class="description-tooltip-content" role="tooltip">
+                    <span
+                        v-if="item.product_description"
+                        :id="`cart-item-description-${item.id}`"
+                        class="description-tooltip-content"
+                        role="tooltip"
+                    >
                         {{ item.product_description }}
                     </span>
                 </article>
@@ -166,15 +176,9 @@ function removeItem(item) {
     </PageContainer>
 </template>
 
-<style scoped>
-.cart-header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px 20px;
-    margin-bottom: 16px;
-}
+<style scoped src="../../../css/product-cards.css"></style>
 
+<style scoped>
 .cart-header :deep(.flash-message) {
     flex: 1 1 100%;
 }
@@ -200,203 +204,6 @@ function removeItem(item) {
 .cart-content {
     display: grid;
     gap: 16px;
-}
-
-.cart-items {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 220px));
-    justify-content: center;
-    gap: 12px;
-}
-
-.cart-item {
-    position: relative;
-    isolation: isolate;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    background: #fff;
-}
-
-.cart-item::before {
-    position: absolute;
-    z-index: 1;
-    inset: 0;
-    background: linear-gradient(135deg, rgb(255 255 255 / 0.68), rgb(255 255 255 / 0.9));
-    border-radius: inherit;
-    content: '';
-    transition: opacity 200ms ease;
-}
-
-.cart-item-header {
-    position: relative;
-    z-index: 3;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid rgb(22 101 52 / 0.25);
-    transition: border-color 200ms ease;
-}
-
-.cart-item-header > * {
-    transition: opacity 200ms ease;
-}
-
-.cart-item-body {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    flex: 1;
-    min-height: 0;
-    transition: opacity 200ms ease;
-}
-
-.cart-item-info {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: 6px;
-    min-width: 0;
-}
-
-.cart-item-image {
-    position: absolute;
-    z-index: 0;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
-    object-fit: cover;
-}
-
-.cart-item-image--placeholder {
-    z-index: 2;
-    display: grid;
-    place-items: center;
-    background: #fff;
-    color: rgb(22 101 52 / 0.35);
-    font-size: 72px;
-    font-weight: 800;
-}
-
-.cart-item-name {
-    flex: 1;
-    min-width: 0;
-    margin: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 20px;
-    font-weight: 700;
-    line-height: 1.2;
-}
-
-.description-tooltip {
-    position: relative;
-    flex: 0 0 auto;
-    transform: translateY(4px);
-}
-
-.description-info {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    box-sizing: border-box;
-    border: 1px solid currentColor;
-    border-radius: 999px;
-    color: #166534;
-    position: relative;
-    cursor: help;
-}
-
-.description-info::before,
-.description-info::after {
-    position: absolute;
-    left: 50%;
-    border-radius: 999px;
-    background: currentColor;
-    content: '';
-    transform: translateX(-50%);
-}
-
-.description-info::before {
-    top: 7px;
-    width: 2px;
-    height: 6px;
-}
-
-.description-info::after {
-    top: 4px;
-    width: 2px;
-    height: 2px;
-}
-
-.description-tooltip-content {
-    position: absolute;
-    z-index: 10;
-    top: calc(100% + 8px);
-    left: 50%;
-    box-sizing: border-box;
-    width: 100%;
-    padding: 8px 10px;
-    border-radius: 10px;
-    border: 1px solid #111827;
-    background: #111827;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 500;
-    line-height: 1.35;
-    opacity: 0;
-    pointer-events: none;
-    transform: translate(-50%, -4px);
-    transition: opacity 150ms ease, transform 150ms ease;
-}
-
-.cart-item:has(.description-tooltip:hover),
-.cart-item:has(.description-tooltip:focus) {
-    z-index: 1;
-}
-
-.cart-item:has(.description-tooltip:hover)::before,
-.cart-item:has(.description-tooltip:focus)::before {
-    opacity: 0;
-}
-
-.cart-item:has(.description-tooltip:hover) .cart-item-header,
-.cart-item:has(.description-tooltip:focus) .cart-item-header {
-    border-bottom-color: transparent;
-}
-
-.cart-item:has(.description-tooltip:hover) .cart-item-header > *,
-.cart-item:has(.description-tooltip:focus) .cart-item-header > *,
-.cart-item:has(.description-tooltip:hover) .cart-item-body,
-.cart-item:has(.description-tooltip:focus) .cart-item-body {
-    opacity: 0;
-}
-
-.cart-item:has(.description-tooltip:hover) .cart-item-body,
-.cart-item:has(.description-tooltip:focus) .cart-item-body {
-    pointer-events: none;
-}
-
-.cart-item:has(.description-tooltip:hover) .description-tooltip-content,
-.cart-item:has(.description-tooltip:focus) .description-tooltip-content {
-    opacity: 1;
-    transform: translateX(-50%);
-}
-
-.cart-item-details {
-    margin: 0;
-    font-size: 18px;
-    line-height: 1.25;
 }
 
 .cart-item-total {
@@ -428,53 +235,6 @@ function removeItem(item) {
 .cart-summary div {
     display: flex;
     gap: 8px;
-}
-
-.quantity-label {
-    display: flex;
-    flex: 1 1 auto;
-    min-width: 0;
-    position: relative;
-}
-
-.quantity-input {
-    width: 100%;
-    height: 28px;
-    box-sizing: border-box;
-    padding: 4px 7px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 16px;
-}
-
-.quantity-error {
-    position: absolute;
-    z-index: 20;
-    top: calc(100% + 6px);
-    left: 0;
-    display: block;
-    width: max-content;
-    max-width: 170px;
-    padding: 6px 8px;
-    border-radius: 8px;
-    border: 1px solid #fecaca;
-    background: #b91c1c;
-    color: #fff;
-    font-size: 11px;
-    font-weight: 700;
-    line-height: 1.2;
-    box-shadow: 0 8px 18px rgb(185 28 28 / 0.24);
-}
-
-.quantity-error::before {
-    position: absolute;
-    top: -4px;
-    left: 14px;
-    width: 8px;
-    height: 8px;
-    background: inherit;
-    content: '';
-    transform: rotate(45deg);
 }
 
 .cart-item-actions {
@@ -533,64 +293,13 @@ function removeItem(item) {
     background: #14532d;
 }
 
-.products-link {
-    color: #166534;
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.products-link:hover {
-    text-decoration: underline;
-}
-
 @media (max-width: 731px) {
-    .cart-items {
-        grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
-        justify-content: center;
-        gap: 4px;
-    }
-
-    .cart-item {
-        justify-self: center;
-        width: 100%;
-        max-width: 220px;
-        gap: 8px;
-        padding: 6px;
-    }
-
-    .cart-item-name {
-        font-size: 18px;
-    }
-
     .cart-item-total {
         font-size: 12px;
     }
 }
 
 @media (max-width: 640px) {
-    .cart-header {
-        gap: 8px;
-        margin-bottom: 12px;
-    }
-
-    .cart-items {
-        grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
-        justify-content: center;
-        gap: 4px;
-    }
-
-    .cart-item {
-        justify-self: center;
-        width: 100%;
-        max-width: 220px;
-        gap: 8px;
-        padding: 6px;
-    }
-
-    .cart-item-name {
-        font-size: 18px;
-    }
-
     .cart-summary {
         flex-direction: column;
         align-items: stretch;

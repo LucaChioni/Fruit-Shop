@@ -5,6 +5,7 @@ import DangerButton from '@/Components/DangerButton.vue';
 import Modal from '@/Components/Modal.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { useTranslations } from '@/i18n';
+import { applyTheme, getPreferredTheme, saveTheme } from '@/theme';
 
 const page = usePage();
 const t = useTranslations();
@@ -20,50 +21,17 @@ const showLogoutConfirmation = ref(false);
 const logoutProcessing = ref(false);
 const isDarkMode = ref(false);
 const isMobileMenuOpen = ref(false);
-const themeStorageKey = 'fruit_shop_theme';
-
-function applyTheme(theme) {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-    document.documentElement.style.colorScheme = theme;
-    isDarkMode.value = theme === 'dark';
-}
-
-function getPreferredTheme() {
-    try {
-        const storedTheme = window.localStorage.getItem(themeStorageKey);
-
-        if (storedTheme === 'dark' || storedTheme === 'light') {
-            return storedTheme;
-        }
-    } catch {
-        // Fall back to the system preference when localStorage is unavailable.
-    }
-
-    return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
 
 onMounted(() => {
-    applyTheme(getPreferredTheme());
-});
-
-function toggleTheme() {
-    const nextTheme = isDarkMode.value ? 'light' : 'dark';
-
-    setTheme(nextTheme);
-}
-
-function setTheme(theme) {
-    if ((theme === 'dark') === isDarkMode.value) {
-        return;
-    }
-
-    try {
-        window.localStorage.setItem(themeStorageKey, theme);
-    } catch {
-        // The visual change still applies for the current page view.
-    }
+    const theme = getPreferredTheme();
 
     applyTheme(theme);
+    isDarkMode.value = theme === 'dark';
+});
+
+function setTheme(theme) {
+    saveTheme(theme);
+    isDarkMode.value = theme === 'dark';
 }
 
 function confirmLogout() {
@@ -115,8 +83,6 @@ function logout() {
             <div class="page-nav-group page-nav-group--main">
             <Link
                 :href="route('products.index')"
-                as="button"
-                type="button"
                 class="page-nav-button"
                 :title="t('nav.products', 'Prodotti')"
                 :aria-label="t('nav.products', 'Prodotti')"
@@ -137,8 +103,6 @@ function logout() {
             <Link
                 v-if="page.props.auth.user"
                 :href="route('cart.index')"
-                as="button"
-                type="button"
                 class="page-nav-button"
                 :title="t('nav.cart', 'Carrello')"
                 :aria-label="t('nav.cart', 'Carrello')"
@@ -158,8 +122,6 @@ function logout() {
             <Link
                 v-if="page.props.auth.user"
                 :href="route('orders.index')"
-                as="button"
-                type="button"
                 class="page-nav-button"
                 :title="t('nav.orders', 'I miei ordini')"
                 :aria-label="t('nav.orders', 'I miei ordini')"
@@ -191,8 +153,6 @@ function logout() {
             <Link
                 v-if="page.props.auth.user?.is_admin"
                 :href="route('admin.orders.index')"
-                as="button"
-                type="button"
                 class="page-nav-button page-nav-button--admin"
                 :title="t('admin.manage_orders', 'Gestisci ordini')"
                 :aria-label="t('admin.manage_orders', 'Gestisci ordini')"
@@ -206,8 +166,6 @@ function logout() {
             <Link
                 v-if="page.props.auth.user?.is_admin"
                 :href="route('admin.products.index')"
-                as="button"
-                type="button"
                 class="page-nav-button page-nav-button--admin"
                 :title="t('admin.manage_products', 'Gestisci prodotti')"
                 :aria-label="t('admin.manage_products', 'Gestisci prodotti')"
@@ -226,8 +184,6 @@ function logout() {
             <Link
                 v-if="page.props.auth.user"
                 :href="route('profile.edit')"
-                as="button"
-                type="button"
                 class="page-nav-button page-nav-button--settings"
                 :title="t('nav.settings', 'Impostazioni')"
                 :aria-label="t('nav.settings', 'Impostazioni')"
@@ -244,8 +200,6 @@ function logout() {
             <Link
                 v-if="!page.props.auth.user"
                 :href="route('login')"
-                as="button"
-                type="button"
                 class="page-nav-button page-nav-button--auth"
                 :title="t('nav.login', 'Login')"
                 :aria-label="t('nav.login', 'Login')"
@@ -272,7 +226,7 @@ function logout() {
                 <span class="page-nav-button-label">{{ t('nav.logout', 'Logout') }}</span>
             </button>
 
-            <span class="theme-switcher" :aria-label="t('nav.theme', 'Tema')">
+            <span class="theme-switcher" role="group" :aria-label="t('nav.theme', 'Tema')">
                 <button
                     type="button"
                     class="theme-button"
@@ -307,7 +261,7 @@ function logout() {
                 </button>
             </span>
 
-            <span class="language-switcher" :aria-label="t('nav.language', 'Lingua')">
+            <span class="language-switcher" role="group" :aria-label="t('nav.language', 'Lingua')">
                 <Link
                     :href="route('language.update', 'it')"
                     method="post"
@@ -331,9 +285,14 @@ function logout() {
         </nav>
     </div>
 
-    <Modal :show="showLogoutConfirmation" max-width="md" @close="closeLogoutConfirmation">
+    <Modal
+        :show="showLogoutConfirmation"
+        max-width="md"
+        labelled-by="logout-modal-title"
+        @close="closeLogoutConfirmation"
+    >
         <div class="logout-modal">
-            <h2 class="logout-modal-title">{{ t('logout.confirm_title', 'Confermi il logout?') }}</h2>
+            <h2 id="logout-modal-title" class="logout-modal-title">{{ t('logout.confirm_title', 'Confermi il logout?') }}</h2>
             <p class="logout-modal-text">
                 {{ t('logout.confirm_text', 'Uscirai dal tuo account. Per ordinare dovrai accedere di nuovo.') }}
             </p>
@@ -485,16 +444,10 @@ function logout() {
     height: 16px;
 }
 
-.nav-icon--orders::after {
-    inset: 3px;
-}
-
-.nav-icon--admin,
 .nav-icon--login {
     border-radius: 50%;
 }
 
-.nav-icon--admin::after,
 .nav-icon--login::after {
     position: absolute;
     inset: 4px;

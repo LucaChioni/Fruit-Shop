@@ -36,7 +36,7 @@ const form = useForm({
             class="mt-6 space-y-6"
         >
             <div>
-                <InputLabel for="email" :value="t('legal.email', 'Email')" />
+                <InputLabel as="span" :value="t('legal.email', 'Email')" />
 
                 <p id="email" class="mt-1 text-sm text-gray-700">
                     {{ user.email }}
@@ -92,6 +92,7 @@ const form = useForm({
                     <p
                         v-if="form.recentlySuccessful"
                         class="text-sm text-gray-600"
+                        role="status"
                     >
                         {{ t('settings.saved', 'Salvato.') }}
                     </p>

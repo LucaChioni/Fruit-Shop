@@ -1,15 +1,17 @@
 <script setup>
 import { useForm, usePage } from '@inertiajs/vue3';
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import flatpickr from 'flatpickr';
-import { Italian } from 'flatpickr/dist/l10n/it.js';
-import 'flatpickr/dist/flatpickr.css';
+import FlashMessage from '@/Components/FlashMessage.vue';
+import OrderStatusBadge from '@/Components/OrderStatusBadge.vue';
 import PageNav from '@/Components/PageNav.vue';
 import PageContainer from '@/Components/PageContainer.vue';
+import { usePickupDateTimePicker } from '@/composables/usePickupDateTimePicker';
 import { useTranslations } from '@/i18n';
 
 const props = defineProps({
-    order: Object,
+    order: {
+        type: Object,
+        required: true,
+    },
     isAdminView: {
         type: Boolean,
         default: false,
@@ -36,14 +38,6 @@ const page = usePage();
 
 const t = useTranslations();
 const pickupAtDefaultParts = props.order.pickup_at_input?.split('T') ?? ['', ''];
-const pickupAtMinDate = props.pickupAtMin?.split('T')[0] ?? '';
-const closedPickupDates = new Set(props.closedPickupDates ?? []);
-const pickupDateError = ref('');
-const dateInputLocale = computed(() => page.props.locale === 'it' ? 'it-IT' : 'en-US');
-const pickupDateInput = ref(null);
-const pickupTimeInput = ref(null);
-let pickupDatePicker = null;
-let pickupTimePicker = null;
 
 const statusForm = useForm({
     status: props.order.status,
@@ -55,6 +49,20 @@ const pickupForm = useForm({
 });
 
 const cancelForm = useForm({});
+
+const {
+    dateInputLocale,
+    pickupDateError,
+    pickupDateInput,
+    pickupTimeInput,
+    validatePickupDate,
+} = usePickupDateTimePicker({
+    form: pickupForm,
+    pickupAtMin: props.pickupAtMin,
+    pickupDateMax: props.pickupDateMax,
+    closedPickupDates: props.closedPickupDates,
+    closedDateError: () => t('checkout.closed_date_error', 'Il ritiro non è disponibile la domenica o nei giorni festivi.'),
+});
 
 function updateStatus() {
     statusForm.patch(route('admin.orders.status.update', props.order.id), {
@@ -76,61 +84,6 @@ function updatePickup() {
     });
 }
 
-function validatePickupDate() {
-    pickupDateError.value = '';
-
-    if (! pickupForm.pickup_date) {
-        return;
-    }
-
-    if (closedPickupDates.has(pickupForm.pickup_date)) {
-        pickupForm.pickup_date = '';
-        pickupDateError.value = t('checkout.closed_date_error', 'Il ritiro non è disponibile la domenica o nei giorni festivi.');
-    }
-}
-
-function setupPickupDatePicker() {
-    if (! pickupDateInput.value) {
-        return;
-    }
-
-    pickupDatePicker?.destroy();
-    pickupDatePicker = flatpickr(pickupDateInput.value, {
-        allowInput: false,
-        altInput: true,
-        altFormat: page.props.locale === 'it' ? 'd/m/Y' : 'm/d/Y',
-        dateFormat: 'Y-m-d',
-        defaultDate: pickupForm.pickup_date || null,
-        disable: [...closedPickupDates],
-        locale: page.props.locale === 'it' ? Italian : 'default',
-        maxDate: props.pickupDateMax,
-        minDate: pickupAtMinDate,
-        onChange: (selectedDates, dateValue) => {
-            pickupForm.pickup_date = dateValue;
-            validatePickupDate();
-        },
-    });
-}
-
-function setupPickupTimePicker() {
-    if (! pickupTimeInput.value) {
-        return;
-    }
-
-    pickupTimePicker?.destroy();
-    pickupTimePicker = flatpickr(pickupTimeInput.value, {
-        allowInput: false,
-        dateFormat: 'H:i',
-        defaultDate: pickupForm.pickup_time || null,
-        enableTime: true,
-        noCalendar: true,
-        time_24hr: true,
-        onChange: (selectedDates, timeValue) => {
-            pickupForm.pickup_time = timeValue;
-        },
-    });
-}
-
 function cancelOrder() {
     if (! confirm(t('orders.cancel_confirm', 'Vuoi annullare questo ordine?'))) {
         return;
@@ -141,42 +94,20 @@ function cancelOrder() {
     });
 }
 
-onMounted(() => {
-    setupPickupDatePicker();
-    setupPickupTimePicker();
-});
-
-onBeforeUnmount(() => {
-    pickupDatePicker?.destroy();
-    pickupTimePicker?.destroy();
-});
-
-watch(dateInputLocale, async () => {
-    await nextTick();
-    setupPickupDatePicker();
-});
 </script>
 
 <template>
     <PageContainer narrow>
-        <header class="order-header">
+        <header class="order-header page-header page-list-header">
             <PageNav />
 
-            <div v-if="page.props.flash?.success" class="flash-message flash-message--success">
-                {{ page.props.flash.success }}
-            </div>
-
-            <div v-if="page.props.flash?.error" class="flash-message flash-message--error">
-                {{ page.props.flash.error }}
-            </div>
+            <FlashMessage embedded />
         </header>
 
         <section class="order-section">
             <p class="order-meta">
                 <strong>{{ t('orders.reference', 'Riferimento') }}:</strong> {{ order.order_number ?? '#' + order.id }} · {{ order.created_at }} ·
-                <span class="order-status" :class="`order-status--${order.status}`">
-                    {{ t(`orders.${order.status}`, order.status) }}
-                </span>
+                <OrderStatusBadge :status="order.status" />
             </p>
 
             <p v-if="order.pickup_at" class="order-meta order-meta--pickup">
@@ -331,18 +262,6 @@ watch(dateInputLocale, async () => {
 </template>
 
 <style scoped>
-.order-header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px 20px;
-    margin-bottom: 16px;
-}
-
-.flash-message {
-    flex: 1 1 100%;
-}
-
 .order-meta {
     margin: 0;
     color: #555;
@@ -366,42 +285,6 @@ watch(dateInputLocale, async () => {
 
 :global(html.dark .maps-link) {
     color: #86efac;
-}
-
-.order-status {
-    display: inline-flex;
-    align-items: center;
-    margin-left: 3px;
-    padding: 2px 8px;
-    border: 1px solid transparent;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 1.3;
-}
-
-.order-status--pending {
-    border-color: #fde68a;
-    background: #fef3c7;
-    color: #92400e;
-}
-
-.order-status--ready {
-    border-color: #bbf7d0;
-    background: #dcfce7;
-    color: #166534;
-}
-
-.order-status--completed {
-    border-color: #e5e7eb;
-    background: #f3f4f6;
-    color: #374151;
-}
-
-.order-status--cancelled {
-    border-color: #fecaca;
-    background: #fee2e2;
-    color: #991b1b;
 }
 
 .order-section {
@@ -454,47 +337,12 @@ watch(dateInputLocale, async () => {
     font-size: 18px;
 }
 
-.products-link {
-    color: #166534;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.products-link:hover {
-    text-decoration: underline;
-}
-
-.flash-message {
-    margin-top: 0;
-    padding: 10px 12px;
-    border: 1px solid transparent;
-    border-radius: 10px;
-    font-weight: 600;
-}
-
 @media (max-width: 640px) {
-    .order-header {
-        gap: 8px;
-        margin-bottom: 12px;
-    }
-
     .order-section,
     .order-total {
         margin-bottom: 12px;
         padding: 10px;
     }
-}
-
-.flash-message--success {
-    background: #dcfce7;
-    border-color: #bbf7d0;
-    color: #15803d;
-}
-
-.flash-message--error {
-    border-color: #fecaca;
-    background: #fee2e2;
-    color: #b91c1c;
 }
 
 .status-form {

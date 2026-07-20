@@ -95,5 +95,4 @@ class ProfileTest extends TestCase
         $this->assertAuthenticatedAs($admin);
         $this->assertNotNull($admin->fresh());
     }
-
 }

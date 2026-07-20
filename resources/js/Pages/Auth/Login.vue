@@ -176,12 +176,6 @@ function clearLoginValidationMessage(event) {
     color: #86efac;
 }
 
-:global(html.dark) .auth-help {
-    border-color: #334155;
-    background: #111827;
-    color: #cbd5e1;
-}
-
 @media (max-width: 640px) {
     .auth-header {
         margin-bottom: 12px;

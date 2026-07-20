@@ -41,12 +41,12 @@ class AuthenticationTest extends TestCase
             && str_contains($mail->render(), 'Login code'));
     }
 
-    public function test_login_code_requests_are_limited_to_ten_per_email_per_day(): void
+    public function test_login_code_requests_use_the_configured_email_daily_limit(): void
     {
         Mail::fake();
         $key = 'login-code:email:'.hash('sha256', 'test@example.com');
 
-        foreach (range(1, 10) as $attempt) {
+        foreach (range(1, config('auth.login_code.email_daily_limit')) as $attempt) {
             RateLimiter::hit($key, 86400);
         }
 
@@ -58,13 +58,13 @@ class AuthenticationTest extends TestCase
         Mail::assertNothingSent();
     }
 
-    public function test_login_code_requests_are_limited_to_ten_per_ip_per_day(): void
+    public function test_login_code_requests_use_the_configured_ip_daily_limit(): void
     {
         Mail::fake();
         $ipAddress = '203.0.113.10';
         $key = 'login-code:ip:'.hash('sha256', $ipAddress);
 
-        foreach (range(1, 10) as $attempt) {
+        foreach (range(1, config('auth.login_code.ip_daily_limit')) as $attempt) {
             RateLimiter::hit($key, 86400);
         }
 
@@ -79,7 +79,7 @@ class AuthenticationTest extends TestCase
 
     public function test_sessions_remain_active_for_ten_days_of_inactivity(): void
     {
-        $this->assertSame(43200, config('session.lifetime'));
+        $this->assertSame(14400, config('session.lifetime'));
     }
 
     public function test_existing_users_can_verify_code_and_login(): void
@@ -157,6 +157,151 @@ class AuthenticationTest extends TestCase
 
         $response->assertSessionHasErrors('code');
         $this->assertGuest();
+    }
+
+    public function test_otp_verification_attempts_remain_limited_when_ip_changes(): void
+    {
+        $this->assertSame(5, config('auth.login_code.verification_attempt_limit'));
+        $this->assertSame(25, config('auth.login_code.verification_ip_attempt_limit'));
+
+        config()->set('auth.login_code.verification_attempt_limit', 2);
+
+        User::factory()->create(['email' => 'test@example.com']);
+
+        EmailLoginCode::create([
+            'email' => 'test@example.com',
+            'code_hash' => Hash::make('123456'),
+            'expires_at' => now()->addMinutes(10),
+        ]);
+
+        $limitedIp = '203.0.113.20';
+        $invalidMessage = __('ui.validation.code_invalid', [], 'it');
+
+        foreach (range(1, 2) as $attempt) {
+            $this->withServerVariables(['REMOTE_ADDR' => $limitedIp])
+                ->post(route('login.verify'), [
+                    'email' => 'test@example.com',
+                    'code' => '654321',
+                ])
+                ->assertSessionHasErrors(['code' => $invalidMessage]);
+        }
+
+        $this->withServerVariables(['REMOTE_ADDR' => $limitedIp])
+            ->post(route('login.verify'), [
+                'email' => 'test@example.com',
+                'code' => '123456',
+            ])
+            ->assertSessionHasErrors(['code' => $invalidMessage]);
+
+        $this->assertGuest();
+
+        $this->withServerVariables(['REMOTE_ADDR' => '203.0.113.21'])
+            ->post(route('login.verify'), [
+                'email' => 'test@example.com',
+                'code' => '123456',
+            ])
+            ->assertSessionHasErrors(['code' => $invalidMessage]);
+
+        $this->assertGuest();
+    }
+
+    public function test_otp_verification_attempts_are_limited_per_ip_across_emails(): void
+    {
+        config()->set('auth.login_code.verification_ip_attempt_limit', 1);
+
+        foreach (['first@example.com', 'second@example.com'] as $email) {
+            EmailLoginCode::create([
+                'email' => $email,
+                'code_hash' => Hash::make('123456'),
+                'expires_at' => now()->addMinutes(10),
+            ]);
+        }
+
+        $ipAddress = '203.0.113.22';
+        $invalidMessage = __('ui.validation.code_invalid', [], 'it');
+
+        $this->withServerVariables(['REMOTE_ADDR' => $ipAddress])
+            ->post(route('login.verify'), [
+                'email' => 'first@example.com',
+                'code' => '654321',
+            ])
+            ->assertSessionHasErrors(['code' => $invalidMessage]);
+
+        $this->withServerVariables(['REMOTE_ADDR' => $ipAddress])
+            ->post(route('login.verify'), [
+                'email' => 'second@example.com',
+                'code' => '123456',
+            ])
+            ->assertSessionHasErrors(['code' => $invalidMessage]);
+
+        $this->assertGuest();
+    }
+
+    public function test_otp_verification_attempts_are_reset_after_success(): void
+    {
+        $user = User::factory()->create(['email' => 'test@example.com']);
+        $ipAddress = '203.0.113.30';
+        $emailRateLimitKey = 'login-code-verification:email:'.hash('sha256', 'test@example.com');
+        $ipRateLimitKey = 'login-code-verification:ip:'.hash('sha256', $ipAddress);
+
+        EmailLoginCode::create([
+            'email' => 'test@example.com',
+            'code_hash' => Hash::make('123456'),
+            'expires_at' => now()->addMinutes(10),
+        ]);
+
+        RateLimiter::hit($emailRateLimitKey, 600);
+        RateLimiter::hit($ipRateLimitKey, 600);
+
+        $this->withServerVariables(['REMOTE_ADDR' => $ipAddress])
+            ->post(route('login.verify'), [
+                'email' => 'test@example.com',
+                'code' => '123456',
+            ])
+            ->assertRedirect(route('dashboard', absolute: false));
+
+        $this->assertAuthenticatedAs($user);
+        $this->assertSame(0, RateLimiter::attempts($emailRateLimitKey));
+        $this->assertSame(2, RateLimiter::attempts($ipRateLimitKey));
+        $this->assertSame(0, RateLimiter::availableIn($emailRateLimitKey));
+        $this->assertGreaterThan(0, RateLimiter::availableIn($ipRateLimitKey));
+    }
+
+    public function test_valid_otp_can_be_retried_when_name_is_missing(): void
+    {
+        config()->set('auth.login_code.verification_attempt_limit', 2);
+
+        EmailLoginCode::create([
+            'email' => 'new@example.com',
+            'code_hash' => Hash::make('123456'),
+            'expires_at' => now()->addMinutes(10),
+        ]);
+
+        $ipAddress = '203.0.113.31';
+        $emailRateLimitKey = 'login-code-verification:email:'.hash('sha256', 'new@example.com');
+        $ipRateLimitKey = 'login-code-verification:ip:'.hash('sha256', $ipAddress);
+
+        $this->withServerVariables(['REMOTE_ADDR' => $ipAddress])
+            ->post(route('login.verify'), [
+                'email' => 'new@example.com',
+                'code' => '123456',
+            ])
+            ->assertSessionHasErrors('name');
+
+        $this->assertSame(1, RateLimiter::attempts($emailRateLimitKey));
+        $this->assertSame(1, RateLimiter::attempts($ipRateLimitKey));
+
+        $this->withServerVariables(['REMOTE_ADDR' => $ipAddress])
+            ->post(route('login.verify'), [
+                'email' => 'new@example.com',
+                'name' => 'New Customer',
+                'code' => '123456',
+            ])
+            ->assertRedirect(route('dashboard', absolute: false));
+
+        $this->assertAuthenticated();
+        $this->assertSame(0, RateLimiter::attempts($emailRateLimitKey));
+        $this->assertSame(2, RateLimiter::attempts($ipRateLimitKey));
     }
 
     public function test_users_can_logout(): void

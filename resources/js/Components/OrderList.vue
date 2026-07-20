@@ -1,8 +1,13 @@
 <script setup>
+import { Link } from '@inertiajs/vue3';
+import OrderStatusBadge from '@/Components/OrderStatusBadge.vue';
 import { useTranslations } from '@/i18n';
 
 const props = defineProps({
-    orders: Array,
+    orders: {
+        type: Array,
+        default: () => [],
+    },
     emptyMessage: {
         type: String,
         default: 'Non ci sono ordini.',
@@ -38,9 +43,7 @@ const t = useTranslations();
 
                 <p class="order-card-meta">
                     {{ order.created_at }} · {{ t('orders.status', 'Stato') }}:
-                    <span class="order-status" :class="`order-status--${order.status}`">
-                        {{ t(`orders.${order.status}`, order.status) }}
-                    </span>
+                    <OrderStatusBadge :status="order.status" />
                 </p>
 
                 <p v-if="order.pickup_at" class="order-card-meta">
@@ -59,9 +62,9 @@ const t = useTranslations();
             <div class="order-card-side">
                 <strong>{{ order.total_amount }} €</strong>
 
-                <a :href="route(detailRouteName, order.id)" class="order-link">
+                <Link :href="route(detailRouteName, order.id)" class="order-link">
                     {{ t('orders.detail', 'Dettaglio') }}
-                </a>
+                </Link>
             </div>
         </article>
     </section>
@@ -102,42 +105,6 @@ const t = useTranslations();
     margin: 0 0 3px;
     color: #555;
     font-size: 14px;
-}
-
-.order-status {
-    display: inline-flex;
-    align-items: center;
-    margin-left: 3px;
-    padding: 2px 8px;
-    border: 1px solid transparent;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 1.3;
-}
-
-.order-status--pending {
-    border-color: #fde68a;
-    background: #fef3c7;
-    color: #92400e;
-}
-
-.order-status--ready {
-    border-color: #bbf7d0;
-    background: #dcfce7;
-    color: #166534;
-}
-
-.order-status--completed {
-    border-color: #e5e7eb;
-    background: #f3f4f6;
-    color: #374151;
-}
-
-.order-status--cancelled {
-    border-color: #fecaca;
-    background: #fee2e2;
-    color: #991b1b;
 }
 
 .order-card-side {

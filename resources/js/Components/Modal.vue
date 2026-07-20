@@ -1,5 +1,25 @@
 <script setup>
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
+
+let bodyLockCount = 0;
+let previousBodyOverflow = '';
+
+function lockBodyScroll() {
+    if (bodyLockCount === 0) {
+        previousBodyOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+    }
+
+    bodyLockCount += 1;
+}
+
+function unlockBodyScroll() {
+    bodyLockCount = Math.max(0, bodyLockCount - 1);
+
+    if (bodyLockCount === 0) {
+        document.body.style.overflow = previousBodyOverflow;
+    }
+}
 
 const props = defineProps({
     show: {
@@ -14,29 +34,55 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    labelledBy: {
+        type: String,
+        default: undefined,
+    },
 });
 
 const emit = defineEmits(['close']);
 const dialog = ref();
 const showSlot = ref(props.show);
+let closeTimer = null;
+let ownsBodyLock = false;
+
+function updateVisibility(show) {
+    if (closeTimer) {
+        clearTimeout(closeTimer);
+        closeTimer = null;
+    }
+
+    if (show) {
+        if (! ownsBodyLock) {
+            lockBodyScroll();
+            ownsBodyLock = true;
+        }
+
+        showSlot.value = true;
+        nextTick(() => {
+            if (dialog.value && ! dialog.value.open) {
+                dialog.value.showModal();
+            }
+        });
+
+        return;
+    }
+
+    if (ownsBodyLock) {
+        unlockBodyScroll();
+        ownsBodyLock = false;
+    }
+
+    closeTimer = setTimeout(() => {
+        dialog.value?.close();
+        showSlot.value = false;
+        closeTimer = null;
+    }, 200);
+}
 
 watch(
     () => props.show,
-    () => {
-        if (props.show) {
-            document.body.style.overflow = 'hidden';
-            showSlot.value = true;
-
-            dialog.value?.showModal();
-        } else {
-            document.body.style.overflow = '';
-
-            setTimeout(() => {
-                dialog.value?.close();
-                showSlot.value = false;
-            }, 200);
-        }
-    },
+    updateVisibility,
 );
 
 const close = () => {
@@ -55,12 +101,21 @@ const closeOnEscape = (e) => {
     }
 };
 
-onMounted(() => document.addEventListener('keydown', closeOnEscape));
+onMounted(() => {
+    document.addEventListener('keydown', closeOnEscape);
+    updateVisibility(props.show);
+});
 
 onUnmounted(() => {
     document.removeEventListener('keydown', closeOnEscape);
 
-    document.body.style.overflow = '';
+    if (closeTimer) {
+        clearTimeout(closeTimer);
+    }
+
+    if (ownsBodyLock) {
+        unlockBodyScroll();
+    }
 });
 
 const maxWidthClass = computed(() => {
@@ -78,6 +133,8 @@ const maxWidthClass = computed(() => {
     <dialog
         class="z-50 m-0 min-h-full min-w-full overflow-y-auto bg-transparent backdrop:bg-transparent"
         ref="dialog"
+        :aria-labelledby="labelledBy"
+        @cancel.prevent="close"
     >
         <div
             class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0"

@@ -1,10 +1,11 @@
 <script setup>
-import { ref } from 'vue';
-import LegalDocument from '@/Components/LegalDocument.vue';
-import Modal from '@/Components/Modal.vue';
+import { usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
+import LegalModal from '@/Components/LegalModal.vue';
 import { useTranslations } from '@/i18n';
 
 const t = useTranslations();
+const page = usePage();
 const activeLegalDocument = ref(null);
 
 const links = [
@@ -33,54 +34,54 @@ function legalFallback(type) {
     return links.find((item) => item.key === type)?.fallback ?? 'Privacy';
 }
 
-const companyInfo = [
+const companyInfo = computed(() => [
     {
         labelKey: 'legal.company_name',
         fallback: 'Ragione sociale',
-        value: 'Fruit Shop S.r.l.',
+        value: page.props.shop?.legal?.companyName ?? 'Fruit Shop S.r.l.',
     },
     {
         labelKey: 'legal.registered_office',
         fallback: 'Sede legale',
-        value: 'Via Placeholder 1, 00100 Roma (RM)',
+        value: page.props.shop?.legal?.registeredOffice ?? 'Via Placeholder 1, 00100 Roma (RM)',
     },
     {
         labelKey: 'legal.vat_number',
         fallback: 'P. IVA',
-        value: 'IT00000000000',
+        value: page.props.shop?.legal?.vatNumber ?? 'IT00000000000',
     },
     {
         labelKey: 'legal.tax_code',
         fallback: 'Codice fiscale',
-        value: '00000000000',
+        value: page.props.shop?.legal?.taxCode ?? '00000000000',
     },
     {
         labelKey: 'legal.rea',
         fallback: 'REA',
-        value: 'RM-0000000',
+        value: page.props.shop?.legal?.rea ?? 'RM-0000000',
     },
     {
         labelKey: 'legal.share_capital',
         fallback: 'Capitale sociale',
-        value: 'Euro 10.000 i.v.',
+        value: page.props.shop?.legal?.shareCapital ?? 'Euro 10.000 i.v.',
     },
     {
         labelKey: 'legal.email',
         fallback: 'Email',
-        value: 'info@example.com',
+        value: page.props.shop?.legal?.email ?? 'info@example.com',
     },
     {
         labelKey: 'legal.pec',
         fallback: 'PEC',
-        value: 'fruitshop@pec.example.com',
+        value: page.props.shop?.legal?.pec ?? 'fruitshop@pec.example.com',
     },
-];
+]);
 </script>
 
 <template>
     <footer class="legal-footer" :aria-label="t('legal.footer_label', 'Informazioni legali')">
         <section class="legal-company" :aria-label="t('legal.company_label', 'Dati aziendali')">
-            <span class="legal-footer-brand">Fruit Shop</span>
+            <span class="legal-footer-brand">{{ page.props.shop?.legal?.brand ?? 'Fruit Shop' }}</span>
 
             <dl class="legal-company-list">
                 <div
@@ -106,28 +107,12 @@ const companyInfo = [
             </button>
         </nav>
 
-        <Modal :show="activeLegalDocument !== null" max-width="2xl" @close="activeLegalDocument = null">
-            <section v-if="activeLegalDocument" class="legal-modal">
-                <header class="legal-modal-header">
-                    <h2 class="legal-modal-title">
-                        {{ t(legalTitle(activeLegalDocument), legalFallback(activeLegalDocument)) }}
-                    </h2>
-
-                    <button
-                        type="button"
-                        class="legal-modal-close"
-                        :aria-label="t('cookies.close', 'Chiudi avviso cookie')"
-                        @click="activeLegalDocument = null"
-                    >
-                        ×
-                    </button>
-                </header>
-
-                <div class="legal-modal-body">
-                    <LegalDocument :type="activeLegalDocument" />
-                </div>
-            </section>
-        </Modal>
+        <LegalModal
+            :show="activeLegalDocument !== null"
+            :type="activeLegalDocument"
+            :title="t(legalTitle(activeLegalDocument), legalFallback(activeLegalDocument))"
+            @close="activeLegalDocument = null"
+        />
     </footer>
 </template>
 
@@ -208,57 +193,6 @@ const companyInfo = [
 .legal-footer-link:hover {
     color: #166534;
     text-decoration: underline;
-}
-
-.legal-modal {
-    max-height: min(760px, calc(100vh - 48px));
-    overflow-y: auto;
-    padding: 18px;
-}
-
-.legal-modal-header {
-    position: sticky;
-    top: -18px;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin: -18px -18px 14px;
-    padding: 16px 18px;
-    border-bottom: 1px solid #e5e7eb;
-    background: #fff;
-}
-
-.legal-modal-title {
-    margin: 0;
-    color: #111827;
-    font-size: 20px;
-    font-weight: 800;
-}
-
-.legal-modal-close {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
-    padding: 0;
-    border: 0;
-    border-radius: 999px;
-    background: transparent;
-    color: #4b5563;
-    cursor: pointer;
-    font: inherit;
-    font-size: 24px;
-    line-height: 1;
-}
-
-.legal-modal-close:hover,
-.legal-modal-close:focus-visible {
-    background: #f3f4f6;
-    color: #111827;
-    outline: none;
 }
 
 </style>

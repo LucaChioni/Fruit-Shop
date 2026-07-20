@@ -1,36 +1,51 @@
 <script setup>
 import { useForm, usePage } from '@inertiajs/vue3';
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import flatpickr from 'flatpickr';
-import { Italian } from 'flatpickr/dist/l10n/it.js';
-import 'flatpickr/dist/flatpickr.css';
 import PageContainer from '@/Components/PageContainer.vue';
 import PageNav from '@/Components/PageNav.vue';
+import { usePickupDateTimePicker } from '@/composables/usePickupDateTimePicker';
 import { useTranslations } from '@/i18n';
 
 const props = defineProps({
-    pickupAtDefault: String,
-    pickupAtMin: String,
-    pickupDateMax: String,
-    closedPickupDates: Array,
+    pickupAtDefault: {
+        type: String,
+        required: true,
+    },
+    pickupAtMin: {
+        type: String,
+        required: true,
+    },
+    pickupDateMax: {
+        type: String,
+        required: true,
+    },
+    closedPickupDates: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const t = useTranslations();
 const page = usePage();
 const pickupAtDefaultParts = props.pickupAtDefault?.split('T') ?? ['', ''];
-const pickupAtMinDate = props.pickupAtMin?.split('T')[0] ?? '';
-const closedPickupDates = new Set(props.closedPickupDates ?? []);
-const pickupDateError = ref('');
-const dateInputLocale = computed(() => page.props.locale === 'it' ? 'it-IT' : 'en-US');
-const pickupDateInput = ref(null);
-const pickupTimeInput = ref(null);
-let pickupDatePicker = null;
-let pickupTimePicker = null;
 
 const form = useForm({
     pickup_date: pickupAtDefaultParts[0] ?? '',
     pickup_time: pickupAtDefaultParts[1] ?? '',
     notes: '',
+});
+
+const {
+    dateInputLocale,
+    pickupDateError,
+    pickupDateInput,
+    pickupTimeInput,
+    validatePickupDate,
+} = usePickupDateTimePicker({
+    form,
+    pickupAtMin: props.pickupAtMin,
+    pickupDateMax: props.pickupDateMax,
+    closedPickupDates: props.closedPickupDates,
+    closedDateError: () => t('checkout.closed_date_error', 'Il ritiro non è disponibile la domenica o nei giorni festivi.'),
 });
 
 function submitOrder() {
@@ -46,80 +61,11 @@ function submitOrder() {
     })).post(route('checkout.store'));
 }
 
-function validatePickupDate() {
-    pickupDateError.value = '';
-
-    if (! form.pickup_date) {
-        return;
-    }
-
-    if (closedPickupDates.has(form.pickup_date)) {
-        form.pickup_date = '';
-        pickupDateError.value = t('checkout.closed_date_error', 'Il ritiro non è disponibile la domenica o nei giorni festivi.');
-    }
-}
-
-function setupPickupDatePicker() {
-    if (! pickupDateInput.value) {
-        return;
-    }
-
-    pickupDatePicker?.destroy();
-    pickupDatePicker = flatpickr(pickupDateInput.value, {
-        allowInput: false,
-        altInput: true,
-        altFormat: page.props.locale === 'it' ? 'd/m/Y' : 'm/d/Y',
-        dateFormat: 'Y-m-d',
-        defaultDate: form.pickup_date || null,
-        disable: [...closedPickupDates],
-        locale: page.props.locale === 'it' ? Italian : 'default',
-        maxDate: props.pickupDateMax,
-        minDate: pickupAtMinDate,
-        onChange: (selectedDates, dateValue) => {
-            form.pickup_date = dateValue;
-            validatePickupDate();
-        },
-    });
-}
-
-function setupPickupTimePicker() {
-    if (! pickupTimeInput.value) {
-        return;
-    }
-
-    pickupTimePicker?.destroy();
-    pickupTimePicker = flatpickr(pickupTimeInput.value, {
-        allowInput: false,
-        dateFormat: 'H:i',
-        defaultDate: form.pickup_time || null,
-        enableTime: true,
-        noCalendar: true,
-        time_24hr: true,
-        onChange: (selectedDates, timeValue) => {
-            form.pickup_time = timeValue;
-        },
-    });
-}
-
-onMounted(() => {
-    setupPickupDatePicker();
-    setupPickupTimePicker();
-});
-
-onBeforeUnmount(() => {
-    pickupDatePicker?.destroy();
-    pickupTimePicker?.destroy();
-});
-
-watch(dateInputLocale, async () => {
-    await nextTick();
-    setupPickupDatePicker();
-});
 </script>
 
 <template>
     <PageContainer narrow>
-        <header class="checkout-header">
+        <header class="checkout-header page-header">
             <PageNav />
         </header>
 
@@ -171,7 +117,7 @@ watch(dateInputLocale, async () => {
                 </p>
             </div>
 
-            <button type="submit" class="submit-button">
+            <button type="submit" class="submit-button" :disabled="form.processing">
                 {{ t('checkout.submit', 'Conferma ordine') }}
             </button>
         </form>
@@ -227,6 +173,11 @@ watch(dateInputLocale, async () => {
 
 .submit-button:hover {
     background: #14532d;
+}
+
+.submit-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .form-error {
