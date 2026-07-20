@@ -4,7 +4,6 @@ on:
   push:
     branches: [ "main" ]
 
-  # allows you to run this workflow from other repositories
   workflow_call:
     secrets:
       SERVER_HOST:
@@ -14,12 +13,48 @@ on:
       SERVER_SSH_KEY:
         required: true
 
-  # allows you to run this workflow manually
   workflow_dispatch:
 
 jobs:
-  build:
+  test:
+    name: Test Laravel
     runs-on: ubuntu-latest
+
+    steps:
+      - name: Scarica il repository
+        uses: actions/checkout@v4
+
+      - name: Configura PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          extensions: mbstring, dom, fileinfo, pdo_sqlite
+          coverage: none
+
+      - name: Installa le dipendenze PHP
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepara Laravel per i test
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          touch database/database.sqlite
+
+      - name: Esegui i test Laravel
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+          CACHE_STORE: array
+          SESSION_DRIVER: array
+          QUEUE_CONNECTION: sync
+          MAIL_MAILER: array
+        run: php artisan test
+
+  build:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: test
 
     steps:
       - name: Deploy sul server
@@ -33,9 +68,10 @@ jobs:
             git pull
 
             docker compose -f compose.production.yaml up -d --build --remove-orphans
-            docker system prune -f
 
-            docker compose -f compose.production.yaml exec app php artisan migrate --force
-            docker compose -f compose.production.yaml exec app php artisan db:seed --force
-            docker compose -f compose.production.yaml exec app php artisan optimize:clear
-            docker compose -f compose.production.yaml exec app php artisan optimize
+            docker compose -f compose.production.yaml exec -T app php artisan migrate --force
+            docker compose -f compose.production.yaml exec -T app php artisan db:seed --force
+            docker compose -f compose.production.yaml exec -T app php artisan optimize:clear
+            docker compose -f compose.production.yaml exec -T app php artisan optimize
+
+            docker system prune -f
